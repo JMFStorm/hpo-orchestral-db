@@ -1,5 +1,4 @@
 const { Router } = require("express");
-const Papa = require("papaparse");
 
 const httpError = require("../utils/httpError");
 const { getAllInstruments } = require("../managers/instrument");
@@ -17,28 +16,30 @@ router.get("/", async (req, res, next) => {
     return next(httpError(err, 404));
   }
 });
+
 // Get test data
 router.get("/data", async (req, res, next) => {
   try {
-    const fs = require("fs");
-    const csvR = require("jquery-csv");
-    const sample = "../csv/hpo_test_data.csv";
+    const fs = require("fs").promises;
+    const csvReader = require("jquery-csv");
+    const sample = csvFilePath;
 
-    fs.readFile(sample, "latin1", function (err, csv) {
+    const fileText = await fs.readFile(sample, "latin1", (err) => {
+      if (err) {
+        console.error(err);
+      }
+    });
+
+    let result = [];
+
+    csvReader.toObjects(fileText, {}, (err, data) => {
       if (err) {
         console.log(err);
       }
-      csvR.toArrays(csv, {}, function (err, data) {
-        if (err) {
-          console.log(err);
-        }
-        console.log("data", data);
-        for (var i = 0, len = data.length; i < len; i++) {
-          console.log(data[i]);
-        }
-      });
+      result = data;
     });
-    res.send("");
+
+    res.send(result);
   } catch (err) {
     console.error("err", err);
     return next(httpError(err, 404));
