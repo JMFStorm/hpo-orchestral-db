@@ -3,7 +3,7 @@ const cors = require("cors");
 const path = require("path");
 
 const { serverPort } = require("./utils/config");
-const instrumentController = require("./controllers/instrument");
+const databaseController = require("./controllers/database");
 const errorHandler = require("./middleware/errorHandler");
 
 const app = express();
@@ -19,7 +19,7 @@ const build = path.join(__dirname, "build");
 app.use(express.static(build));
 
 // Use routes
-app.use("/api/instrument", instrumentController);
+app.use("/api/database", databaseController);
 
 // Use error handler endpoint
 app.use(errorHandler);

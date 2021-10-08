@@ -1,5 +1,3 @@
-const nodeEnvironment = process.env.NODE_ENV;
-
 const postgres = "postgres";
 const localhost = "localhost";
 const development = "development";
@@ -13,10 +11,8 @@ const dbConfigDev = {
   database: process.env.DB_NAME_DEV,
 };
 
-const serverPortDev = 3000;
-
-const getDbConfig = () => {
-  switch (nodeEnvironment) {
+const getDbConfig = (env) => {
+  switch (env) {
     case development:
       return dbConfigDev;
     default:
@@ -24,8 +20,10 @@ const getDbConfig = () => {
   }
 };
 
-const getServerPort = () => {
-  switch (nodeEnvironment) {
+const getServerPort = (env) => {
+  const serverPortDev = process.env.SERVER_PORT_DEV;
+
+  switch (env) {
     case development:
       return serverPortDev;
     default:
@@ -33,7 +31,10 @@ const getServerPort = () => {
   }
 };
 
+const nodeEnvironment = process.env.NODE_ENV;
+
 module.exports = {
-  dbConfig: getDbConfig(),
-  serverPort: getServerPort(),
+  dbConfig: getDbConfig(nodeEnvironment),
+  serverPort: getServerPort(nodeEnvironment),
+  csvTestFilePath: process.env.CSV_TEST_FILE_PATH,
 };
