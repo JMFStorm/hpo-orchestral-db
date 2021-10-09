@@ -13,12 +13,12 @@ module.exports = new EntitySchema({
   relations: {
     musician: {
       target: "musician",
-      type: "one-to-one",
+      type: "one-to-many",
       cascade: true,
     },
     instrument: {
       target: "instrument",
-      type: "one-to-one",
+      type: "one-to-many",
       cascade: true,
     },
   },
