@@ -35,7 +35,7 @@ controller.get("/seed", async (req, res, next) => {
     rowObjects.forEach((x) => {
       const regex1 = new RegExp("\\*");
       const regex2 = new RegExp("/");
-      const current = x.Säveltäjä;
+      const current = x.Saveltaja;
 
       // Check for 'empty'
       if (regex1.test(current)) {
@@ -57,6 +57,7 @@ controller.get("/seed", async (req, res, next) => {
 
     // From arrangers
     const arrangers = rowObjects
+      .filter((x) => x.Sovittaja.trim().length !== 0)
       .map((x) => {
         const regex = new RegExp("^sov./arr.");
         const current = x.Sovittaja;
@@ -66,11 +67,42 @@ controller.get("/seed", async (req, res, next) => {
           return current.substring(9).trim();
         }
         return current;
-      })
-      .filter((x) => x.trim().length !== 0);
+      });
     console.log("Adding musicians from " + arrangers.length + " total arrangers:");
     const c3 = await createMusicians(arrangers);
     console.log("Added " + c3 + " from compositors");
+
+    // From soloist
+    let soloists = [];
+    // Collect instruments
+    let instruments = [];
+
+    rowObjects
+      .filter((x) => x.Solisti.trim().length !== 0)
+      .forEach((x) => {
+        const regex = new RegExp(",");
+        const cell = x.Solisti;
+        // Check for multiple in one cell
+        if (regex.test(cell)) {
+          const soloistArr = cell.split(",");
+          soloistArr.forEach((x) => {
+            const current = x.trim();
+            // Get instrument
+            const regexInstrument = /\(w*\)/;
+            if (regexInstrument.test(current)) {
+              const start = current.indexOf("(") + 1;
+              const end = current.indexOf(")");
+              const instrument = current.substring(start, end);
+              if (!instrument.trim().length === 0) {
+                instruments.push(instrument);
+              }
+            }
+            // Get musician
+          });
+        }
+      });
+
+    console.log(instruments);
 
     const totalMusicians = c1 + c2 + c3;
 
