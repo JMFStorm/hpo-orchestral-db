@@ -94,17 +94,23 @@ controller.get("/seed", async (req, res, next) => {
               const end = current.indexOf(")");
               const instrument = current.substring(start, end);
               if (!instrument.trim().length === 0) {
-                instruments.push(instrument);
+                instruments.push(instrument.trim());
               }
             }
-            // Get musician
+            // Get musicians
+            const soloist = current.substring(0, current.indexOf("("));
+            if (soloist.trim().length !== 0) {
+              soloists.push(soloist.trim());
+            }
           });
         }
       });
 
-    console.log(instruments);
+    console.log("Adding musicians from " + soloists.length + " total soloists:");
+    const c4 = await createMusicians(soloists);
+    console.log("Added " + c4 + " from soloists");
 
-    const totalMusicians = c1 + c2 + c3;
+    const totalMusicians = c1 + c2 + c3 + c4;
 
     // Send response
     const results = {
