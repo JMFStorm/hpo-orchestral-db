@@ -7,7 +7,7 @@ const { dbConfig } = require("../utils/config");
 const connectionConfig = {
   ...dbConfig,
   synchronize: true,
-  entities: [require("../entities/Musician")],
+  entities: [require("../entities/Musician"), require("../entities/Instrument")],
 };
 
 module.exports = typeorm.createConnection(connectionConfig);

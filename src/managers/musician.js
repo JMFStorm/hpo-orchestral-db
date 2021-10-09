@@ -3,9 +3,9 @@ const { getRepository } = require("typeorm");
 const Musician = require("../entities/Musician");
 
 // Describe
-// Adds creates musicians on table from an array of names,
+// Adds musicians to table from an array of names,
 // filters duplicates, returns saved count
-const createMusicians = async (musicianNames) => {
+const addMusicians = async (musicianNames) => {
   const repo = getRepository(Musician);
 
   let objects = [];
@@ -28,10 +28,11 @@ const createMusicians = async (musicianNames) => {
     }
   });
 
-  console.log(`Found ${duplicates} duplicates in list of ${musicianNames.length} names and ${invalid} invalid`);
+  console.log(
+    `Found ${duplicates} duplicates in list of ${musicianNames.length} names and ${invalid} invalid`
+  );
 
   let newObjects = [];
-  let existing = 0;
 
   const existingMusicians = await repo.find({});
 
@@ -41,19 +42,15 @@ const createMusicians = async (musicianNames) => {
       newObjects.push({
         name: obj.name,
       });
-    } else {
-      existing++;
     }
   });
-
-  console.log(existing + " musicians already found from db");
 
   const result = await repo.save(newObjects);
   return result.length;
 };
 
 // Describe
-// Deletes all musicians from table
+// Deletes all musicians from table,
 // returns deleted count
 const deleteAllMusicians = async () => {
   const repo = getRepository(Musician);
@@ -63,6 +60,6 @@ const deleteAllMusicians = async () => {
 };
 
 module.exports = {
-  createMusicians,
+  addMusicians,
   deleteAllMusicians,
 };

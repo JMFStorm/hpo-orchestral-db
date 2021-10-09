@@ -1,7 +1,8 @@
 const { Router } = require("express");
 
 const httpError = require("../utils/httpError");
-const { createMusicians, deleteAllMusicians } = require("../managers/musician");
+const { addMusicians, deleteAllMusicians } = require("../managers/musician");
+const { addInstruments, deleteAllInstruments } = require("../managers/instrument");
 const { csvTestFilePath } = require("../utils/config");
 const { csvRowsToObjects } = require("../utils/csvRead");
 
@@ -15,8 +16,10 @@ controller.get("/seed", async (req, res, next) => {
   try {
     // Delete existing data
     const path = csvFilePath;
-    const d = await deleteAllMusicians();
-    console.log("Deleted " + d + " musicians");
+    const delMus = await deleteAllMusicians();
+    const delInstr = await deleteAllInstruments();
+    console.log("Deleted " + delMus + " musicians");
+    console.log("Deleted " + delInstr + " instruments");
 
     // Read CSV file
     const rowObjects = await csvRowsToObjects(path);
@@ -26,7 +29,7 @@ controller.get("/seed", async (req, res, next) => {
     // From conductors
     const conductors = rowObjects.map((x) => x.Kapellimestari);
     console.log("Adding musicians from " + conductors.length + " conductors:");
-    const c1 = await createMusicians(conductors);
+    const c1 = await addMusicians(conductors);
     console.log("Added " + c1 + " from conductors");
 
     // From compositors
@@ -52,7 +55,7 @@ controller.get("/seed", async (req, res, next) => {
     });
 
     console.log("Adding musicians from " + compositors.length + " total compositors:");
-    const c2 = await createMusicians(compositors);
+    const c2 = await addMusicians(compositors);
     console.log("Added " + c2 + " from compositors");
 
     // From arrangers
@@ -69,7 +72,7 @@ controller.get("/seed", async (req, res, next) => {
         return current;
       });
     console.log("Adding musicians from " + arrangers.length + " total arrangers:");
-    const c3 = await createMusicians(arrangers);
+    const c3 = await addMusicians(arrangers);
     console.log("Added " + c3 + " from compositors");
 
     // From soloist
@@ -88,12 +91,14 @@ controller.get("/seed", async (req, res, next) => {
           soloistArr.forEach((x) => {
             const current = x.trim();
             // Get instrument
-            const regexInstrument = /\(w*\)/;
+            const regexInstrument = new RegExp("(w*)");
+            console.log("current", current, regexInstrument.test(current));
             if (regexInstrument.test(current)) {
               const start = current.indexOf("(") + 1;
               const end = current.indexOf(")");
               const instrument = current.substring(start, end);
-              if (!instrument.trim().length === 0) {
+              console.log("instrument", instrument);
+              if (instrument.trim().length !== 0) {
                 instruments.push(instrument.trim());
               }
             }
@@ -107,15 +112,22 @@ controller.get("/seed", async (req, res, next) => {
       });
 
     console.log("Adding musicians from " + soloists.length + " total soloists:");
-    const c4 = await createMusicians(soloists);
+    const c4 = await addMusicians(soloists);
     console.log("Added " + c4 + " from soloists");
 
+    console.log("Adding instruments from " + instruments.length + " total instruments:");
+    const i1 = await addInstruments(instruments);
+    console.log("Added " + i1 + " from instruments");
+
     const totalMusicians = c1 + c2 + c3 + c4;
+    const totalInstruments = i1;
 
     // Send response
     const results = {
-      deletedMusicians: d,
+      deletedMusicians: delMus,
       NewMusicians: totalMusicians,
+      deletedInstruments: delInstr,
+      NewInstruments: totalInstruments,
     };
     console.log("Results:", results);
     res.send(results);
