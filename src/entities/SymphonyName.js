@@ -17,7 +17,6 @@ module.exports = new EntitySchema({
     symphony: {
       target: "symphony",
       type: "many-to-one",
-      joinTable: true,
       cascade: true,
     },
   },

@@ -1,23 +1,7 @@
-const { getRepository } = require("typeorm");
+const { getRepository, SimpleConsoleLogger } = require("typeorm");
 
 const Symphony = require("../entities/Symphony");
 const SymphonyName = require("../entities/SymphonyName");
-
-// Describe
-// Adds symphony ids to table
-// returns saved count
-const addSymphonyIds = async (ids) => {
-  const repo = getRepository(Symphony);
-
-  const objects = ids.map((x) => {
-    return {
-      symphony_id: x,
-    };
-  });
-
-  const res = await repo.save(objects);
-  return res.length;
-};
 
 // Describe
 // Adds symphonies to id and name table
@@ -29,21 +13,23 @@ const addSymphonies = async (symphonies) => {
     const repoId = getRepository(Symphony);
     const repoName = getRepository(SymphonyName);
 
+    let symphonyObject = null;
     const idObject = { symphony_id: symph.symphony_id };
     const idExists = await repoId.findOne(idObject);
 
-    let savedIdObj = null;
-
     if (!idExists) {
-      const savedId = await repoId.save(idObject);
-      savedIdObj = savedId;
+      symphonyObject = await repoId.save(idObject);
+    } else {
+      const findRes = await repoId.find(idObject);
+      symphonyObject = findRes[0];
     }
 
     const nameObject = { name: symph.name };
     const foundName = await repoName.findOne(nameObject);
 
+    // Save symphony_name, add relation 'from symphony'
     if (!foundName) {
-      const saveNameObject = { ...nameObject, symphony: savedIdObj ? savedIdObj : null };
+      const saveNameObject = { ...nameObject, symphony: symphonyObject };
       await repoName.save(saveNameObject);
 
       addedCount++;
@@ -75,7 +61,6 @@ const deleteAllSymphonyNames = async () => {
 
 module.exports = {
   addSymphonies,
-  addSymphonyIds,
   deleteAllSymphonyIds,
   deleteAllSymphonyNames,
 };
