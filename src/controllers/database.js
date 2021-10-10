@@ -18,15 +18,17 @@ const controller = Router();
 controller.get("/seed", async (req, res, next) => {
   try {
     // Delete existing data
-    const path = csvFilePath;
-    const delMus = await deleteAllMusicians();
-    const delInstr = await deleteAllInstruments();
-    const delSymNameId = await deleteAllSymphonyNames();
-    const delSymId = await deleteAllSymphonyIds();
-    const delOrch = await deleteAllOrchestries();
-    const delLocation = await deleteAllLocations();
+    Promise.all([
+      await deleteAllMusicians(),
+      await deleteAllInstruments(),
+      await deleteAllSymphonyNames(),
+      await deleteAllSymphonyIds(),
+      await deleteAllOrchestries(),
+      await deleteAllLocations(),
+    ]);
 
     // Read CSV file
+    const path = csvFilePath;
     const rowObjects = await csvRowsToObjects(path);
 
     // Collect musicians from conductors
@@ -164,29 +166,16 @@ controller.get("/seed", async (req, res, next) => {
     });
 
     // Save everything collected
-    const musicianRes = await addMusicians(musicians);
-    const symphoniesRes = await addSymphonies(symphonies);
-    const instrumentRes = await addInstruments(instruments);
-    const orchestriesRes = await addOrchestries(orchestraNames);
-    const locationsRes = await addLocations(locationNames);
+    Promise.all([
+      await addMusicians(musicians),
+      await addSymphonies(symphonies),
+      await addInstruments(instruments),
+      await addOrchestries(orchestraNames),
+      await addLocations(locationNames),
+    ]);
 
-    // Send response
-    const results = {
-      deletedMusicians: delMus,
-      deletedInstruments: delInstr,
-      deletedSymphonyIds: delSymId,
-      deletedSymphonyNames: delSymNameId,
-      deletedOrchestries: delOrch,
-      deletedLocations: delLocation,
-      newMusicians: musicianRes,
-      newInstruments: instrumentRes,
-      newSymphonies: symphoniesRes,
-      newOrchestries: orchestriesRes,
-      newLocations: locationsRes,
-    };
-
-    console.log("Results:", results);
-    res.send(results);
+    console.log("Seed successfull");
+    res.send("Seed successfull");
   } catch (err) {
     console.error("err", err);
     return next(httpError(err, 404));
