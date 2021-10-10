@@ -4,6 +4,7 @@ const httpError = require("../utils/httpError");
 const { addMusicians, deleteAllMusicians } = require("../managers/musician");
 const { addInstruments, deleteAllInstruments } = require("../managers/instrument");
 const { addSymphonies, deleteAllSymphonyIds, deleteAllSymphonyNames } = require("../managers/symphony");
+const { addOrchestries, deleteAllOrchestries } = require("../managers/orchestra");
 const { csvTestFilePath } = require("../utils/config");
 const { csvRowsToObjects } = require("../utils/csvRead");
 
@@ -21,14 +22,12 @@ controller.get("/seed", async (req, res, next) => {
     const delInstr = await deleteAllInstruments();
     const delSymNameId = await deleteAllSymphonyNames();
     const delSymId = await deleteAllSymphonyIds();
+    const delOrch = await deleteAllOrchestries();
 
     // Read CSV file
     const rowObjects = await csvRowsToObjects(path);
 
-    // Add musicians to table
-
-    // Add musicians to table
-    // From conductors
+    // Collect musicians from conductors
     let musicians = [];
 
     rowObjects.map((x) => {
@@ -39,8 +38,7 @@ controller.get("/seed", async (req, res, next) => {
       }
     });
 
-    // Add musicians to table
-    // From compositors
+    // Collect musicians from compositors
     rowObjects.map((x) => {
       const regex1 = new RegExp("\\*");
       const regex2 = new RegExp("/");
@@ -67,8 +65,7 @@ controller.get("/seed", async (req, res, next) => {
       }
     });
 
-    // Add musicians to table
-    // From arrangers
+    // Collect musicians from arrangers
     rowObjects
       .filter((x) => x.Sovittaja.trim().length !== 0)
       .map((x) => {
@@ -83,10 +80,10 @@ controller.get("/seed", async (req, res, next) => {
         musicians.push(current);
       });
 
-    // Add musicians to table
-    // From soloist and collect instruments
+    // Collect instruments from soloists
     let instruments = [];
 
+    // And collect musicians from soloist
     rowObjects
       .filter((x) => x.Solisti.trim().length !== 0)
       .map((x) => {
@@ -95,7 +92,6 @@ controller.get("/seed", async (req, res, next) => {
         // Check for multiple in one cell
         if (regex.test(cell)) {
           const soloistArr = cell.split(",");
-          // loop
           soloistArr.map((x) => {
             const current = x.trim();
             // Get instrument
@@ -117,14 +113,13 @@ controller.get("/seed", async (req, res, next) => {
         }
       });
 
-    // Add symphony ids to table
+    // Collect symphony ids
     let symphonies = [];
 
     rowObjects.map((row) => {
       const symphonyIdCell = row.TeoksenId;
       const symphonyNameCell = row.TeoksenNimi;
 
-      // Create symphony objects
       const symphonyObj = {
         symphony_id: symphonyIdCell,
         name: symphonyNameCell,
@@ -135,20 +130,33 @@ controller.get("/seed", async (req, res, next) => {
       }
     });
 
+    // Collect orchestries
+    let orchestraNames = [];
+
+    rowObjects.map((row) => {
+      const orchestra = row.Orkesteri;
+      if (!orchestraNames.some((x) => x === orchestra) && orchestra.trim() !== "") {
+        orchestraNames.push(orchestra);
+      }
+    });
+
     // Save everything collected
     const musicianRes = await addMusicians(musicians);
-    const symphoniesAdded = await addSymphonies(symphonies);
+    const symphoniesRes = await addSymphonies(symphonies);
     const instrumentRes = await addInstruments(instruments);
+    const orchestriesRes = await addOrchestries(orchestraNames);
 
     // Send response
     const results = {
       deletedMusicians: delMus,
-      newMusicians: musicianRes,
       deletedInstruments: delInstr,
-      newInstruments: instrumentRes,
       deletedSymphonyIds: delSymId,
       deletedSymphonyNames: delSymNameId,
-      newSymphonies: symphoniesAdded,
+      deletedOrchestries: delOrch,
+      newMusicians: musicianRes,
+      newInstruments: instrumentRes,
+      newSymphonies: symphoniesRes,
+      newOrchestries: orchestriesRes,
     };
 
     console.log("Results:", results);

@@ -13,6 +13,7 @@ const connectionConfig = {
     require("../entities/InstrumentSession"),
     require("../entities/Symphony"),
     require("../entities/SymphonyName"),
+    require("../entities/Orchestra"),
   ],
 };
 
