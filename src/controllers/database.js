@@ -5,6 +5,7 @@ const { addMusicians, deleteAllMusicians } = require("../managers/musician");
 const { addInstruments, deleteAllInstruments } = require("../managers/instrument");
 const { addSymphonies, deleteAllSymphonyIds, deleteAllSymphonyNames } = require("../managers/symphony");
 const { addOrchestries, deleteAllOrchestries } = require("../managers/orchestra");
+const { addLocations, deleteAllLocations } = require("../managers/location");
 const { csvTestFilePath } = require("../utils/config");
 const { csvRowsToObjects } = require("../utils/csvRead");
 
@@ -23,6 +24,7 @@ controller.get("/seed", async (req, res, next) => {
     const delSymNameId = await deleteAllSymphonyNames();
     const delSymId = await deleteAllSymphonyIds();
     const delOrch = await deleteAllOrchestries();
+    const delLocation = await deleteAllLocations();
 
     // Read CSV file
     const rowObjects = await csvRowsToObjects(path);
@@ -140,11 +142,22 @@ controller.get("/seed", async (req, res, next) => {
       }
     });
 
+    // Collect locations
+    let locationNames = [];
+
+    rowObjects.map((row) => {
+      const location = row.Konserttipaikka;
+      if (!locationNames.some((x) => x === location) && location.trim() !== "") {
+        locationNames.push(location);
+      }
+    });
+
     // Save everything collected
     const musicianRes = await addMusicians(musicians);
     const symphoniesRes = await addSymphonies(symphonies);
     const instrumentRes = await addInstruments(instruments);
     const orchestriesRes = await addOrchestries(orchestraNames);
+    const locationsRes = await addLocations(locationNames);
 
     // Send response
     const results = {
@@ -153,10 +166,12 @@ controller.get("/seed", async (req, res, next) => {
       deletedSymphonyIds: delSymId,
       deletedSymphonyNames: delSymNameId,
       deletedOrchestries: delOrch,
+      deletedLocations: delLocation,
       newMusicians: musicianRes,
       newInstruments: instrumentRes,
       newSymphonies: symphoniesRes,
       newOrchestries: orchestriesRes,
+      newLocations: locationsRes,
     };
 
     console.log("Results:", results);
