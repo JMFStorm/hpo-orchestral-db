@@ -3,7 +3,7 @@ const { Router } = require("express");
 const httpError = require("../utils/httpError");
 const { addMusicians, deleteAllMusicians } = require("../managers/musician");
 const { addInstruments, deleteAllInstruments } = require("../managers/instrument");
-const { addSymphonyIds, deleteAllSymphonyIds } = require("../managers/symphony");
+const { addSymphonies, deleteAllSymphonyIds, deleteAllSymphonyNames } = require("../managers/symphony");
 const { csvTestFilePath } = require("../utils/config");
 const { csvRowsToObjects } = require("../utils/csvRead");
 
@@ -19,6 +19,7 @@ controller.get("/seed", async (req, res, next) => {
     const path = csvFilePath;
     const delMus = await deleteAllMusicians();
     const delInstr = await deleteAllInstruments();
+    const delSymNameId = await deleteAllSymphonyNames();
     const delSymId = await deleteAllSymphonyIds();
 
     // Read CSV file
@@ -117,18 +118,26 @@ controller.get("/seed", async (req, res, next) => {
       });
 
     // Add symphony ids to table
-    let symphonyIdCells = [];
+    let symphonies = [];
 
     rowObjects.map((row) => {
       const symphonyIdCell = row.TeoksenId;
-      if (!symphonyIdCells.some((x) => x === symphonyIdCell)) {
-        symphonyIdCells.push(symphonyIdCell);
+      const symphonyNameCell = row.TeoksenNimi;
+
+      // Create symphony objects
+      const symphonyObj = {
+        symphony_id: symphonyIdCell,
+        name: symphonyNameCell,
+      };
+
+      if (!symphonies.some((x) => x.symphony_id === symphonyObj.symphony_id && x.name === symphonyObj.name)) {
+        symphonies.push(symphonyObj);
       }
     });
 
     // Save everything collected
     const musicianRes = await addMusicians(musicians);
-    const symIdRes = await addSymphonyIds(symphonyIdCells);
+    const symphoniesAdded = await addSymphonies(symphonies);
     const instrumentRes = await addInstruments(instruments);
 
     // Send response
@@ -138,7 +147,8 @@ controller.get("/seed", async (req, res, next) => {
       deletedInstruments: delInstr,
       newInstruments: instrumentRes,
       deletedSymphonyIds: delSymId,
-      newSymphonyIds: symIdRes,
+      deletedSymphonyNames: delSymNameId,
+      newSymphonies: symphoniesAdded,
     };
 
     console.log("Results:", results);

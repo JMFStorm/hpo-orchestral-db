@@ -11,7 +11,7 @@ const connectionConfig = {
     require("../entities/Musician"),
     require("../entities/Instrument"),
     require("../entities/InstrumentSession"),
-    require("../entities/SymphonyId"),
+    require("../entities/Symphony"),
     require("../entities/SymphonyName"),
   ],
 };

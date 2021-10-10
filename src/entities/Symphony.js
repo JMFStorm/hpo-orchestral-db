@@ -1,16 +1,23 @@
 const EntitySchema = require("typeorm").EntitySchema;
 
 module.exports = new EntitySchema({
-  name: "symphony_id",
-  tableName: "symphony_ids",
+  name: "symphony",
+  tableName: "symphonies",
   columns: {
     id: {
       primary: true,
-      type: "int",
+      type: "uuid",
       generated: "uuid",
     },
     symphony_id: {
       type: "varchar",
+    },
+  },
+  relations: {
+    symphonyName: {
+      target: "symphony_name",
+      type: "one-to-many",
+      onDelete: "CASCADE",
     },
   },
 });

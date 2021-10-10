@@ -6,11 +6,19 @@ module.exports = new EntitySchema({
   columns: {
     id: {
       primary: true,
-      type: "int",
+      type: "uuid",
       generated: "uuid",
     },
     name: {
       type: "varchar",
+    },
+  },
+  relations: {
+    symphony: {
+      target: "symphony",
+      type: "many-to-one",
+      joinTable: true,
+      cascade: true,
     },
   },
 });

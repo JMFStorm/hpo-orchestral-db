@@ -1,12 +1,12 @@
 const EntitySchema = require("typeorm").EntitySchema;
 
 module.exports = new EntitySchema({
-  name: "instrument_session",
-  tableName: "instrument_sessions",
+  name: "instrumentSession",
+  tableName: "instrumentSessions",
   columns: {
     id: {
       primary: true,
-      type: "int",
+      type: "uuid",
       generated: "uuid",
     },
   },

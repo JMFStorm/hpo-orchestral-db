@@ -9,7 +9,6 @@ const addInstruments = async (instrumentNames) => {
   const repo = getRepository(Instrument);
 
   let objects = [];
-  let duplicates = 0;
   let invalid = 0;
 
   // Filter duplicates and invalid
@@ -23,14 +22,8 @@ const addInstruments = async (instrumentNames) => {
       objects.push({
         name,
       });
-    } else {
-      duplicates++;
     }
   });
-
-  console.log(
-    `Found ${duplicates} duplicates in list of ${instrumentNames.length} names and ${invalid} invalid`
-  );
 
   let newObjects = [];
 
