@@ -18,6 +18,7 @@ module.exports = new EntitySchema({
       target: "symphony",
       type: "many-to-one",
       cascade: true,
+      onDelete: "CASCADE",
     },
   },
 });

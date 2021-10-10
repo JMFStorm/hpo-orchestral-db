@@ -33,36 +33,39 @@ controller.get("/seed", async (req, res, next) => {
     let musicians = [];
 
     rowObjects.map((x) => {
-      const conductor = x.Kapellimestari;
+      const conductor = x.Kapellimestari.trim();
 
-      if (!musicians.some((x) => x === conductor)) {
+      if (conductor !== "" && !musicians.includes(conductor)) {
         musicians.push(conductor);
       }
     });
 
     // Collect musicians from compositors
     rowObjects.map((x) => {
-      const regex1 = new RegExp("\\*");
-      const regex2 = new RegExp("/");
-      const compositor = x.Saveltaja;
+      const compositor = x.Saveltaja.trim();
 
       // Check for 'empty'
-      if (regex1.test(compositor)) {
+      const regex1 = new RegExp("\\*");
+
+      if (regex1.test(compositor) || compositor === "") {
         return;
       }
 
       // Check for multiple in one cell
+      const regex2 = new RegExp("/");
+
       if (regex2.test(compositor)) {
-        const compsArr = compositor.split("/");
-        compsArr.map((comp) => {
-          if (!musicians.some((x) => x === comp)) {
-            musicians.push(comp.trim());
+        const compsArr = compositor.split("/").map((x) => x.trim());
+        compsArr.map((x) => {
+          const comp = x.trim();
+          if (!musicians.includes(comp)) {
+            musicians.push(comp);
             return;
           }
         });
       }
 
-      if (!musicians.some((x) => x === compositor)) {
+      if (!musicians.includes(compositor)) {
         musicians.push(compositor);
       }
     });
@@ -71,48 +74,56 @@ controller.get("/seed", async (req, res, next) => {
     rowObjects
       .filter((x) => x.Sovittaja.trim().length !== 0)
       .map((x) => {
-        const regex = new RegExp("^sov./arr.");
         const current = x.Sovittaja;
+        let arranger = current;
 
         // Filter string with regex
+        const regex = new RegExp("^sov./arr.");
+
         if (regex.test(current)) {
-          musicians.push(current.substring(9).trim());
-          return;
+          arranger = current.substring(9).trim();
         }
-        musicians.push(current);
+
+        if (!musicians.includes(arranger)) {
+          musicians.push(arranger);
+        }
       });
 
     // Collect instruments from soloists
     let instruments = [];
 
+    // >>>>>>>>>>>>>>>>>>> CONTINUE DEBUG FROM HERE<<<<<<<<<<<<<<<<<<
+
     // And collect musicians from soloist
     rowObjects
       .filter((x) => x.Solisti.trim().length !== 0)
       .map((x) => {
-        const regex = new RegExp(",");
         const cell = x.Solisti;
+
         // Check for multiple in one cell
-        if (regex.test(cell)) {
-          const soloistArr = cell.split(",");
-          soloistArr.map((x) => {
-            const current = x.trim();
-            // Get instrument
-            const regexInstrument = new RegExp("(w*)");
-            if (regexInstrument.test(current)) {
-              const start = current.indexOf("(") + 1;
-              const end = current.indexOf(")");
-              const instrument = current.substring(start, end);
-              if (instrument.trim().length !== 0) {
-                instruments.push(instrument.trim());
-              }
+        const soloistArr = cell.split(",");
+        soloistArr.map((x) => {
+          const current = x.trim();
+
+          // Get musicians
+          const soloist = current.substring(0, current.indexOf("(")).trim();
+          if (soloist.length > 0 && !musicians.includes(soloist)) {
+            musicians.push(soloist);
+          }
+
+          // Get instrument
+          const regexInstrument = new RegExp("(w*)");
+
+          if (regexInstrument.test(current)) {
+            const start = current.indexOf("(") + 1;
+            const end = current.indexOf(")");
+            const instrument = current.substring(start, end);
+
+            if (instrument.trim().length !== 0) {
+              instruments.push(instrument.trim());
             }
-            // Get musicians
-            const soloist = current.substring(0, current.indexOf("("));
-            if (soloist.trim().length !== 0) {
-              musicians.push(soloist.trim());
-            }
-          });
-        }
+          }
+        });
       });
 
     // Collect symphony ids
