@@ -1,8 +1,8 @@
 const EntitySchema = require("typeorm").EntitySchema;
 
 module.exports = new EntitySchema({
-  name: "instrumentSession",
-  tableName: "instrumentSessions",
+  name: "instrument_session",
+  tableName: "instrument_sessions",
   columns: {
     id: {
       primary: true,

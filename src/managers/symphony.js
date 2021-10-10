@@ -1,4 +1,4 @@
-const { getRepository, SimpleConsoleLogger } = require("typeorm");
+const { getRepository } = require("typeorm");
 
 const Symphony = require("../entities/Symphony");
 const SymphonyName = require("../entities/SymphonyName");
