@@ -6,6 +6,7 @@ const { addInstruments, deleteAllInstruments } = require("../managers/instrument
 const { addSymphonies, deleteAllSymphonyIds, deleteAllSymphonyNames } = require("../managers/symphony");
 const { addOrchestries, deleteAllOrchestries } = require("../managers/orchestra");
 const { addLocations, deleteAllLocations } = require("../managers/location");
+const { addConcerts, addConcertTags, deleteAllConcertTags } = require("../managers/concert");
 const { csvTestFilePath } = require("../utils/config");
 const { csvRowsToObjects } = require("../utils/csvRead");
 
@@ -25,6 +26,7 @@ controller.get("/seed", async (req, res, next) => {
       await deleteAllSymphonyIds(),
       await deleteAllOrchestries(),
       await deleteAllLocations(),
+      await deleteAllConcertTags(),
     ]);
 
     // Read CSV file
@@ -165,14 +167,54 @@ controller.get("/seed", async (req, res, next) => {
       }
     });
 
-    // Save everything collected
+    // Collect concert tags
+    let concertTagNames = [];
+
+    rowObjects.map((row) => {
+      const tag = row.KonsertinNimike.trim();
+      if (!concertTagNames.includes(tag) && tag !== "") {
+        concertTagNames.push(tag);
+      }
+    });
+
+    // Collect concerts
+    let concerts = [];
+
+    rowObjects.map((row) => {
+      const concertId = row.KonserttiId.trim();
+      const date = row.Paivamaara.trim();
+      const time = row.Aloitusaika.trim();
+      const location = row.Konserttipaikka.trim();
+      const tag = row.KonsertinNimike.trim();
+      const orchestra = row.Orkesteri.trim();
+
+      if (!concerts.some((x) => x.concert_id === concertId) && concertId !== "") {
+        const concertObject = {
+          concert_id: concertId,
+          date: date,
+          starting_time: time,
+          location: location,
+          concert_tag: tag,
+          orchestra: orchestra,
+        };
+        concerts.push(concertObject);
+      }
+    });
+
+    // Save all 'loosely' collected
     Promise.all([
       await addMusicians(musicians),
       await addSymphonies(symphonies),
       await addInstruments(instruments),
       await addOrchestries(orchestraNames),
       await addLocations(locationNames),
+      await addConcertTags(concertTagNames),
     ]);
+
+    // Save concerts
+    await addConcerts(concerts);
+
+    // Save both concert and intrument performances
 
     console.log("Seed successfull");
     res.send("Seed successfull");
