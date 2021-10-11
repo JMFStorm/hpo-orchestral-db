@@ -1,8 +1,8 @@
 const EntitySchema = require("typeorm").EntitySchema;
 
 module.exports = new EntitySchema({
-  name: "instrument_session",
-  tableName: "instrument_sessions",
+  name: "soloist_performance",
+  tableName: "soloist_performances",
   columns: {
     id: {
       primary: true,
@@ -11,7 +11,7 @@ module.exports = new EntitySchema({
     },
   },
   relations: {
-    musician: {
+    soloist: {
       target: "musician",
       type: "one-to-many",
       cascade: true,

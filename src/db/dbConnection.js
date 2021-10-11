@@ -10,13 +10,14 @@ const connectionConfig = {
   entities: [
     require("../entities/Musician"),
     require("../entities/Instrument"),
-    require("../entities/InstrumentSession"),
+    require("../entities/SoloistPerformance"),
     require("../entities/Symphony"),
     require("../entities/SymphonyName"),
     require("../entities/Orchestra"),
     require("../entities/Location"),
     require("../entities/Concert"),
     require("../entities/ConcertTag"),
+    require("../entities/ConcertPerformance"),
   ],
 };
 

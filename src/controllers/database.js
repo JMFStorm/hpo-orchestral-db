@@ -96,8 +96,6 @@ controller.get("/seed", async (req, res, next) => {
     // Collect instruments from soloists
     let instruments = [];
 
-    // >>>>>>>>>>>>>>>>>>> CONTINUE DEBUG FROM HERE<<<<<<<<<<<<<<<<<<
-
     // And collect musicians from soloist
     rowObjects
       .filter((x) => x.Solisti.trim().length !== 0)
@@ -121,10 +119,10 @@ controller.get("/seed", async (req, res, next) => {
           if (regexInstrument.test(current)) {
             const start = current.indexOf("(") + 1;
             const end = current.indexOf(")");
-            const instrument = current.substring(start, end);
+            const instrument = current.substring(start, end).trim();
 
-            if (instrument.trim().length !== 0) {
-              instruments.push(instrument.trim());
+            if (instrument !== "" && !instruments.includes(instrument)) {
+              instruments.push(instrument);
             }
           }
         });
@@ -201,6 +199,71 @@ controller.get("/seed", async (req, res, next) => {
       }
     });
 
+    // Collect both soloist and concert performances
+    let performances = [];
+
+    rowObjects.map((row) => {
+      const soloistPerformances = [];
+      const soloistsCell = row.Solisti;
+
+      // Check for multiple soloists in one cell
+      const soloistArr = soloistsCell.split(",");
+      soloistArr.map((x) => {
+        const current = x.trim();
+
+        let soloistTemp;
+        let instrumentTemp;
+
+        // Get musicians
+        const soloist = current.substring(0, current.indexOf("(")).trim();
+
+        if (soloist.length > 0) {
+          soloistTemp = soloist;
+        }
+
+        // Get instrument
+        const regexInstrument = new RegExp("(w*)");
+
+        if (regexInstrument.test(current)) {
+          const start = current.indexOf("(") + 1;
+          const end = current.indexOf(")");
+          const instrument = current.substring(start, end).trim();
+
+          if (instrument.length > 0) {
+            instrumentTemp = instrument;
+          }
+        }
+
+        // Add new soloist performance for current concert performance
+        if (soloistTemp && instrumentTemp) {
+          soloistPerformances.push({
+            soloistName: soloistTemp,
+            instrumentName: instrumentTemp,
+          });
+        }
+      });
+      const concertId = row.KonserttiId.trim();
+      const order = row.Esitysjarjestys.trim();
+      const symphonyId = row.TeoksenId.trim();
+      const conductor = row.Kapellimestari.trim();
+      const compositor = row.Saveltaja.trim();
+      const arranger = row.Sovittaja.trim();
+
+      const newPerformance = {
+        order: order,
+        concertId: concertId,
+        symphonyId: symphonyId,
+        conductor: conductor,
+        compositor: compositor,
+        arranger: arranger,
+        soloist_performances: soloistPerformances,
+      };
+
+      if (!performances.some((x) => x === newPerformance)) {
+        performances.push(newPerformance);
+      }
+    });
+
     // Save all 'loosely' collected
     Promise.all([
       await addMusicians(musicians),
@@ -214,7 +277,7 @@ controller.get("/seed", async (req, res, next) => {
     // Save concerts
     await addConcerts(concerts);
 
-    // Save both concert and intrument performances
+    // Save soloist and concert performances
 
     console.log("Seed successfull");
     res.send("Seed successfull");
