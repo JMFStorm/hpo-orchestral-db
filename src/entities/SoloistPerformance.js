@@ -13,13 +13,21 @@ module.exports = new EntitySchema({
   relations: {
     soloist: {
       target: "musician",
-      type: "one-to-many",
+      type: "many-to-one",
       cascade: true,
+      onDelete: "CASCADE",
     },
     instrument: {
       target: "instrument",
-      type: "one-to-many",
+      type: "many-to-one",
       cascade: true,
+      onDelete: "CASCADE",
+    },
+    concert_performance: {
+      target: "concert_performance",
+      type: "many-to-many",
+      cascade: true,
+      onDelete: "CASCADE",
     },
   },
 });

@@ -13,4 +13,11 @@ module.exports = new EntitySchema({
       type: "varchar",
     },
   },
+  relations: {
+    soloist_performances: {
+      target: "soloist_performance",
+      type: "one-to-many",
+      cascade: true,
+    },
+  },
 });

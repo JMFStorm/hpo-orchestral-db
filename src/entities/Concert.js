@@ -39,5 +39,10 @@ module.exports = new EntitySchema({
       cascade: true,
       onDelete: "CASCADE",
     },
+    concert_performances: {
+      target: "concert_performance",
+      type: "one-to-many",
+      cascade: true,
+    },
   },
 });

@@ -16,7 +16,7 @@ module.exports = new EntitySchema({
   relations: {
     concert: {
       target: "concert",
-      type: "one-to-many",
+      type: "many-to-one",
       cascade: true,
     },
     symphony: {

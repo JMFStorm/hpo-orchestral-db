@@ -7,6 +7,11 @@ const { addSymphonies, deleteAllSymphonyIds, deleteAllSymphonyNames } = require(
 const { addOrchestries, deleteAllOrchestries } = require("../managers/orchestra");
 const { addLocations, deleteAllLocations } = require("../managers/location");
 const { addConcerts, addConcertTags, deleteAllConcertTags } = require("../managers/concert");
+const {
+  addPerformances,
+  deleteAllConcertPerformances,
+  deleteAllSoloistPerformances,
+} = require("../managers/performance");
 const { csvTestFilePath } = require("../utils/config");
 const { csvRowsToObjects } = require("../utils/csvRead");
 
@@ -20,6 +25,8 @@ controller.get("/seed", async (req, res, next) => {
   try {
     // Delete existing data
     Promise.all([
+      await deleteAllConcertPerformances(),
+      await deleteAllSoloistPerformances(),
       await deleteAllMusicians(),
       await deleteAllInstruments(),
       await deleteAllSymphonyNames(),
@@ -242,6 +249,7 @@ controller.get("/seed", async (req, res, next) => {
           });
         }
       });
+
       const concertId = row.KonserttiId.trim();
       const order = row.Esitysjarjestys.trim();
       const symphonyId = row.TeoksenId.trim();
@@ -265,6 +273,7 @@ controller.get("/seed", async (req, res, next) => {
     });
 
     // Save all 'loosely' collected
+    console.log("Saving loose tables...");
     Promise.all([
       await addMusicians(musicians),
       await addSymphonies(symphonies),
@@ -278,9 +287,10 @@ controller.get("/seed", async (req, res, next) => {
     await addConcerts(concerts);
 
     // Save soloist and concert performances
+    const savedCount = await addPerformances(performances);
 
-    console.log("Seed successfull");
-    res.send("Seed successfull");
+    console.log({ savedPerformances: savedCount });
+    res.send({ savedPerformances: savedCount });
   } catch (err) {
     console.error("err", err);
     return next(httpError(err, 404));
