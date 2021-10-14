@@ -72,6 +72,31 @@ const addPerformances = async (symphonies) => {
 };
 
 // Describe
+// Get all performances
+const getAllPerformances = async () => {
+  const relationsArr = ["concert", "symphony", "conductor", "compositor", "arranger", "soloist_performances"];
+
+  const repo = getRepository(ConcertPerformance);
+
+  const result = await repo.find({ relations: relationsArr });
+  return result;
+};
+
+// Describe
+// Get performances by compositor id
+const getPerformancesByCompositorId = async (compositorId) => {
+  const relationsArr = ["concert", "symphony", "conductor", "compositor", "arranger", "soloist_performances"];
+
+  const repo = getRepository(ConcertPerformance);
+
+  const result = await repo.find({
+    where: { compositor: { id: compositorId } },
+    relations: relationsArr,
+  });
+  return result;
+};
+
+// Describe
 // Deletes all concert performances from table,
 // returns deleted count
 const deleteAllConcertPerformances = async () => {
@@ -91,6 +116,8 @@ const deleteAllSoloistPerformances = async () => {
 
 module.exports = {
   addPerformances,
+  getAllPerformances,
+  getPerformancesByCompositorId,
   deleteAllConcertPerformances,
   deleteAllSoloistPerformances,
 };

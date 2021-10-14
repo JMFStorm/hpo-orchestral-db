@@ -4,6 +4,7 @@ const path = require("path");
 
 const { serverPort } = require("./utils/config");
 const databaseController = require("./controllers/database");
+const performanceController = require("./controllers/performance");
 const errorHandler = require("./middleware/errorHandler");
 const { urlencoded } = require("express");
 
@@ -21,6 +22,7 @@ app.use(express.static(build));
 
 // Use routes
 app.use("/api/database", databaseController);
+app.use("/api/performance", performanceController);
 
 // Use error handler endpoint
 app.use(errorHandler);

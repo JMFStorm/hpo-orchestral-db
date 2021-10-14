@@ -349,7 +349,7 @@ controller.get("/seed", async (req, res, next) => {
     const savedCount = await addPerformances(performances);
 
     console.log({ savedPerformances: savedCount });
-    res.send({ savedPerformances: savedCount });
+    return res.send({ savedPerformances: savedCount });
   } catch (err) {
     console.error("err", err);
     return next(httpError(err, 404));
