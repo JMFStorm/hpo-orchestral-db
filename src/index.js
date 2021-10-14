@@ -1,11 +1,9 @@
-require("dotenv").config();
-
 const dbConnection = require("./db/dbConnection");
 const appStart = require("./app");
 
 // Connect database
 dbConnection
-  .then(async (connection) => {
+  .then(async () => {
     console.log("Database connected");
   })
   .catch((error) => {

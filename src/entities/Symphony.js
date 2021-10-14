@@ -12,13 +12,8 @@ module.exports = new EntitySchema({
     symphony_id: {
       type: "varchar",
     },
-  },
-  relations: {
-    symphonyName: {
-      target: "symphony_name",
-      type: "one-to-many",
-      cascade: true,
-      onDelete: "CASCADE",
+    name: {
+      type: "varchar",
     },
   },
 });

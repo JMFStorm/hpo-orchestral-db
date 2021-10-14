@@ -12,7 +12,6 @@ const connectionConfig = {
     require("../entities/Instrument"),
     require("../entities/SoloistPerformance"),
     require("../entities/Symphony"),
-    require("../entities/SymphonyName"),
     require("../entities/Orchestra"),
     require("../entities/Location"),
     require("../entities/Concert"),

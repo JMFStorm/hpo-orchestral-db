@@ -3,7 +3,7 @@ const { Router } = require("express");
 const httpError = require("../utils/httpError");
 const { addMusicians, deleteAllMusicians } = require("../managers/musician");
 const { addInstruments, deleteAllInstruments } = require("../managers/instrument");
-const { addSymphonies, deleteAllSymphonyIds, deleteAllSymphonyNames } = require("../managers/symphony");
+const { addSymphonies, deleteAllSymphonyIds } = require("../managers/symphony");
 const { addOrchestries, deleteAllOrchestries } = require("../managers/orchestra");
 const { addLocations, deleteAllLocations } = require("../managers/location");
 const { addConcerts, addConcertTags, deleteAllConcertTags } = require("../managers/concert");
@@ -29,7 +29,6 @@ controller.get("/seed", async (req, res, next) => {
       await deleteAllSoloistPerformances(),
       await deleteAllMusicians(),
       await deleteAllInstruments(),
-      await deleteAllSymphonyNames(),
       await deleteAllSymphonyIds(),
       await deleteAllOrchestries(),
       await deleteAllLocations(),
@@ -142,9 +141,32 @@ controller.get("/seed", async (req, res, next) => {
       const symphonyIdCell = row.TeoksenId;
       const symphonyNameCell = row.TeoksenNimi;
 
+      // Determine symphony name
+      let symphonyName = symphonyNameCell;
+
+      // Special concert cases
+      const regexList = [
+        /\(ylimääräinen\)/,
+        /\(ke.\)/,
+        /\(ekS.\)/,
+        /\(ek Eurooppa.\)/,
+        /\(tanssiversion ensiesitys\)/,
+      ];
+
+      if (regexList.some((rx) => rx.test(symphonyNameCell))) {
+        const indexStart = symphonyNameCell.lastIndexOf("(");
+        const indexEnd = symphonyNameCell.lastIndexOf(")");
+
+        if (indexStart < indexEnd) {
+          symphonyName = symphonyNameCell.substring(0, indexStart).trim();
+        } else {
+          console.log("Something not right with brackets: ", indexStart, indexEnd, symphonyNameCell);
+        }
+      }
+
       const symphonyObj = {
         symphony_id: symphonyIdCell,
-        name: symphonyNameCell,
+        name: symphonyName,
       };
 
       if (!symphonies.some((x) => x.symphony_id === symphonyObj.symphony_id && x.name === symphonyObj.name)) {
@@ -250,6 +272,40 @@ controller.get("/seed", async (req, res, next) => {
         }
       });
 
+      // Initialize defaults
+      let newPerformance = {
+        is_encore: false,
+        premiere_in_finland: false,
+        world_premiere: false,
+        premiere_in_europe: false,
+        premiere_dance_performance: false,
+      };
+
+      // Check for special case concert performance
+      const symphonyNameCell = row.TeoksenNimi.trim();
+
+      // Encore
+      if (symphonyNameCell.match(/\(ylimääräinen\)/)) {
+        newPerformance.is_encore = true;
+      }
+      // Finland premiere
+      if (symphonyNameCell.match(/\(ekS.\)/)) {
+        newPerformance.premiere_in_finland = true;
+      }
+      // World premiere
+      if (symphonyNameCell.match(/\(ke.\)/)) {
+        newPerformance.world_premiere = true;
+      }
+      // Europe premiere
+      if (symphonyNameCell.match(/\(ek Eurooppa\)/)) {
+        newPerformance.premiere_in_europe = true;
+      }
+      // Dance premiere, wtf?
+      if (symphonyNameCell.match(/\(tanssiversion ensiesitys\)/)) {
+        newPerformance.premiere_dance_performance = true;
+      }
+
+      // Build concert performance object from the rest
       const concertId = row.KonserttiId.trim();
       const order = row.Esitysjarjestys.trim();
       const symphonyId = row.TeoksenId.trim();
@@ -257,7 +313,8 @@ controller.get("/seed", async (req, res, next) => {
       const compositor = row.Saveltaja.trim();
       const arranger = row.Sovittaja.trim();
 
-      const newPerformance = {
+      newPerformance = {
+        ...newPerformance,
         order: order,
         concertId: concertId,
         symphonyId: symphonyId,
@@ -272,8 +329,10 @@ controller.get("/seed", async (req, res, next) => {
       }
     });
 
+    // throw "Debug stop";
+
     // Save all 'loosely' collected
-    console.log("Saving loose tables...");
+    console.log("Saving 'loose' tables...");
     Promise.all([
       await addMusicians(musicians),
       await addSymphonies(symphonies),

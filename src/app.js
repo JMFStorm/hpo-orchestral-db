@@ -5,14 +5,15 @@ const path = require("path");
 const { serverPort } = require("./utils/config");
 const databaseController = require("./controllers/database");
 const errorHandler = require("./middleware/errorHandler");
+const { urlencoded } = require("express");
 
 const app = express();
 
 // Use cors
 app.use(cors());
 
-// Use JSON parser
 app.use(express.json());
+app.use(urlencoded({ extended: true }));
 
 // Use static frontend files
 const build = path.join(__dirname, "build");

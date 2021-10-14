@@ -12,6 +12,29 @@ module.exports = new EntitySchema({
     order: {
       type: "int",
     },
+    order: {
+      type: "int",
+    },
+    world_premiere: {
+      type: "boolean",
+      nullable: true,
+    },
+    premiere_in_finland: {
+      type: "boolean",
+      nullable: true,
+    },
+    premiere_in_europe: {
+      type: "boolean",
+      nullable: true,
+    },
+    premiere_dance_performance: {
+      type: "boolean",
+      nullable: true,
+    },
+    is_encore: {
+      type: "boolean",
+      nullable: true,
+    },
   },
   relations: {
     concert: {
