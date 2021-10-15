@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const postgres = "postgres";
 const localhost = "localhost";
 const development = "development";
