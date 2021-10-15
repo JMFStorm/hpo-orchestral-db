@@ -33,9 +33,13 @@ const addConcerts = async (concerts) => {
     concertObject.starting_time = concert.starting_time === "" ? null : concert.starting_time;
 
     // Fill fields from existing table rows
-    concertObject.concert_tag = await concertTagRepo.findOne({ name: concert.concert_tag });
-    concertObject.location = await locationRepo.findOne({ name: concert.location });
-    concertObject.orchestra = await orchestraRepo.findOne({ name: concert.orchestra });
+    await Promise.all([
+      await concertTagRepo
+        .findOne({ name: concert.concert_tag })
+        .then((x) => (concertObject.concert_tag = x)),
+      await locationRepo.findOne({ name: concert.location }).then((x) => (concertObject.location = x)),
+      await orchestraRepo.findOne({ name: concert.orchestra }).then((x) => (concertObject.orchestra = x)),
+    ]);
 
     // Save result
     result = await concertRepo.save(concertObject);
