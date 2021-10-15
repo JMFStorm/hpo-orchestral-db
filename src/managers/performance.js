@@ -7,6 +7,21 @@ const Musician = require("../entities/Musician");
 const Concert = require("../entities/Concert");
 const Symphony = require("../entities/Symphony");
 
+// To get all relational tables from performances
+const allPerformanceRelations = [
+  "concert",
+  "concert.location",
+  "concert.concert_tag",
+  "concert.orchestra",
+  "symphony",
+  "conductor",
+  "compositor",
+  "arranger",
+  "soloist_performances",
+  "soloist_performances.soloist",
+  "soloist_performances.instrument",
+];
+
 // Describe
 // Adds concert & soloist performances to table,
 // returns saved count
@@ -74,24 +89,32 @@ const addPerformances = async (symphonies) => {
 // Describe
 // Get all performances
 const getAllPerformances = async () => {
-  const relationsArr = ["concert", "symphony", "conductor", "compositor", "arranger", "soloist_performances"];
-
   const repo = getRepository(ConcertPerformance);
 
-  const result = await repo.find({ relations: relationsArr });
+  const result = await repo.find({ relations: allPerformanceRelations });
+  return result;
+};
+
+// Describe
+// Get performances by conductor id
+const getPerformancesByConductorId = async (conductorId) => {
+  const repo = getRepository(ConcertPerformance);
+
+  const result = await repo.find({
+    where: { conductor: { id: conductorId } },
+    relations: allPerformanceRelations,
+  });
   return result;
 };
 
 // Describe
 // Get performances by compositor id
 const getPerformancesByCompositorId = async (compositorId) => {
-  const relationsArr = ["concert", "symphony", "conductor", "compositor", "arranger", "soloist_performances"];
-
   const repo = getRepository(ConcertPerformance);
 
   const result = await repo.find({
     where: { compositor: { id: compositorId } },
-    relations: relationsArr,
+    relations: allPerformanceRelations,
   });
   return result;
 };
@@ -117,6 +140,7 @@ const deleteAllSoloistPerformances = async () => {
 module.exports = {
   addPerformances,
   getAllPerformances,
+  getPerformancesByConductorId,
   getPerformancesByCompositorId,
   deleteAllConcertPerformances,
   deleteAllSoloistPerformances,
