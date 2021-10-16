@@ -5,15 +5,33 @@ const {
   getAllPerformances,
   getPerformancesByConductorId,
   getPerformancesByCompositorId,
+  getPerformancesSearch,
 } = require("../managers/performance");
 
 const controller = Router();
 
 // Describe
-// Get all performances by
+// Get all performances
 controller.get("/", async (req, res, next) => {
   try {
     const response = await getAllPerformances();
+
+    return res.send(response);
+  } catch (err) {
+    console.error("err", err);
+    return next(httpError(err, 404));
+  }
+});
+
+// Describe
+// Get all performances with search params
+controller.get("/search", async (req, res, next) => {
+  try {
+    const compositorId = req.query.compositorId;
+    const conductorId = req.query.conductorId;
+
+    const searchParams = { compositorId, conductorId };
+    const response = await getPerformancesSearch(searchParams);
 
     return res.send(response);
   } catch (err) {

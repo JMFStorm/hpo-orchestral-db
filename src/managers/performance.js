@@ -90,8 +90,30 @@ const addPerformances = async (symphonies) => {
 // Get all performances
 const getAllPerformances = async () => {
   const repo = getRepository(ConcertPerformance);
-
   const result = await repo.find({ relations: allPerformanceRelations });
+  return result;
+};
+
+// Describe
+// Get all performances with search params
+const getPerformancesSearch = async ({ compositorId, conductorId }) => {
+  const repo = getRepository(ConcertPerformance);
+
+  // Create query object
+  let whereQuery = {};
+
+  if (compositorId) {
+    whereQuery.compositor = { id: compositorId };
+  }
+  if (conductorId) {
+    whereQuery.conductor = { id: conductorId };
+  }
+
+  const result = await repo.find({
+    where: whereQuery,
+    relations: allPerformanceRelations,
+  });
+
   return result;
 };
 
@@ -104,6 +126,7 @@ const getPerformancesByConductorId = async (conductorId) => {
     where: { conductor: { id: conductorId } },
     relations: allPerformanceRelations,
   });
+
   return result;
 };
 
@@ -116,6 +139,7 @@ const getPerformancesByCompositorId = async (compositorId) => {
     where: { compositor: { id: compositorId } },
     relations: allPerformanceRelations,
   });
+
   return result;
 };
 
@@ -142,6 +166,7 @@ module.exports = {
   getAllPerformances,
   getPerformancesByConductorId,
   getPerformancesByCompositorId,
+  getPerformancesSearch,
   deleteAllConcertPerformances,
   deleteAllSoloistPerformances,
 };

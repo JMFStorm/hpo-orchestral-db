@@ -1,10 +1,17 @@
-import { getPerformancesByCompositorId } from "../api/performanceApi";
+import { getPerformancesBySearchParams } from "../api/performanceApi";
 import SearchForm from "./SearchForm";
 
 const SearchPage = () => {
   const getByCompositor = async (compositorId, conductorId) => {
     console.log(compositorId, conductorId);
-    await getPerformancesByCompositorId(compositorId);
+
+    const params = {
+      compositorId,
+      conductorId,
+    };
+
+    const response = await getPerformancesBySearchParams(params);
+    console.log("response:", response);
   };
 
   return (
