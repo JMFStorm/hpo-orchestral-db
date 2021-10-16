@@ -5,7 +5,7 @@ import "../styles/app.css";
 
 const App = () => {
   return (
-    <Container className="App" maxWidth="md" sx={{ backgroundColor: "pink" }}>
+    <Container className="App" maxWidth="md">
       <SearchPage />
     </Container>
   );

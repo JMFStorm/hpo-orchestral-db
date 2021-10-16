@@ -15,12 +15,10 @@ const SearchForm = (props) => {
   const conductors = [{ name: "Segerstam Leif", id: "54d56613-d423-4153-8f68-a6430afcfcfd" }];
 
   const handleCompositor = (event) => {
-    console.log("Conmpositor", event.target.value);
     setCompositorId(event.target.value);
   };
 
   const handleConductor = (event) => {
-    console.log("Conductor", event.target.value);
     setConductorId(event.target.value);
   };
 
