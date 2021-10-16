@@ -1,11 +1,13 @@
+import { Container } from "@mui/material";
+
 import SearchPage from "./SearchPage";
 import "../styles/app.css";
 
 const App = () => {
   return (
-    <div className="App">
+    <Container className="App" maxWidth="md" sx={{ backgroundColor: "pink" }}>
       <SearchPage />
-    </div>
+    </Container>
   );
 };
 

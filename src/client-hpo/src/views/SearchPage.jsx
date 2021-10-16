@@ -1,16 +1,17 @@
-import { useEffect } from "react";
 import { getPerformancesByCompositorId } from "../api/performanceApi";
+import SearchForm from "./SearchForm";
 
 const SearchPage = () => {
-  const getData = async () => {
-    await getPerformancesByCompositorId();
+  const getByCompositor = async (compositorId, conductorId) => {
+    console.log(compositorId, conductorId);
+    await getPerformancesByCompositorId(compositorId);
   };
 
-  useEffect(() => {
-    getData();
-  }, []);
-
-  return <div>SearchPage</div>;
+  return (
+    <div className="SearchPage">
+      <SearchForm submitForm={getByCompositor} />
+    </div>
+  );
 };
 
 export default SearchPage;
