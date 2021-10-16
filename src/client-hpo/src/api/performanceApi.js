@@ -26,11 +26,13 @@ const getPerformancesBySearchParams = async (searchParams) => {
 
     const url =
       `${requestUrl}/search?` +
-      `${compositorId ? `compositorId=${compositorId}` : ""}` +
+      `${compositorId?.length > 0 ? `compositorId=${compositorId}` : ""}` +
       `${Object.keys(searchParams).length > 1 ? "&" : ""}` +
-      `${conductorId ? `conductorId=${conductorId}` : ""}`;
+      `${conductorId?.length > 0 ? `conductorId=${conductorId}` : ""}`;
 
     const response = await axios.get(url);
+
+    console.log("response", response);
 
     return response.data;
   } catch (err) {

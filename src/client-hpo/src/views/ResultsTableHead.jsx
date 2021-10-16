@@ -19,7 +19,6 @@ const ResultsTableHead = (props) => {
         <TableCell align="left">Säveltäjä</TableCell>
         <TableCell align="left">Konsertin kuvaus</TableCell>
         <TableCell align="left">Kapellimestari</TableCell>
-        <TableCell align="left">Sovittaja</TableCell>
       </TableRow>
     </TableHead>
   );

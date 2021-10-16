@@ -31,6 +31,9 @@ const SearchForm = (props) => {
           label="Compositor"
           onChange={handleCompositor}
         >
+          <MenuItem value="">
+            <em>Tyhjä</em>
+          </MenuItem>
           {compositors.length > 0 &&
             compositors.map((x) => {
               return <MenuItem value={x.id}>{x.name}</MenuItem>;
@@ -46,6 +49,9 @@ const SearchForm = (props) => {
           label="Conductor"
           onChange={handleConductor}
         >
+          <MenuItem value="">
+            <em>Tyhjä</em>
+          </MenuItem>
           {conductors.length > 0 &&
             conductors.map((x) => {
               return <MenuItem value={x.id}>{x.name}</MenuItem>;

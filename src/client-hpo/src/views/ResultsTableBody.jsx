@@ -12,7 +12,6 @@ const ResultsTableBody = (props) => {
           <TableCell align="left">{row.compositor?.name}</TableCell>
           <TableCell align="left">{row.concert.concert_tag.name}</TableCell>
           <TableCell align="left">{row.conductor?.name}</TableCell>
-          <TableCell align="left">{row.arranger?.name}</TableCell>
         </TableRow>
       ))}
     </TableBody>
