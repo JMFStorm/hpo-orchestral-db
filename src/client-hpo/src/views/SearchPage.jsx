@@ -15,6 +15,7 @@ const SearchPage = () => {
 
     const response = await getPerformancesBySearchParams(params);
     setSearchResults(response);
+    console.log("response", response);
   };
 
   return (

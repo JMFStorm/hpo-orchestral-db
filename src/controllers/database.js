@@ -305,13 +305,20 @@ controller.get("/seed", async (req, res, next) => {
         newPerformance.premiere_dance_performance = true;
       }
 
+      // Arranger regex
+      let arranger = row.Sovittaja.trim();
+      const regex = new RegExp("^sov./arr.");
+
+      if (regex.test(arranger)) {
+        arranger = arranger.substring(9).trim();
+      }
+
       // Build concert performance object from the rest
       const concertId = row.KonserttiId.trim();
       const order = row.Esitysjarjestys.trim();
       const symphonyId = row.TeoksenId.trim();
       const conductor = row.Kapellimestari.trim();
       const compositor = row.Saveltaja.trim();
-      const arranger = row.Sovittaja.trim();
 
       newPerformance = {
         ...newPerformance,

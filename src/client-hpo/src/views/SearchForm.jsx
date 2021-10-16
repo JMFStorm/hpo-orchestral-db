@@ -7,12 +7,9 @@ const SearchForm = (props) => {
   const [compositorId, setCompositorId] = useState("");
   const [conductorId, setConductorId] = useState("");
 
-  const compositors = [
-    { id: "0ec1698d-5ffc-4646-b66f-e21860d887ad", name: "Sibelius Jean" },
-    { id: "35740395-6038-4c4e-8742-1da0e0d1d113", name: "Brahms Johannes" },
-  ];
+  const compositors = [{ id: "c5e48d18-c114-410a-bc9f-7a3485af926d", name: "Sibelius Jean" }];
 
-  const conductors = [{ name: "Segerstam Leif", id: "54d56613-d423-4153-8f68-a6430afcfcfd" }];
+  const conductors = [{ name: "Segerstam Leif", id: "7439f066-20ad-4935-be4d-3a2092c3ad67" }];
 
   const handleCompositor = (event) => {
     setCompositorId(event.target.value);
@@ -30,7 +27,7 @@ const SearchForm = (props) => {
     <div className="SearchForm">
       <FormGroup fullWidth>
         {/* Select compositors */}
-        <InputLabel>Compositor</InputLabel>
+        <InputLabel>Säveltäjä</InputLabel>
         <Select
           defaultValue=""
           value={compositorId}
@@ -45,7 +42,7 @@ const SearchForm = (props) => {
         </Select>
 
         {/* Select conductors */}
-        <InputLabel>Conductor</InputLabel>
+        <InputLabel>Kapellimestari</InputLabel>
         <Select
           defaultValue=""
           value={conductorId}
@@ -62,7 +59,7 @@ const SearchForm = (props) => {
 
       {/* Submit form */}
       <Button onClick={handleSubmit} variant="contained">
-        Sumbit
+        Hae
       </Button>
     </div>
   );

@@ -5,7 +5,7 @@ import "../styles/app.css";
 
 const App = () => {
   return (
-    <Container className="App" maxWidth="md">
+    <Container className="App" maxWidth="lg">
       <SearchPage />
     </Container>
   );
