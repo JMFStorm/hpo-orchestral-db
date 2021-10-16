@@ -18,17 +18,17 @@ const SearchPage = () => {
     ]);
   };
 
+  // Load compositors & conductors on component load
   useEffect(() => {
     asyncUseEffect();
   }, []);
 
   // Submit search form
   const getSearchResults = async (compositorId, conductorId) => {
-    const params = {
+    const response = await getPerformancesBySearchParams({
       compositorId,
       conductorId,
-    };
-    const response = await getPerformancesBySearchParams(params);
+    });
     setSearchResults(response);
   };
 

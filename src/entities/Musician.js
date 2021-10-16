@@ -19,5 +19,10 @@ module.exports = new EntitySchema({
       type: "one-to-many",
       cascade: true,
     },
+    concert_performance: {
+      target: "concert_performance",
+      type: "one-to-many",
+      cascade: true,
+    },
   },
 });

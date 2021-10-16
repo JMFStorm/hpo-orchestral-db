@@ -7,11 +7,6 @@ const SearchForm = (props) => {
   const [compositorId, setCompositorId] = useState("");
   const [conductorId, setConductorId] = useState("");
 
-  /*
-  const compositors = [{ id: "c5e48d18-c114-410a-bc9f-7a3485af926d", name: "Sibelius Jean" }];
-  const conductors = [{ name: "Segerstam Leif", id: "7439f066-20ad-4935-be4d-3a2092c3ad67" }];
-  */
-
   const handleCompositor = (event) => {
     setCompositorId(event.target.value);
   };
@@ -36,7 +31,7 @@ const SearchForm = (props) => {
           label="Compositor"
           onChange={handleCompositor}
         >
-          {compositors &&
+          {compositors.length > 0 &&
             compositors.map((x) => {
               return <MenuItem value={x.id}>{x.name}</MenuItem>;
             })}
@@ -51,7 +46,7 @@ const SearchForm = (props) => {
           label="Conductor"
           onChange={handleConductor}
         >
-          {conductors &&
+          {conductors.length > 0 &&
             conductors.map((x) => {
               return <MenuItem value={x.id}>{x.name}</MenuItem>;
             })}

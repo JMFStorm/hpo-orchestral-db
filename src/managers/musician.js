@@ -1,6 +1,7 @@
 const { getRepository } = require("typeorm");
 
 const Musician = require("../entities/Musician");
+const ConcertPerformance = require("../entities/ConcertPerformance");
 
 // Describe
 // Adds musicians to table from an array of names,
@@ -53,15 +54,41 @@ const deleteAllMusicians = async () => {
 };
 
 // Describe
-// Deletes all compositor musicians from table
+// Gets all compositor musicians from table
 const getAllCompositors = async () => {
-  console.log("getAllCompositors");
+  const repo = getRepository(ConcertPerformance);
+  const response = await repo.find({ relations: ["compositor"] });
+
+  const compositors = response
+    .map((x) => {
+      return x.compositor ? { id: x.compositor.id, name: x.compositor.name } : null;
+    })
+    .filter((x) => x);
+
+  // Filter array to uniques
+  return compositors.filter(
+    (current, index, self) =>
+      index === self.findIndex((x) => x.id === current.id && x.name === current.name)
+  );
 };
 
 // Describe
-// Deletes all conductor musicians from table
+// Gets all conductor musicians from table
 const getAllConductors = async () => {
-  console.log("getAllConductors");
+  const repo = getRepository(ConcertPerformance);
+  const response = await repo.find({ relations: ["conductor"] });
+
+  const conductors = response
+    .map((x) => {
+      return x.conductor ? { id: x.conductor.id, name: x.conductor.name } : null;
+    })
+    .filter((x) => x);
+
+  // Filter array to uniques
+  return conductors.filter(
+    (current, index, self) =>
+      index === self.findIndex((x) => x.id === current.id && x.name === current.name)
+  );
 };
 
 module.exports = {
