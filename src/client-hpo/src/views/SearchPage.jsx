@@ -34,6 +34,7 @@ const SearchPage = () => {
 
   return (
     <div className="SearchPage">
+      <h1>Teoksen esityshaku</h1>
       <SearchForm compositors={compositors} conductors={conductors} submitForm={getSearchResults} />
       {searchResults.length > 0 && <ResultsTable tableData={searchResults} />}
     </div>

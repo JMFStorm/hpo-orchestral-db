@@ -35,9 +35,18 @@ const SearchForm = (props) => {
             <em>Tyhjä</em>
           </MenuItem>
           {compositors.length > 0 &&
-            compositors.map((x) => {
-              return <MenuItem value={x.id}>{x.name}</MenuItem>;
-            })}
+            compositors
+              .sort((a, b) => {
+                if (a.name < b.name) {
+                  return -1;
+                } else if (a.name > b.name) {
+                  return 1;
+                }
+                return 0;
+              })
+              .map((x) => {
+                return <MenuItem value={x.id}>{x.name}</MenuItem>;
+              })}
         </Select>
 
         {/* Select conductors */}
@@ -53,14 +62,23 @@ const SearchForm = (props) => {
             <em>Tyhjä</em>
           </MenuItem>
           {conductors.length > 0 &&
-            conductors.map((x) => {
-              return <MenuItem value={x.id}>{x.name}</MenuItem>;
-            })}
+            conductors
+              .sort((a, b) => {
+                if (a.name < b.name) {
+                  return -1;
+                } else if (a.name > b.name) {
+                  return 1;
+                }
+                return 0;
+              })
+              .map((x) => {
+                return <MenuItem value={x.id}>{x.name}</MenuItem>;
+              })}
         </Select>
       </FormGroup>
 
       {/* Submit form */}
-      <Button onClick={handleSubmit} variant="contained">
+      <Button sx={{ margin: "1rem 0" }} onClick={handleSubmit} variant="contained">
         Hae
       </Button>
     </div>

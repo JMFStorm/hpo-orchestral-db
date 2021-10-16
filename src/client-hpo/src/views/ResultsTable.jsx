@@ -47,18 +47,16 @@ const ResultsTable = (props) => {
   const [symphonySortDir, setSymphonySortDir] = useState(ASC);
 
   useEffect(() => {
-    console.log("update");
-
     let newList = [];
 
     if (sortType === DATE) {
-      newList = sortByDate(tableData, sortType);
+      newList = sortByDate(tableData, dateSortDir);
     } else if (sortType === SYMPHONY) {
-      newList = sortBySymphony(tableData, sortType);
+      newList = sortBySymphony(tableData, symphonySortDir);
     }
 
     setResultsSorted(newList);
-  }, [sortType, tableData]);
+  }, [sortType, tableData, dateSortDir, symphonySortDir]);
 
   // Sort by date
   const switchDateSort = () => {

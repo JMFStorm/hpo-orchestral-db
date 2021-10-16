@@ -32,8 +32,6 @@ const getPerformancesBySearchParams = async (searchParams) => {
 
     const response = await axios.get(url);
 
-    console.log("response", response);
-
     return response.data;
   } catch (err) {
     console.log(err);
