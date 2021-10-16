@@ -52,7 +52,21 @@ const deleteAllMusicians = async () => {
   return result.affected;
 };
 
+// Describe
+// Deletes all compositor musicians from table
+const getAllCompositors = async () => {
+  console.log("getAllCompositors");
+};
+
+// Describe
+// Deletes all conductor musicians from table
+const getAllConductors = async () => {
+  console.log("getAllConductors");
+};
+
 module.exports = {
   addMusicians,
+  getAllCompositors,
+  getAllConductors,
   deleteAllMusicians,
 };

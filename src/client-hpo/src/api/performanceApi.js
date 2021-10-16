@@ -2,8 +2,6 @@ import axios from "axios";
 
 import { baseUrl } from "../config";
 
-console.log("baseUrl", baseUrl);
-
 const UrlExtension = "/api/performance";
 const requestUrl = baseUrl + UrlExtension;
 
