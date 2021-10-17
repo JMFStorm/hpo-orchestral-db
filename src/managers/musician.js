@@ -10,12 +10,10 @@ const addMusicians = async (musicianNames) => {
   const repo = getRepository(Musician);
 
   let objects = [];
-  let invalid = 0;
 
   // Filter duplicates and invalid
   musicianNames.forEach((name) => {
     if (name.trim() === "") {
-      invalid++;
       return;
     }
 
