@@ -23,6 +23,14 @@ const controller = Router();
 // Seed database from stratch with CSV data
 controller.post("/seed", async (req, res, next) => {
   try {
+    // Read CSV file
+    const path = csvFilePath;
+    const rowObjects = await csvRowsToObjects(path);
+
+    if (!path || !rowObjects?.length > 0) {
+      return res.send({ savedPerformances: 0 });
+    }
+
     // Delete existing data
     Promise.all([
       await deleteAllConcertPerformances(),
@@ -34,10 +42,6 @@ controller.post("/seed", async (req, res, next) => {
       await deleteAllLocations(),
       await deleteAllConcertTags(),
     ]);
-
-    // Read CSV file
-    const path = csvFilePath;
-    const rowObjects = await csvRowsToObjects(path);
 
     // Collect musicians from conductors
     let musicians = [];
@@ -345,20 +349,19 @@ controller.post("/seed", async (req, res, next) => {
       }
     });
 
-    // throw "Debug stop";
-
     // Save all 'loosely' collected
     console.log("Saving 'loose' tables...");
     Promise.all([
-      await addMusicians(musicians),
-      await addSymphonies(symphonies),
-      await addInstruments(instruments),
-      await addOrchestries(orchestraNames),
-      await addLocations(locationNames),
-      await addConcertTags(concertTagNames),
+      await addMusicians(musicians).then(() => console.log("Saved musicians")),
+      await addSymphonies(symphonies).then(() => console.log("Saved symphonies")),
+      await addInstruments(instruments).then(() => console.log("Saved instruments")),
+      await addOrchestries(orchestraNames).then(() => console.log("Saved orchestraNames")),
+      await addLocations(locationNames).then(() => console.log("Saved locationNames")),
+      await addConcertTags(concertTagNames).then(() => console.log("Saved concertTagNames")),
     ]);
 
     // Save concerts
+    console.log("Saving concerts...");
     await addConcerts(concerts);
 
     // Save soloist and concert performances

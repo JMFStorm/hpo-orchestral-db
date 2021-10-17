@@ -11,7 +11,12 @@ const Orchestra = require("../entities/Orchestra");
 const addConcerts = async (concerts) => {
   let result = [];
 
+  let addedCount = 0;
+  const concertCount = concerts.length;
+
   for (const concert of concerts) {
+    console.log(`Saving concerts: (${addedCount}/${concertCount})`);
+
     const concertRepo = getRepository(Concert);
     const concertTagRepo = getRepository(ConcertTag);
     const locationRepo = getRepository(Location);
@@ -37,12 +42,17 @@ const addConcerts = async (concerts) => {
       await concertTagRepo
         .findOne({ name: concert.concert_tag })
         .then((x) => (concertObject.concert_tag = x)),
-      await locationRepo.findOne({ name: concert.location }).then((x) => (concertObject.location = x)),
-      await orchestraRepo.findOne({ name: concert.orchestra }).then((x) => (concertObject.orchestra = x)),
+      await locationRepo
+        .findOne({ name: concert.location })
+        .then((x) => (concertObject.location = x)),
+      await orchestraRepo
+        .findOne({ name: concert.orchestra })
+        .then((x) => (concertObject.orchestra = x)),
     ]);
 
     // Save result
     result = await concertRepo.save(concertObject);
+    addedCount++;
   }
 
   return result.length;

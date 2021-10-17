@@ -66,13 +66,21 @@ const addPerformances = async (symphonies) => {
 
     // Get all existing fields from tables
     await Promise.all([
-      await concertRepo.findOne({ concert_id: symph.concertId }).then((x) => (concertPerfObj.concert = x)),
+      await concertRepo
+        .findOne({ concert_id: symph.concertId })
+        .then((x) => (concertPerfObj.concert = x)),
       await symphonyRepo
         .findOne({ symphony_id: symph.symphonyId })
         .then((x) => (concertPerfObj.symphony = x)),
-      await musicianRepo.findOne({ name: symph.conductor }).then((x) => (concertPerfObj.conductor = x)),
-      await musicianRepo.findOne({ name: symph.compositor }).then((x) => (concertPerfObj.compositor = x)),
-      await musicianRepo.findOne({ name: symph.arranger }).then((x) => (concertPerfObj.arranger = x)),
+      await musicianRepo
+        .findOne({ name: symph.conductor })
+        .then((x) => (concertPerfObj.conductor = x)),
+      await musicianRepo
+        .findOne({ name: symph.compositor })
+        .then((x) => (concertPerfObj.compositor = x)),
+      await musicianRepo
+        .findOne({ name: symph.arranger })
+        .then((x) => (concertPerfObj.arranger = x)),
       await saveSoloistPerformances(symph.soloist_performances).then(
         (x) => (concertPerfObj.soloist_performances = x)
       ),
