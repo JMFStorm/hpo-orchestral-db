@@ -2,12 +2,12 @@ import axios from "axios";
 
 import { baseUrl } from "../config";
 
-const UrlExtension = "/api/musician";
+const UrlExtension = "api/musician/";
 const requestUrl = baseUrl + UrlExtension;
 
 const getAllConductors = async () => {
   try {
-    const url = requestUrl + "/conductor";
+    const url = requestUrl + "conductor";
     const response = await axios.get(url);
     return response.data;
   } catch (err) {
@@ -17,7 +17,7 @@ const getAllConductors = async () => {
 
 const getAllCompositors = async () => {
   try {
-    const url = requestUrl + "/compositor";
+    const url = requestUrl + "compositor";
     const response = await axios.get(url);
     return response.data;
   } catch (err) {
