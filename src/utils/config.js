@@ -39,8 +39,8 @@ const getDbConfig = (env) => {
 };
 
 const getServerPort = (env) => {
-  const serverPortDev = process.env.SERVER_PORT_DEV;
-  const serverPortDemo = process.env.PORT || 3000;
+  const serverPortDev = process.env.SERVER_PORT_DEV || 4000;
+  const serverPortDemo = process.env.PORT || 4000;
 
   switch (env) {
     case development:
