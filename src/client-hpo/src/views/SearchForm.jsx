@@ -21,7 +21,7 @@ const SearchForm = (props) => {
 
   return (
     <div className="SearchForm">
-      <FormGroup fullWidth>
+      <FormGroup fullwidth={"true"}>
         {/* Select compositors */}
         <InputLabel>Säveltäjä</InputLabel>
         <Select
@@ -45,7 +45,11 @@ const SearchForm = (props) => {
                 return 0;
               })
               .map((x) => {
-                return <MenuItem value={x.id}>{x.name}</MenuItem>;
+                return (
+                  <MenuItem key={x.id} value={x.id}>
+                    {x.name}
+                  </MenuItem>
+                );
               })}
         </Select>
 
@@ -72,7 +76,11 @@ const SearchForm = (props) => {
                 return 0;
               })
               .map((x) => {
-                return <MenuItem value={x.id}>{x.name}</MenuItem>;
+                return (
+                  <MenuItem key={x.id} value={x.id}>
+                    {x.name}
+                  </MenuItem>
+                );
               })}
         </Select>
       </FormGroup>

@@ -29,14 +29,25 @@ const SearchPage = () => {
       compositorId,
       conductorId,
     });
-    setSearchResults(response);
+    // Sort response by date
+    setSearchResults(
+      response.sort((a, b) => {
+        const dateA = Date.parse(a.concert.date);
+        const dateB = Date.parse(b.concert.date);
+        return dateA - dateB;
+      })
+    );
   };
 
   return (
     <div className="SearchPage">
-      <h1>Teoksen esityshaku</h1>
+      <h1>Teoksen esityshaku DEMO</h1>
       <SearchForm compositors={compositors} conductors={conductors} submitForm={getSearchResults} />
-      {searchResults.length > 0 && <ResultsTable tableData={searchResults} />}
+      {searchResults.length > 0 ? (
+        <ResultsTable tableData={searchResults} />
+      ) : (
+        <div>Ei hakutuloksia</div>
+      )}
     </div>
   );
 };
