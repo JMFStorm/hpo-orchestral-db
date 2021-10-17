@@ -21,7 +21,7 @@ const controller = Router();
 
 // Describe
 // Seed database from stratch with CSV data
-controller.get("/seed", async (req, res, next) => {
+controller.post("/seed", async (req, res, next) => {
   try {
     // Delete existing data
     Promise.all([
@@ -160,7 +160,12 @@ controller.get("/seed", async (req, res, next) => {
         if (indexStart < indexEnd) {
           symphonyName = symphonyNameCell.substring(0, indexStart).trim();
         } else {
-          console.log("Something not right with brackets: ", indexStart, indexEnd, symphonyNameCell);
+          console.log(
+            "Something not right with brackets: ",
+            indexStart,
+            indexEnd,
+            symphonyNameCell
+          );
         }
       }
 
@@ -169,7 +174,11 @@ controller.get("/seed", async (req, res, next) => {
         name: symphonyName,
       };
 
-      if (!symphonies.some((x) => x.symphony_id === symphonyObj.symphony_id && x.name === symphonyObj.name)) {
+      if (
+        !symphonies.some(
+          (x) => x.symphony_id === symphonyObj.symphony_id && x.name === symphonyObj.name
+        )
+      ) {
         symphonies.push(symphonyObj);
       }
     });

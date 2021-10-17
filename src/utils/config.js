@@ -40,12 +40,13 @@ const getDbConfig = (env) => {
 
 const getServerPort = (env) => {
   const serverPortDev = process.env.SERVER_PORT_DEV;
+  const serverPortDemo = process.env.PORT || 3000;
 
   switch (env) {
     case development:
       return serverPortDev;
     case production:
-      return serverPortDev;
+      return serverPortDemo;
     default:
       throw "Invalid node environment";
   }
