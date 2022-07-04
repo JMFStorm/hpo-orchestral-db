@@ -3,6 +3,7 @@ const { Router } = require("express");
 const httpError = require("../utils/httpError");
 const {
   getAllPerformances,
+  getAllPremiereTags,
   getPerformancesByConductorId,
   getPerformancesByCompositorId,
   getPerformancesSearch,
@@ -62,6 +63,19 @@ controller.get("/compositor/:id", async (req, res, next) => {
     const compositorId = req.params.id;
 
     const response = await getPerformancesByCompositorId(compositorId);
+
+    return res.send(response);
+  } catch (err) {
+    console.error("err", err);
+    return next(httpError(err, 404));
+  }
+});
+
+// Describe
+// Get all premiere tags
+controller.get("/premieretag", async (req, res, next) => {
+  try {
+    const response = await getAllPremiereTags();
 
     return res.send(response);
   } catch (err) {

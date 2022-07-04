@@ -1,6 +1,7 @@
 const { getRepository } = require("typeorm");
 
-const ConcertPerformance = require("../entities/ConcertPerformance");
+const PremiereTag = require("../entities/PremiereTag");
+const ConcertPerformance = require("../entities/SymphonyPerformance");
 const SoloistPerformance = require("../entities/SoloistPerformance");
 const Instrument = require("../entities/Instrument");
 const Musician = require("../entities/Musician");
@@ -21,6 +22,27 @@ const allPerformanceRelations = [
   "soloist_performances.soloist",
   "soloist_performances.instrument",
 ];
+
+// Describe
+// Adds concert & soloist performances to table,
+// returns saved count
+const addPremiereTags = async (premiereTags) => {
+  let addedCount = 0;
+  const premiereTagRepo = getRepository(PremiereTag);
+
+  for (const premiereTag of premiereTags) {
+    const premiereTagObject = {
+      name: premiereTag.sqlName,
+    };
+
+    // Save
+    await premiereTagRepo.save(premiereTagObject);
+    addedCount++;
+    console.log("Added premiere_tag:", premiereTagObject);
+  }
+
+  return addedCount;
+};
 
 // Describe
 // Adds concert & soloist performances to table,
@@ -105,6 +127,14 @@ const getAllPerformances = async () => {
 };
 
 // Describe
+// Get all premiere tags
+const getAllPremiereTags = async () => {
+  const repo = getRepository(PremiereTag);
+  const result = await repo.find();
+  return result;
+};
+
+// Describe
 // Get all performances with search params
 const getPerformancesSearch = async ({ compositorId, conductorId }) => {
   const repo = getRepository(ConcertPerformance);
@@ -173,7 +203,9 @@ const deleteAllSoloistPerformances = async () => {
 
 module.exports = {
   addPerformances,
+  addPremiereTags,
   getAllPerformances,
+  getAllPremiereTags,
   getPerformancesByConductorId,
   getPerformancesByCompositorId,
   getPerformancesSearch,

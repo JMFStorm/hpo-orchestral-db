@@ -1,8 +1,8 @@
 const EntitySchema = require("typeorm").EntitySchema;
 
 module.exports = new EntitySchema({
-  name: "concert_performance",
-  tableName: "concert_performances",
+  name: "symphony_performance",
+  tableName: "symphony_performances",
   columns: {
     id: {
       primary: true,
@@ -11,29 +11,6 @@ module.exports = new EntitySchema({
     },
     order: {
       type: "int",
-    },
-    order: {
-      type: "int",
-    },
-    world_premiere: {
-      type: "boolean",
-      nullable: true,
-    },
-    premiere_in_finland: {
-      type: "boolean",
-      nullable: true,
-    },
-    premiere_in_europe: {
-      type: "boolean",
-      nullable: true,
-    },
-    premiere_dance_performance: {
-      type: "boolean",
-      nullable: true,
-    },
-    is_encore: {
-      type: "boolean",
-      nullable: true,
     },
   },
   relations: {
@@ -72,6 +49,11 @@ module.exports = new EntitySchema({
       cascade: true,
       onDelete: "CASCADE",
       joinTable: true,
+    },
+    premiere_tag: {
+      target: "premiere_tag",
+      type: "many-to-one",
+      cascade: true,
     },
   },
 });

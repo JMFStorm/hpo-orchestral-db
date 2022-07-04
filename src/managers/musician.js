@@ -1,7 +1,7 @@
 const { getRepository } = require("typeorm");
 
 const Musician = require("../entities/Musician");
-const ConcertPerformance = require("../entities/ConcertPerformance");
+const ConcertPerformance = require("../entities/SymphonyPerformance");
 
 // Describe
 // Adds musicians to table from an array of names,

@@ -24,7 +24,7 @@ module.exports = new EntitySchema({
       onDelete: "CASCADE",
     },
     concert_performance: {
-      target: "concert_performance",
+      target: "symphony_performance",
       type: "many-to-many",
       cascade: true,
       onDelete: "CASCADE",

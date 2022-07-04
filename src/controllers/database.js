@@ -9,10 +9,11 @@ const { addLocations, deleteAllLocations } = require("../managers/location");
 const { addConcerts, addConcertTags, deleteAllConcertTags } = require("../managers/concert");
 const {
   addPerformances,
+  addPremiereTags,
   deleteAllConcertPerformances,
   deleteAllSoloistPerformances,
 } = require("../managers/performance");
-const { csvDirectoryPath } = require("../utils/config");
+const { csvDirectoryPath, premiereTags } = require("../utils/config");
 const { csvRowsToObjects } = require("../utils/csvRead");
 
 const controller = Router();
@@ -46,6 +47,11 @@ controller.post("/seed", async (req, res, next) => {
     ]);
 
     console.log("Deleted existing tables.");
+
+    // Create premiere tag tables
+
+    console.log("Creating premiere_tag table with premiere tags:", premiereTags);
+    await addPremiereTags(premiereTags);
 
     // Collect musicians from conductors
     let musicians = [];
@@ -152,16 +158,10 @@ controller.post("/seed", async (req, res, next) => {
       // Determine symphony name
       let symphonyName = symphonyNameCell;
 
-      // Special concert cases
-      const regexList = [
-        /\(ylimääräinen\)/,
-        /\(ke.\)/,
-        /\(ekS.\)/,
-        /\(ek Eurooppa.\)/,
-        /\(tanssiversion ensiesitys\)/,
-      ];
+      // Premiere tag names
+      const premieresRegexList = premiereTags.map((x) => x.regex);
 
-      if (regexList.some((rx) => rx.test(symphonyNameCell))) {
+      if (premieresRegexList.some((rx) => rx.test(symphonyNameCell))) {
         const indexStart = symphonyNameCell.lastIndexOf("(");
         const indexEnd = symphonyNameCell.lastIndexOf(")");
 
@@ -291,11 +291,13 @@ controller.post("/seed", async (req, res, next) => {
 
       // Initialize defaults
       let newPerformance = {
+        /*
         is_encore: false,
         premiere_in_finland: false,
         world_premiere: false,
         premiere_in_europe: false,
         premiere_dance_performance: false,
+        */
       };
 
       // Check for special case concert performance
@@ -303,23 +305,23 @@ controller.post("/seed", async (req, res, next) => {
 
       // Encore
       if (symphonyNameCell.match(/\(ylimääräinen\)/)) {
-        newPerformance.is_encore = true;
+        // newPerformance.is_encore = true;
       }
       // Finland premiere
       if (symphonyNameCell.match(/\(ekS.\)/)) {
-        newPerformance.premiere_in_finland = true;
+        // newPerformance.premiere_in_finland = true;
       }
       // World premiere
       if (symphonyNameCell.match(/\(ke.\)/)) {
-        newPerformance.world_premiere = true;
+        // newPerformance.world_premiere = true;
       }
       // Europe premiere
       if (symphonyNameCell.match(/\(ek Eurooppa\)/)) {
-        newPerformance.premiere_in_europe = true;
+        // newPerformance.premiere_in_europe = true;
       }
       // Dance premiere, wtf?
       if (symphonyNameCell.match(/\(tanssiversion ensiesitys\)/)) {
-        newPerformance.premiere_dance_performance = true;
+        // newPerformance.premiere_dance_performance = true;
       }
 
       // Arranger regex

@@ -20,7 +20,7 @@ module.exports = new EntitySchema({
       cascade: true,
     },
     concert_performance: {
-      target: "concert_performance",
+      target: "symphony_performance",
       type: "one-to-many",
       cascade: true,
     },

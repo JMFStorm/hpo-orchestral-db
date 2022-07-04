@@ -15,7 +15,8 @@ const connectionConfig = {
     require("../entities/Location"),
     require("../entities/Concert"),
     require("../entities/ConcertTag"),
-    require("../entities/ConcertPerformance"),
+    require("../entities/SymphonyPerformance"),
+    require("../entities/PremiereTag"),
   ],
 };
 
