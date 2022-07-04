@@ -1,8 +1,12 @@
-const dbConnection = require("./db/dbConnection");
-const appStart = require("./app");
+const typeorm = require("typeorm");
+
+const { connectionConfig } = require("./db/dbConnection");
+const expressApp = require("./app");
+const { serverPort } = require("./utils/config");
 
 // Connect database
-dbConnection
+typeorm
+  .createConnection(connectionConfig)
   .then(async () => {
     console.log("Database connected");
   })
@@ -11,6 +15,6 @@ dbConnection
   });
 
 // Listen express app
-appStart(() => {
-  console.log(`HPO Orchestral DB - server initialized`);
+expressApp.listen(serverPort, () => {
+  console.log(`HPO Orchestral DB - server initialized on port: ${serverPort}`);
 });

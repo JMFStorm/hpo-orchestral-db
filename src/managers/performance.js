@@ -37,7 +37,9 @@ const addPerformances = async (symphonies) => {
   const symphoniesCount = symphonies.length;
 
   for (const symph of symphonies) {
-    console.log(`Saving performance: (${addedCount}/${symphoniesCount})`);
+    if (addedCount % 50 == 0) {
+      console.log(`Saving performance: (${addedCount}/${symphoniesCount})`);
+    }
 
     const saveSoloistPerformances = async (performances) => {
       let soloistPerfArray = [];

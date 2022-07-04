@@ -1,6 +1,5 @@
 require("reflect-metadata");
 require("dotenv").config();
-const typeorm = require("typeorm");
 
 const { dbConfig } = require("../utils/config");
 
@@ -20,4 +19,4 @@ const connectionConfig = {
   ],
 };
 
-module.exports = typeorm.createConnection(connectionConfig);
+module.exports = { connectionConfig };

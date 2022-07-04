@@ -12,10 +12,8 @@ const {
   deleteAllConcertPerformances,
   deleteAllSoloistPerformances,
 } = require("../managers/performance");
-const { csvTestFilePath } = require("../utils/config");
+const { csvDirectoryPath } = require("../utils/config");
 const { csvRowsToObjects } = require("../utils/csvRead");
-
-const csvFilePath = csvTestFilePath;
 
 const controller = Router();
 
@@ -24,10 +22,14 @@ const controller = Router();
 controller.post("/seed", async (req, res, next) => {
   try {
     // Read CSV file
-    const path = csvFilePath;
-    const rowObjects = await csvRowsToObjects(path);
+    const csvFileName = req.body.csvFileName;
+    const csvPath = csvDirectoryPath + csvFileName;
 
-    if (!path || !rowObjects?.length > 0) {
+    console.log(`Using ${csvPath} as seed filepath`);
+
+    const rowObjects = await csvRowsToObjects(csvPath);
+
+    if (!csvPath || !rowObjects?.length > 0) {
       return res.send({ savedPerformances: 0 });
     }
 
@@ -42,6 +44,8 @@ controller.post("/seed", async (req, res, next) => {
       await deleteAllLocations(),
       await deleteAllConcertTags(),
     ]);
+
+    console.log("Deleted existing tables.");
 
     // Collect musicians from conductors
     let musicians = [];

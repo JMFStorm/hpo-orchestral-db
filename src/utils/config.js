@@ -30,8 +30,10 @@ const dbConfigDemo = {
 const getDbConfig = (env) => {
   switch (env) {
     case development:
+      console.log("Using local database");
       return dbConfigDev;
     case production:
+      console.log("Using server database");
       return dbConfigDemo;
     default:
       throw "Invalid node environment";
@@ -52,10 +54,23 @@ const getServerPort = (env) => {
   }
 };
 
+const getCsvDirectoryPath = (env) => {
+  const csvFileDirectoryDev = process.env.CSV_TEST_DIRECTORY_PATH;
+
+  switch (env) {
+    case development:
+      return csvFileDirectoryDev;
+    case production:
+      return csvFileDirectoryDev;
+    default:
+      throw "Invalid node environment";
+  }
+};
+
 const nodeEnvironment = process.env.NODE_ENV;
 
 module.exports = {
   dbConfig: getDbConfig(nodeEnvironment),
   serverPort: getServerPort(nodeEnvironment),
-  csvTestFilePath: process.env.CSV_TEST_FILE_PATH,
+  csvDirectoryPath: getCsvDirectoryPath(nodeEnvironment),
 };

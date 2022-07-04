@@ -15,7 +15,9 @@ const addConcerts = async (concerts) => {
   const concertCount = concerts.length;
 
   for (const concert of concerts) {
-    console.log(`Saving concerts: (${addedCount}/${concertCount})`);
+    if (addedCount % 25 == 0) {
+      console.log(`Saving concerts: (${addedCount}/${concertCount})`);
+    }
 
     const concertRepo = getRepository(Concert);
     const concertTagRepo = getRepository(ConcertTag);
