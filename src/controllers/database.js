@@ -10,6 +10,7 @@ const { addConcerts, addConcertTags, deleteAllConcertTags } = require("../manage
 const {
   addPerformances,
   addPremiereTags,
+  getAllPremiereTags,
   deleteAllConcertPerformances,
   deleteAllSoloistPerformances,
 } = require("../managers/performance");
@@ -49,7 +50,6 @@ controller.post("/seed", async (req, res, next) => {
     console.log("Deleted existing tables.");
 
     // Create premiere tag tables
-
     console.log("Creating premiere_tag table with premiere tags:", premiereTags);
     await addPremiereTags(premiereTags);
 
@@ -246,7 +246,10 @@ controller.post("/seed", async (req, res, next) => {
     });
 
     // Collect both soloist and concert performances
+    // and connect premiere tags
     let performances = [];
+
+    const premiereTagObjects = await getAllPremiereTags();
 
     rowObjects.map((row) => {
       const soloistPerformances = [];
@@ -290,39 +293,20 @@ controller.post("/seed", async (req, res, next) => {
       });
 
       // Initialize defaults
-      let newPerformance = {
-        /*
-        is_encore: false,
-        premiere_in_finland: false,
-        world_premiere: false,
-        premiere_in_europe: false,
-        premiere_dance_performance: false,
-        */
-      };
-
-      // Check for special case concert performance
+      let newPerformance = {};
       const symphonyNameCell = row.TeoksenNimi.trim();
 
-      // Encore
-      if (symphonyNameCell.match(/\(ylimääräinen\)/)) {
-        // newPerformance.is_encore = true;
-      }
-      // Finland premiere
-      if (symphonyNameCell.match(/\(ekS.\)/)) {
-        // newPerformance.premiere_in_finland = true;
-      }
-      // World premiere
-      if (symphonyNameCell.match(/\(ke.\)/)) {
-        // newPerformance.world_premiere = true;
-      }
-      // Europe premiere
-      if (symphonyNameCell.match(/\(ek Eurooppa\)/)) {
-        // newPerformance.premiere_in_europe = true;
-      }
-      // Dance premiere, wtf?
-      if (symphonyNameCell.match(/\(tanssiversion ensiesitys\)/)) {
-        // newPerformance.premiere_dance_performance = true;
-      }
+      // Check for premeiere tag in name cell
+      premiereTags.forEach((tag) => {
+        if (symphonyNameCell.match(tag.regex)) {
+          const premiereTagObject = premiereTagObjects.find((x) => x.name === tag.sqlName);
+
+          if (premiereTagObject) {
+            console.log(`Added premier tag '${premiereTagObject.name}' for '${symphonyNameCell}'.`);
+            newPerformance.premiere_tag = premiereTagObject;
+          }
+        }
+      });
 
       // Arranger regex
       let arranger = row.Sovittaja.trim();
