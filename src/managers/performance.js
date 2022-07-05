@@ -18,6 +18,7 @@ const allPerformanceRelations = [
   "conductor",
   "compositor",
   "arranger",
+  "premiere_tag",
   "soloist_performances",
   "soloist_performances.soloist",
   "soloist_performances.instrument",
@@ -52,6 +53,7 @@ const addPerformances = async (symphonies) => {
   const symphonyRepo = getRepository(Symphony);
   const instrumentRepo = getRepository(Instrument);
   const musicianRepo = getRepository(Musician);
+  const premiereTagRepo = getRepository(PremiereTag);
   const concertPerfRepo = getRepository(ConcertPerformance);
   const soloistPerfRepo = getRepository(SoloistPerformance);
 
@@ -105,6 +107,9 @@ const addPerformances = async (symphonies) => {
       await musicianRepo
         .findOne({ name: symph.arranger })
         .then((x) => (concertPerfObj.arranger = x)),
+      await premiereTagRepo
+        .findOne({ name: symph.premiere_tag })
+        .then((x) => (concertPerfObj.premiere_tag = x)),
       await saveSoloistPerformances(symph.soloist_performances).then(
         (x) => (concertPerfObj.soloist_performances = x)
       ),
@@ -131,6 +136,15 @@ const getAllPerformances = async () => {
 const getAllPremiereTags = async () => {
   const repo = getRepository(PremiereTag);
   const result = await repo.find();
+  return result;
+};
+
+// Describe
+// Get premiere tag by name
+const getPremiereTagByName = async (name) => {
+  const repo = getRepository(PremiereTag);
+  const result = await repo.findOne({ name: name });
+  console.log("Premiere tag", result);
   return result;
 };
 
@@ -206,6 +220,7 @@ module.exports = {
   addPremiereTags,
   getAllPerformances,
   getAllPremiereTags,
+  getPremiereTagByName,
   getPerformancesByConductorId,
   getPerformancesByCompositorId,
   getPerformancesSearch,

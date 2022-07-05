@@ -54,6 +54,7 @@ module.exports = new EntitySchema({
       target: "premiere_tag",
       type: "many-to-one",
       cascade: true,
+      onDelete: "CASCADE",
     },
   },
 });

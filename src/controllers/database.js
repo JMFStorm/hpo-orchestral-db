@@ -11,6 +11,7 @@ const {
   addPerformances,
   addPremiereTags,
   getAllPremiereTags,
+  getPremiereTagByName,
   deleteAllConcertPerformances,
   deleteAllSoloistPerformances,
 } = require("../managers/performance");
@@ -297,13 +298,13 @@ controller.post("/seed", async (req, res, next) => {
       const symphonyNameCell = row.TeoksenNimi.trim();
 
       // Check for premeiere tag in name cell
-      premiereTags.forEach((tag) => {
+      premiereTags.forEach(async (tag) => {
         if (symphonyNameCell.match(tag.regex)) {
           const premiereTagObject = premiereTagObjects.find((x) => x.name === tag.sqlName);
 
           if (premiereTagObject) {
-            console.log(`Added premier tag '${premiereTagObject.name}' for '${symphonyNameCell}'.`);
-            newPerformance.premiere_tag = premiereTagObject;
+            newPerformance.premiere_tag = premiereTagObject.name;
+            console.log(`Added premier tag '${premiereTagObject.name}' for ${symphonyNameCell}`);
           }
         }
       });
