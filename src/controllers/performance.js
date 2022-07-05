@@ -1,9 +1,10 @@
 const { Router } = require("express");
 
 const httpError = require("../utils/httpError");
+const { getAllPremiereTags } = require("../managers/premiereTag");
 const {
   getAllPerformances,
-  getAllPremiereTags,
+
   getPerformancesByConductorId,
   getPerformancesByCompositorId,
   getPerformancesSearch,

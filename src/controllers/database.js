@@ -7,11 +7,9 @@ const { addSymphonies, deleteAllSymphonyIds } = require("../managers/symphony");
 const { addOrchestries, deleteAllOrchestries } = require("../managers/orchestra");
 const { addLocations, deleteAllLocations } = require("../managers/location");
 const { addConcerts, addConcertTags, deleteAllConcertTags } = require("../managers/concert");
+const { addPremiereTags, getAllPremiereTags } = require("../managers/premiereTag");
 const {
   addPerformances,
-  addPremiereTags,
-  getAllPremiereTags,
-  getPremiereTagByName,
   deleteAllConcertPerformances,
   deleteAllSoloistPerformances,
 } = require("../managers/performance");

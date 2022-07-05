@@ -27,27 +27,6 @@ const allPerformanceRelations = [
 // Describe
 // Adds concert & soloist performances to table,
 // returns saved count
-const addPremiereTags = async (premiereTags) => {
-  let addedCount = 0;
-  const premiereTagRepo = getRepository(PremiereTag);
-
-  for (const premiereTag of premiereTags) {
-    const premiereTagObject = {
-      name: premiereTag.sqlName,
-    };
-
-    // Save
-    await premiereTagRepo.save(premiereTagObject);
-    addedCount++;
-    console.log("Added premiere_tag:", premiereTagObject);
-  }
-
-  return addedCount;
-};
-
-// Describe
-// Adds concert & soloist performances to table,
-// returns saved count
 const addPerformances = async (symphonies) => {
   const concertRepo = getRepository(Concert);
   const symphonyRepo = getRepository(Symphony);
@@ -132,23 +111,6 @@ const getAllPerformances = async () => {
 };
 
 // Describe
-// Get all premiere tags
-const getAllPremiereTags = async () => {
-  const repo = getRepository(PremiereTag);
-  const result = await repo.find();
-  return result;
-};
-
-// Describe
-// Get premiere tag by name
-const getPremiereTagByName = async (name) => {
-  const repo = getRepository(PremiereTag);
-  const result = await repo.findOne({ name: name });
-  console.log("Premiere tag", result);
-  return result;
-};
-
-// Describe
 // Get all performances with search params
 const getPerformancesSearch = async ({ compositorId, conductorId }) => {
   const repo = getRepository(ConcertPerformance);
@@ -217,10 +179,7 @@ const deleteAllSoloistPerformances = async () => {
 
 module.exports = {
   addPerformances,
-  addPremiereTags,
   getAllPerformances,
-  getAllPremiereTags,
-  getPremiereTagByName,
   getPerformancesByConductorId,
   getPerformancesByCompositorId,
   getPerformancesSearch,
