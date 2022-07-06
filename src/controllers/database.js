@@ -7,7 +7,11 @@ const { addSymphonies, deleteAllSymphonyIds } = require("../managers/symphony");
 const { addOrchestries, deleteAllOrchestries } = require("../managers/orchestra");
 const { addLocations, deleteAllLocations } = require("../managers/location");
 const { addConcerts, addConcertTags, deleteAllConcertTags } = require("../managers/concert");
-const { addPremiereTags, getAllPremiereTags } = require("../managers/premiereTag");
+const {
+  addPremiereTags,
+  getAllPremiereTags,
+  deleteAllPremiereTags,
+} = require("../managers/premiereTag");
 const {
   addPerformances,
   deleteAllConcertPerformances,
@@ -44,6 +48,7 @@ controller.post("/seed", async (req, res, next) => {
       await deleteAllOrchestries(),
       await deleteAllLocations(),
       await deleteAllConcertTags(),
+      await deleteAllPremiereTags(),
     ]);
 
     console.log("Deleted existing tables.");
@@ -58,7 +63,21 @@ controller.post("/seed", async (req, res, next) => {
     rowObjects.map((x) => {
       const conductor = x.Kapellimestari.trim();
 
-      if (conductor !== "" && !musicians.includes(conductor)) {
+      // Check for multiple in one cell
+      const regex21 = new RegExp("/");
+
+      if (regex21.test(conductor)) {
+        console.log("Found multiple conductors", conductor);
+        const condsArr = conductor.split("/").map((x) => x.trim());
+        condsArr.forEach((x) => {
+          const cond = x.trim();
+
+          if (!musicians.includes(cond)) {
+            musicians.push(cond);
+            return;
+          }
+        });
+      } else if (conductor !== "" && !musicians.includes(conductor)) {
         musicians.push(conductor);
       }
     });
@@ -79,8 +98,9 @@ controller.post("/seed", async (req, res, next) => {
 
       if (regex2.test(compositor)) {
         const compsArr = compositor.split("/").map((x) => x.trim());
-        compsArr.map((x) => {
+        compsArr.forEach((x) => {
           const comp = x.trim();
+
           if (!musicians.includes(comp)) {
             musicians.push(comp);
             return;
@@ -327,7 +347,7 @@ controller.post("/seed", async (req, res, next) => {
         order: order,
         concertId: concertId,
         symphonyId: symphonyId,
-        conductor: conductor,
+        conductors: [conductor],
         compositor: compositor,
         arranger: arranger,
         soloist_performances: soloistPerformances,

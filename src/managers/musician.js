@@ -42,16 +42,6 @@ const addMusicians = async (musicianNames) => {
 };
 
 // Describe
-// Deletes all musicians from table,
-// returns deleted count
-const deleteAllMusicians = async () => {
-  const repo = getRepository(Musician);
-
-  const result = await repo.delete({});
-  return result.affected;
-};
-
-// Describe
 // Gets all compositor musicians from table
 const getAllCompositors = async () => {
   const repo = getRepository(ConcertPerformance);
@@ -74,19 +64,30 @@ const getAllCompositors = async () => {
 // Gets all conductor musicians from table
 const getAllConductors = async () => {
   const repo = getRepository(ConcertPerformance);
-  const response = await repo.find({ relations: ["conductor"] });
+  const response = await repo.find({ relations: ["conductors"] });
 
   const conductors = response
-    .map((x) => {
-      return x.conductor ? { id: x.conductor.id, name: x.conductor.name } : null;
-    })
+    .map((x) => x.conductors)
+    .flat(1)
     .filter((x) => x);
 
   // Filter array to uniques
-  return conductors.filter(
+  const filtered = conductors.filter(
     (current, index, self) =>
       index === self.findIndex((x) => x.id === current.id && x.name === current.name)
   );
+
+  return filtered;
+};
+
+// Describe
+// Deletes all musicians from table,
+// returns deleted count
+const deleteAllMusicians = async () => {
+  const repo = getRepository(Musician);
+
+  const result = await repo.delete({});
+  return result.affected;
 };
 
 module.exports = {

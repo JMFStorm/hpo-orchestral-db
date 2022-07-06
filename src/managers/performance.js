@@ -15,7 +15,7 @@ const allPerformanceRelations = [
   "concert.concert_tag",
   "concert.orchestra",
   "symphony",
-  "conductor",
+  "conductors",
   "compositor",
   "arranger",
   "premiere_tag",
@@ -78,8 +78,8 @@ const addPerformances = async (symphonies) => {
         .findOne({ symphony_id: symph.symphonyId })
         .then((x) => (concertPerfObj.symphony = x)),
       await musicianRepo
-        .findOne({ name: symph.conductor })
-        .then((x) => (concertPerfObj.conductor = x)),
+        .findOne({ name: symph.conductors[0] })
+        .then((x) => (concertPerfObj.conductors = [x])),
       await musicianRepo
         .findOne({ name: symph.compositor })
         .then((x) => (concertPerfObj.compositor = x)),

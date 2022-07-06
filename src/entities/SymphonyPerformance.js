@@ -25,11 +25,12 @@ module.exports = new EntitySchema({
       cascade: true,
       onDelete: "CASCADE",
     },
-    conductor: {
+    conductors: {
       target: "musician",
-      type: "many-to-one",
+      type: "many-to-many",
       cascade: true,
       onDelete: "CASCADE",
+      joinTable: true,
     },
     compositor: {
       target: "musician",

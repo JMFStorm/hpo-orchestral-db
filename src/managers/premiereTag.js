@@ -40,8 +40,19 @@ const getPremiereTagByName = async (name) => {
   return result;
 };
 
+// Describe
+// Deletes all premiere tags from table,
+// returns deleted count
+const deleteAllPremiereTags = async () => {
+  const repo = getRepository(PremiereTag);
+
+  const result = await repo.delete({});
+  return result.affected;
+};
+
 module.exports = {
   addPremiereTags,
   getAllPremiereTags,
   getPremiereTagByName,
+  deleteAllPremiereTags,
 };
