@@ -45,7 +45,7 @@ const addPerformances = async (symphonies) => {
     }
 
     const saveSoloistPerformances = async (performances) => {
-      let soloistPerfArray = [];
+      let soloistObjectsArray = [];
 
       // Iterate soloist performances to object array
       for (const performance of performances) {
@@ -59,10 +59,21 @@ const addPerformances = async (symphonies) => {
 
         // Save soloist performance
         const savedSoloistPerf = await soloistPerfRepo.save(soloistPerfObject);
-        soloistPerfArray.push(savedSoloistPerf);
+        soloistObjectsArray.push(savedSoloistPerf);
       }
 
-      return soloistPerfArray;
+      return soloistObjectsArray;
+    };
+
+    const setConductorObjectsArray = async (conductorNames) => {
+      let conductorObjectsArray = [];
+
+      for (const name of conductorNames) {
+        const conductorObj = await musicianRepo.findOne({ name: name });
+        conductorObjectsArray.push(conductorObj);
+      }
+
+      return conductorObjectsArray;
     };
 
     let concertPerfObj = {
@@ -78,9 +89,6 @@ const addPerformances = async (symphonies) => {
         .findOne({ symphony_id: symph.symphonyId })
         .then((x) => (concertPerfObj.symphony = x)),
       await musicianRepo
-        .findOne({ name: symph.conductors[0] })
-        .then((x) => (concertPerfObj.conductors = [x])),
-      await musicianRepo
         .findOne({ name: symph.compositor })
         .then((x) => (concertPerfObj.compositor = x)),
       await musicianRepo
@@ -92,6 +100,7 @@ const addPerformances = async (symphonies) => {
       await saveSoloistPerformances(symph.soloist_performances).then(
         (x) => (concertPerfObj.soloist_performances = x)
       ),
+      await setConductorObjectsArray(symph.conductors).then((x) => (concertPerfObj.conductors = x)),
     ]);
 
     // Save

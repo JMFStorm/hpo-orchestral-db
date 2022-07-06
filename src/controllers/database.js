@@ -311,6 +311,17 @@ controller.post("/seed", async (req, res, next) => {
         }
       });
 
+      const conductorCell = row.Kapellimestari.trim();
+      let conductorsArr = [];
+
+      // Check for multiple conductors in cell
+      // and add them for array
+      const conductorArr = conductorCell.split("/");
+      conductorArr.map((x) => {
+        const conductor = x.trim();
+        conductorsArr.push(conductor);
+      });
+
       // Initialize defaults
       let newPerformance = {};
       const symphonyNameCell = row.TeoksenNimi.trim();
@@ -339,7 +350,6 @@ controller.post("/seed", async (req, res, next) => {
       const concertId = row.KonserttiId.trim();
       const order = row.Esitysjarjestys.trim();
       const symphonyId = row.TeoksenId.trim();
-      const conductor = row.Kapellimestari.trim();
       const compositor = row.Saveltaja.trim();
 
       newPerformance = {
@@ -347,7 +357,7 @@ controller.post("/seed", async (req, res, next) => {
         order: order,
         concertId: concertId,
         symphonyId: symphonyId,
-        conductors: [conductor],
+        conductors: conductorsArr,
         compositor: compositor,
         arranger: arranger,
         soloist_performances: soloistPerformances,
