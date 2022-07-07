@@ -67,7 +67,6 @@ controller.post("/seed", async (req, res, next) => {
       const regex21 = new RegExp("/");
 
       if (regex21.test(conductor)) {
-        console.log("Found multiple conductors", conductor);
         const condsArr = conductor.split("/").map((x) => x.trim());
         condsArr.forEach((x) => {
           const cond = x.trim();
@@ -106,9 +105,7 @@ controller.post("/seed", async (req, res, next) => {
             return;
           }
         });
-      }
-
-      if (!musicians.includes(compositor)) {
+      } else if (compositor !== "" && !musicians.includes(compositor)) {
         musicians.push(compositor);
       }
     });
@@ -316,10 +313,19 @@ controller.post("/seed", async (req, res, next) => {
 
       // Check for multiple conductors in cell
       // and add them for array
-      const conductorArr = conductorCell.split("/");
-      conductorArr.map((x) => {
+      conductorCell.split("/").map((x) => {
         const conductor = x.trim();
         conductorsArr.push(conductor);
+      });
+
+      const compositorCell = row.Saveltaja.trim();
+      let compositorsArr = [];
+
+      // Check for multiple compositors in cell
+      // and add them for array
+      compositorCell.split("/").map((x) => {
+        const compositor = x.trim();
+        compositorsArr.push(compositor);
       });
 
       // Initialize defaults
@@ -350,7 +356,6 @@ controller.post("/seed", async (req, res, next) => {
       const concertId = row.KonserttiId.trim();
       const order = row.Esitysjarjestys.trim();
       const symphonyId = row.TeoksenId.trim();
-      const compositor = row.Saveltaja.trim();
 
       newPerformance = {
         ...newPerformance,
@@ -358,7 +363,7 @@ controller.post("/seed", async (req, res, next) => {
         concertId: concertId,
         symphonyId: symphonyId,
         conductors: conductorsArr,
-        compositor: compositor,
+        compositors: compositorsArr,
         arranger: arranger,
         soloist_performances: soloistPerformances,
       };

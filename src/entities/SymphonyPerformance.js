@@ -32,11 +32,12 @@ module.exports = new EntitySchema({
       onDelete: "CASCADE",
       joinTable: true,
     },
-    compositor: {
+    compositors: {
       target: "musician",
-      type: "many-to-one",
+      type: "many-to-many",
       cascade: true,
       onDelete: "CASCADE",
+      joinTable: true,
     },
     arranger: {
       target: "musician",

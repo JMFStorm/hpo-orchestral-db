@@ -45,19 +45,20 @@ const addMusicians = async (musicianNames) => {
 // Gets all compositor musicians from table
 const getAllCompositors = async () => {
   const repo = getRepository(ConcertPerformance);
-  const response = await repo.find({ relations: ["compositor"] });
+  const response = await repo.find({ relations: ["compositors"] });
 
   const compositors = response
-    .map((x) => {
-      return x.compositor ? { id: x.compositor.id, name: x.compositor.name } : null;
-    })
+    .map((x) => x.compositors)
+    .flat(1)
     .filter((x) => x);
 
   // Filter array to uniques
-  return compositors.filter(
+  const filtered = compositors.filter(
     (current, index, self) =>
       index === self.findIndex((x) => x.id === current.id && x.name === current.name)
   );
+
+  return filtered;
 };
 
 // Describe
