@@ -368,7 +368,7 @@ controller.post("/seed", async (req, res, next) => {
         symphonyId: symphonyId,
         conductors: conductorsArr,
         compositors: compositorsArr,
-        arranger: arranger,
+        arrangers: arranger,
         soloist_performances: soloistPerformances,
       };
 

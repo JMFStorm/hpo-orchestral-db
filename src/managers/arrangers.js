@@ -14,8 +14,6 @@ const addArrangers = async (arrangerNames) => {
     };
   });
 
-  console.log("arrangers", objects);
-
   const res = await repo.save(objects);
   return res.length;
 };

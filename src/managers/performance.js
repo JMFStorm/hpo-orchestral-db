@@ -7,6 +7,7 @@ const Instrument = require("../entities/Instrument");
 const Musician = require("../entities/Musician");
 const Concert = require("../entities/Concert");
 const Symphony = require("../entities/Symphony");
+const Arrangers = require("../entities/Arrangers");
 
 // To get all relational tables from performances
 const allPerformanceRelations = [
@@ -28,6 +29,7 @@ const allPerformanceRelations = [
 // Adds concert & soloist performances to table,
 // returns saved count
 const addPerformances = async (symphonies) => {
+  const arrangerRepo = getRepository(Arrangers);
   const concertRepo = getRepository(Concert);
   const symphonyRepo = getRepository(Symphony);
   const instrumentRepo = getRepository(Instrument);
@@ -99,9 +101,9 @@ const addPerformances = async (symphonies) => {
       await symphonyRepo
         .findOne({ symphony_id: symph.symphonyId })
         .then((x) => (concertPerfObj.symphony = x)),
-      await musicianRepo
-        .findOne({ name: symph.arranger })
-        .then((x) => (concertPerfObj.arranger = x)),
+      await arrangerRepo
+        .findOne({ names: symph.arrangers })
+        .then((x) => (concertPerfObj.arrangers = x)),
       await premiereTagRepo
         .findOne({ name: symph.premiere_tag })
         .then((x) => (concertPerfObj.premiere_tag = x)),
