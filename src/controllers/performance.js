@@ -4,7 +4,7 @@ const httpError = require("../utils/httpError");
 const { getAllPremiereTags } = require("../managers/premiereTag");
 const {
   getAllPerformances,
-
+  getPerformancesByPerformanceId,
   getPerformancesByConductorId,
   getPerformancesByCompositorId,
   getPerformancesSearch,
@@ -17,6 +17,20 @@ const controller = Router();
 controller.get("/", async (req, res, next) => {
   try {
     const response = await getAllPerformances();
+
+    return res.send(response);
+  } catch (err) {
+    console.error("err", err);
+    return next(httpError(err, 404));
+  }
+});
+
+// Describe
+// Get all performance by performace id
+controller.get("/:id", async (req, res, next) => {
+  try {
+    const performaceId = req.params.id;
+    const response = await getPerformancesByPerformanceId(performaceId);
 
     return res.send(response);
   } catch (err) {

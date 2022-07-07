@@ -154,6 +154,19 @@ const getPerformancesSearch = async ({ compositorId, conductorId }) => {
 };
 
 // Describe
+// Get performances by performance id
+const getPerformancesByPerformanceId = async (performaceId) => {
+  const repo = getRepository(ConcertPerformance);
+
+  const result = await repo.find({
+    where: { id: performaceId },
+    relations: allPerformanceRelations,
+  });
+
+  return result;
+};
+
+// Describe
 // Get performances by conductor id
 const getPerformancesByConductorId = async (conductorId) => {
   const repo = getRepository(ConcertPerformance);
@@ -200,6 +213,7 @@ const deleteAllSoloistPerformances = async () => {
 module.exports = {
   addPerformances,
   getAllPerformances,
+  getPerformancesByPerformanceId,
   getPerformancesByConductorId,
   getPerformancesByCompositorId,
   getPerformancesSearch,
