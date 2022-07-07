@@ -7,6 +7,7 @@ const connectionConfig = {
   ...dbConfig,
   synchronize: true,
   entities: [
+    require("../entities/Arrangers"),
     require("../entities/Musician"),
     require("../entities/Instrument"),
     require("../entities/SoloistPerformance"),

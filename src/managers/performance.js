@@ -17,7 +17,7 @@ const allPerformanceRelations = [
   "symphony",
   "conductors",
   "compositors",
-  "arranger",
+  "arrangers",
   "premiere_tag",
   "soloist_performances",
   "soloist_performances.soloist",

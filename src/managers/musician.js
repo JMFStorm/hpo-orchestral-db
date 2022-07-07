@@ -1,5 +1,6 @@
 const { getRepository } = require("typeorm");
 
+const Arrangers = require("../entities/Arrangers");
 const Musician = require("../entities/Musician");
 const ConcertPerformance = require("../entities/SymphonyPerformance");
 
@@ -82,6 +83,14 @@ const getAllConductors = async () => {
 };
 
 // Describe
+// Gets all arrangers
+const getAllArrangers = async () => {
+  const repo = getRepository(Arrangers);
+  const response = await repo.find();
+  return response;
+};
+
+// Describe
 // Deletes all musicians from table,
 // returns deleted count
 const deleteAllMusicians = async () => {
@@ -95,5 +104,6 @@ module.exports = {
   addMusicians,
   getAllCompositors,
   getAllConductors,
+  getAllArrangers,
   deleteAllMusicians,
 };

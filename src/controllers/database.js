@@ -17,6 +17,7 @@ const {
   deleteAllConcertPerformances,
   deleteAllSoloistPerformances,
 } = require("../managers/performance");
+const { addArrangers, deleteAllArrangers } = require("../managers/arrangers");
 const { csvDirectoryPath, premiereTags } = require("../utils/config");
 const { csvRowsToObjects } = require("../utils/csvRead");
 
@@ -49,6 +50,7 @@ controller.post("/seed", async (req, res, next) => {
       await deleteAllLocations(),
       await deleteAllConcertTags(),
       await deleteAllPremiereTags(),
+      await deleteAllArrangers(),
     ]);
 
     console.log("Deleted existing tables.");
@@ -110,7 +112,9 @@ controller.post("/seed", async (req, res, next) => {
       }
     });
 
-    // Collect musicians from arrangers
+    let arrangers = [];
+
+    // Collect arrangers
     rowObjects
       .filter((x) => x.Sovittaja.trim().length !== 0)
       .map((x) => {
@@ -124,8 +128,8 @@ controller.post("/seed", async (req, res, next) => {
           arranger = current.substring(9).trim();
         }
 
-        if (!musicians.includes(arranger)) {
-          musicians.push(arranger);
+        if (!arrangers.includes(arranger)) {
+          arrangers.push(arranger);
         }
       });
 
@@ -382,6 +386,7 @@ controller.post("/seed", async (req, res, next) => {
       await addOrchestries(orchestraNames).then(() => console.log("Saved orchestraNames")),
       await addLocations(locationNames).then(() => console.log("Saved locationNames")),
       await addConcertTags(concertTagNames).then(() => console.log("Saved concertTagNames")),
+      await addArrangers(arrangers).then(() => console.log("Saved arrangers")),
     ]);
 
     // Save concerts

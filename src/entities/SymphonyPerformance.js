@@ -39,8 +39,8 @@ module.exports = new EntitySchema({
       onDelete: "CASCADE",
       joinTable: true,
     },
-    arranger: {
-      target: "musician",
+    arrangers: {
+      target: "arrangers",
       type: "many-to-one",
       cascade: true,
       onDelete: "CASCADE",
