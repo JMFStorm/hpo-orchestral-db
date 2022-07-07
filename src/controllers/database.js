@@ -27,15 +27,20 @@ const controller = Router();
 // Seed database from stratch with CSV data
 controller.post("/seed", async (req, res, next) => {
   try {
+    let rowObjects = {};
+
     // Read CSV file
-    const csvFileName = req.body.csvFileName;
-    const csvPath = csvDirectoryPath + csvFileName;
+    const csvTestFileName = req.body.csvTestFileName;
 
-    console.log(`Using ${csvPath} as seed filepath`);
+    if (csvTestFileName) {
+      const csvPath = csvDirectoryPath + csvTestFileName;
+      console.log(`Using ${csvPath} as a test seed filepath`);
+      rowObjects = await csvRowsToObjects(csvPath);
+    } else {
+      // Else get rowObjects from request body
+    }
 
-    const rowObjects = await csvRowsToObjects(csvPath);
-
-    if (!csvPath || !rowObjects?.length > 0) {
+    if (rowObjects?.length <= 0) {
       return res.send({ savedPerformances: 0 });
     }
 
