@@ -343,7 +343,6 @@ controller.post("/seed", async (req, res, next) => {
 
           if (premiereTagObject) {
             newPerformance.premiere_tag = premiereTagObject.name;
-            console.log(`Added premier tag '${premiereTagObject.name}' for ${symphonyNameCell}`);
           }
         }
       });
@@ -361,6 +360,9 @@ controller.post("/seed", async (req, res, next) => {
       const order = row.Esitysjarjestys.trim();
       const symphonyId = row.TeoksenId.trim();
 
+      const footnote = row.TietoaKonsertista ? row.TietoaKonsertista.trim() : "";
+      const archiveInfo = row.LisatietoaKonsertista ? row.LisatietoaKonsertista.trim() : "";
+
       newPerformance = {
         ...newPerformance,
         order: order,
@@ -370,6 +372,8 @@ controller.post("/seed", async (req, res, next) => {
         compositors: compositorsArr,
         arrangers: arranger,
         soloist_performances: soloistPerformances,
+        footnote: footnote,
+        archive_info: archiveInfo,
       };
 
       if (!performances.some((x) => x === newPerformance)) {

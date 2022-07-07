@@ -36,7 +36,6 @@ const getAllPremiereTags = async () => {
 const getPremiereTagByName = async (name) => {
   const repo = getRepository(PremiereTag);
   const result = await repo.findOne({ name: name });
-  console.log("Premiere tag", result);
   return result;
 };
 

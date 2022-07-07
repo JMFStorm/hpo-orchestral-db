@@ -91,6 +91,8 @@ const addPerformances = async (symphonies) => {
 
     let concertPerfObj = {
       order: symph.order,
+      footnote: symph.footnote,
+      archive_info: symph.archive_info,
     };
 
     // Get all existing fields from tables

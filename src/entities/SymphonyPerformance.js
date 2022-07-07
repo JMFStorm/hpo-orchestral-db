@@ -12,6 +12,14 @@ module.exports = new EntitySchema({
     order: {
       type: "int",
     },
+    footnote: {
+      type: "varchar",
+      nullable: true,
+    },
+    archive_info: {
+      type: "varchar",
+      nullable: true,
+    },
   },
   relations: {
     concert: {
