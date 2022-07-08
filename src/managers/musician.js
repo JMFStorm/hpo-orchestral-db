@@ -63,6 +63,20 @@ const getAllCompositors = async () => {
 };
 
 // Describe
+// Search compositors by the starting letter
+const searchCompositorsByStartingLetter = async (lettersArr) => {
+  const regexString = (string) => `^${string}`;
+  const regexArr = lettersArr.map((x) => new RegExp(regexString(x), "i"));
+
+  const response = await getAllCompositors();
+
+  const filteredByStaringLetter = response.filter((comp) =>
+    regexArr.some((reg) => reg.test(comp.name))
+  );
+  return filteredByStaringLetter;
+};
+
+// Describe
 // Gets all conductor musicians from table
 const getAllConductors = async () => {
   const repo = getRepository(ConcertPerformance);
@@ -105,5 +119,6 @@ module.exports = {
   getAllCompositors,
   getAllConductors,
   getAllArrangers,
+  searchCompositorsByStartingLetter,
   deleteAllMusicians,
 };
