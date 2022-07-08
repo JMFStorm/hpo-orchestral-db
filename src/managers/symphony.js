@@ -38,7 +38,7 @@ const getSymphoniesByCompositorId = async (compositorId) => {
   );
 
   const result = relatedPerformances.map((x) => x.symphony);
-  return relatedPerformances;
+  return result;
 };
 
 // Describe
