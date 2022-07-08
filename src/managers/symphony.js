@@ -1,6 +1,7 @@
 const { getRepository } = require("typeorm");
 
 const Symphony = require("../entities/Symphony");
+const SymphonyPerformance = require("../entities/SymphonyPerformance");
 
 // Describe
 // Adds symphonies to table,
@@ -24,6 +25,23 @@ const addSymphonies = async (symphonies) => {
 };
 
 // Describe
+// Search symphonies by compositor id
+const getSymphoniesByCompositorId = async (compositorId) => {
+  const repo = getRepository(SymphonyPerformance);
+
+  const response = await repo.find({
+    relations: ["symphony", "compositors"],
+  });
+
+  const relatedPerformances = response.filter((x) =>
+    x.compositors.map((x) => x.id).includes(compositorId)
+  );
+
+  const result = relatedPerformances.map((x) => x.symphony);
+  return relatedPerformances;
+};
+
+// Describe
 // Deletes all symphonies from table,
 // returns deleted count
 const deleteAllSymphonyIds = async () => {
@@ -35,5 +53,6 @@ const deleteAllSymphonyIds = async () => {
 
 module.exports = {
   addSymphonies,
+  getSymphoniesByCompositorId,
   deleteAllSymphonyIds,
 };

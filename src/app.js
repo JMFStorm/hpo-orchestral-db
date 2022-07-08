@@ -5,6 +5,7 @@ const path = require("path");
 const databaseController = require("./controllers/database");
 const performanceController = require("./controllers/performance");
 const musicianController = require("./controllers/musician");
+const symphonyConstroller = require("./controllers/symphony");
 const errorHandler = require("./middleware/errorHandler");
 
 const app = express();
@@ -25,6 +26,7 @@ console.log("Using static page files from: ", build);
 app.use("/api/database", databaseController);
 app.use("/api/performance", performanceController);
 app.use("/api/musician", musicianController);
+app.use("/api/symphony", symphonyConstroller);
 
 // Use error handler endpoint
 app.use(errorHandler);
