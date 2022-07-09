@@ -1,6 +1,6 @@
-const { getRepository } = require("typeorm");
+import { getRepository } from "typeorm";
 
-const Orchestra = require("../entities/Orchestra");
+import Orchestra from "../entities/Orchestra";
 
 // Describe
 // Adds orchestries to table,

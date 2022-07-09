@@ -1,12 +1,12 @@
 import { getRepository } from "typeorm";
 
-import Arrangers from "../entities/Arranger";
+import Arranger from "../entities/Arranger";
 
 // Describe
 // Adds arrangers to table,
 // returns saved count
 export const addArrangers = async (arrangerNames: string[]) => {
-  const repo = getRepository(Arrangers);
+  const repo = getRepository(Arranger);
 
   const objects = arrangerNames.map((x) => {
     return {
@@ -22,7 +22,7 @@ export const addArrangers = async (arrangerNames: string[]) => {
 // Deletes all arrangers from table,
 // returns deleted count
 export const deleteAllArrangers = async () => {
-  const repo = getRepository(Arrangers);
+  const repo = getRepository(Arranger);
 
   const result = await repo.delete({});
   return result.affected;

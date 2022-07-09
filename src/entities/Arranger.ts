@@ -1,6 +1,6 @@
 import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity("arrangers", { name: "arrangers" })
+@Entity("arranger", { name: "arrangers" })
 export default class Arranger extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;

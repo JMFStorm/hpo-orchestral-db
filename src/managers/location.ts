@@ -1,6 +1,6 @@
-const { getRepository } = require("typeorm");
+import { getRepository } from "typeorm";
 
-const Location = require("../entities/Location");
+import Location from "../entities/Location";
 
 // Describe
 // Adds locations to table,

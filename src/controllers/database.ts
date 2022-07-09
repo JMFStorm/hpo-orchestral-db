@@ -51,6 +51,8 @@ controller.post("/seed", async (req, res, next) => {
       return res.send({ savedPerformances: 0 });
     }
 
+    console.log("Deleting existing tables.");
+
     // Delete existing data
     Promise.all([
       await deleteAllConcertPerformances(),

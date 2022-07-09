@@ -7,18 +7,30 @@ import { ConnectionOptions, createConnection } from "typeorm";
 const postgres = "postgres";
 const localhost = "localhost";
 
+import Musician from "../entities/Musician";
+import Arranger from "../entities/Arranger";
+import Instrument from "../entities/Instrument";
+import SoloistPerformance from "../entities/SoloistPerformance";
+import Symphony from "../entities/Symphony";
+import Orchestra from "../entities/Orchestra";
+import Location from "../entities/Location";
+import Concert from "../entities/Concert";
+import ConcertTag from "../entities/ConcertTag";
+import SymphonyPerformance from "../entities/SymphonyPerformance";
+import PremiereTag from "../entities/PremiereTag";
+
 const entitiesList = [
-  require("../entities/Arrangers"),
-  require("../entities/Musician"),
-  require("../entities/Instrument"),
-  require("../entities/SoloistPerformance"),
-  require("../entities/Symphony"),
-  require("../entities/Orchestra"),
-  require("../entities/Location"),
-  require("../entities/Concert"),
-  require("../entities/ConcertTag"),
-  require("../entities/SymphonyPerformance"),
-  require("../entities/PremiereTag"),
+  Arranger,
+  Musician,
+  Instrument,
+  SoloistPerformance,
+  Symphony,
+  Orchestra,
+  Location,
+  Concert,
+  ConcertTag,
+  SymphonyPerformance,
+  PremiereTag,
 ];
 
 const configDev: ConnectionOptions = {
