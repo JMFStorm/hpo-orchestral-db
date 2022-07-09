@@ -4,6 +4,7 @@ const Concert = require("../entities/Concert");
 const ConcertTag = require("../entities/ConcertTag");
 const Location = require("../entities/Location");
 const Orchestra = require("../entities/Orchestra");
+const SymphonyPerformance = require("../entities/SymphonyPerformance");
 
 // Describe
 // Adds concerts to table
@@ -75,6 +76,20 @@ const addConcertTags = async (tagNames) => {
 };
 
 // Describe
+// Search concerts by symphony id
+const getConcertsBySymphonyId = async (symphonyId) => {
+  const repo = getRepository(SymphonyPerformance);
+
+  const response = await repo.find({
+    relations: ["concert", "symphony"],
+  });
+
+  const filtered = response.filter((x) => x.symphony.id === symphonyId);
+
+  return filtered;
+};
+
+// Describe
 // Deletes all concert tags from table,
 // returns deleted count
 const deleteAllConcertTags = async () => {
@@ -87,5 +102,6 @@ const deleteAllConcertTags = async () => {
 module.exports = {
   addConcerts,
   addConcertTags,
+  getConcertsBySymphonyId,
   deleteAllConcertTags,
 };

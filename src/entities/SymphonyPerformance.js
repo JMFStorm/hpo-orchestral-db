@@ -1,5 +1,7 @@
 const EntitySchema = require("typeorm").EntitySchema;
 
+const { Entity, PrimaryGeneratedColumn, Column, OneToMany } = require("typeorm");
+
 module.exports = new EntitySchema({
   name: "symphony_performance",
   tableName: "symphony_performances",
@@ -26,6 +28,7 @@ module.exports = new EntitySchema({
       target: "concert",
       type: "many-to-one",
       cascade: true,
+      treeParent: true,
     },
     symphony: {
       target: "symphony",
