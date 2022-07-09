@@ -86,7 +86,22 @@ const getConcertsBySymphonyId = async (symphonyId) => {
 
   const filtered = response.filter((x) => x.symphony.id === symphonyId);
 
-  return filtered;
+  const concertIds = filtered.map((x) => x.concert.id);
+
+  const idQuery = concertIds.map((x) => {
+    return {
+      id: x,
+    };
+  });
+
+  const concertRepo = getRepository(Concert);
+
+  const result = await concertRepo.find({
+    relations: ["location", "orchestra", "concert_tag"],
+    where: idQuery,
+  });
+
+  return result;
 };
 
 // Describe
