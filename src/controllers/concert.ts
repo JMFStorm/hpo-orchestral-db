@@ -19,4 +19,4 @@ controller.get("/symphony/:symphonyId", async (req, res, next) => {
   }
 });
 
-module.exports = controller;
+export default controller;

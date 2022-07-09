@@ -6,7 +6,7 @@ const SymphonyPerformance = require("../entities/SymphonyPerformance");
 // Describe
 // Adds symphonies to table,
 // returns saved count
-const addSymphonies = async (symphonies) => {
+export const addSymphonies = async (symphonies) => {
   let addedCount = 0;
 
   for (const symph of symphonies) {
@@ -26,7 +26,7 @@ const addSymphonies = async (symphonies) => {
 
 // Describe
 // Search symphonies by compositor id
-const getSymphoniesByCompositorId = async (compositorId) => {
+export const getSymphoniesByCompositorId = async (compositorId: string) => {
   const repo = getRepository(SymphonyPerformance);
 
   const response = await repo.find({
@@ -44,15 +44,9 @@ const getSymphoniesByCompositorId = async (compositorId) => {
 // Describe
 // Deletes all symphonies from table,
 // returns deleted count
-const deleteAllSymphonyIds = async () => {
+export const deleteAllSymphonyIds = async () => {
   const repo = getRepository(Symphony);
 
   const result = await repo.delete({});
   return result.affected;
-};
-
-module.exports = {
-  addSymphonies,
-  getSymphoniesByCompositorId,
-  deleteAllSymphonyIds,
 };

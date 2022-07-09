@@ -5,7 +5,7 @@ const PremiereTag = require("../entities/PremiereTag");
 // Describe
 // Adds premiere tags to table,
 // returns saved count
-const addPremiereTags = async (premiereTags) => {
+export const addPremiereTags = async (premiereTags) => {
   let addedCount = 0;
   const premiereTagRepo = getRepository(PremiereTag);
 
@@ -25,7 +25,7 @@ const addPremiereTags = async (premiereTags) => {
 
 // Describe
 // Get all premiere tags
-const getAllPremiereTags = async () => {
+export const getAllPremiereTags = async () => {
   const repo = getRepository(PremiereTag);
   const result = await repo.find();
   return result;
@@ -33,7 +33,7 @@ const getAllPremiereTags = async () => {
 
 // Describe
 // Get premiere tag by name
-const getPremiereTagByName = async (name) => {
+export const getPremiereTagByName = async (name: string) => {
   const repo = getRepository(PremiereTag);
   const result = await repo.findOne({ name: name });
   return result;
@@ -42,16 +42,9 @@ const getPremiereTagByName = async (name) => {
 // Describe
 // Deletes all premiere tags from table,
 // returns deleted count
-const deleteAllPremiereTags = async () => {
+export const deleteAllPremiereTags = async () => {
   const repo = getRepository(PremiereTag);
 
   const result = await repo.delete({});
   return result.affected;
-};
-
-module.exports = {
-  addPremiereTags,
-  getAllPremiereTags,
-  getPremiereTagByName,
-  deleteAllPremiereTags,
 };

@@ -1,13 +1,13 @@
-const { getRepository } = require("typeorm");
+import { getRepository } from "typeorm";
 
-const Arrangers = require("../entities/Arrangers");
-const Musician = require("../entities/Musician");
-const ConcertPerformance = require("../entities/SymphonyPerformance");
+import Arrangers from "../entities/Arrangers";
+import Musician from "../entities/Musician";
+import ConcertPerformance from "../entities/SymphonyPerformance";
 
 // Describe
 // Adds musicians to table from an array of names,
 // filters duplicates, returns saved count
-const addMusicians = async (musicianNames) => {
+export const addMusicians = async (musicianNames: string[]) => {
   const repo = getRepository(Musician);
 
   let objects = [];
@@ -44,7 +44,7 @@ const addMusicians = async (musicianNames) => {
 
 // Describe
 // Gets all compositor musicians from table
-const getAllCompositors = async () => {
+export const getAllCompositors = async () => {
   const repo = getRepository(ConcertPerformance);
   const response = await repo.find({ relations: ["compositors"] });
 
@@ -64,8 +64,8 @@ const getAllCompositors = async () => {
 
 // Describe
 // Search compositors by the starting letter
-const searchCompositorsByStartingLetter = async (lettersArr) => {
-  const regexString = (string) => `^${string}`;
+export const searchCompositorsByStartingLetter = async (lettersArr: string[]) => {
+  const regexString = (str: string) => `^${str}`;
   const regexArr = lettersArr.map((x) => new RegExp(regexString(x), "i"));
 
   const response = await getAllCompositors();
@@ -78,7 +78,7 @@ const searchCompositorsByStartingLetter = async (lettersArr) => {
 
 // Describe
 // Gets all conductor musicians from table
-const getAllConductors = async () => {
+export const getAllConductors = async () => {
   const repo = getRepository(ConcertPerformance);
   const response = await repo.find({ relations: ["conductors"] });
 
@@ -98,7 +98,7 @@ const getAllConductors = async () => {
 
 // Describe
 // Gets all arrangers
-const getAllArrangers = async () => {
+export const getAllArrangers = async () => {
   const repo = getRepository(Arrangers);
   const response = await repo.find();
   return response;
@@ -107,18 +107,9 @@ const getAllArrangers = async () => {
 // Describe
 // Deletes all musicians from table,
 // returns deleted count
-const deleteAllMusicians = async () => {
+export const deleteAllMusicians = async () => {
   const repo = getRepository(Musician);
 
   const result = await repo.delete({});
   return result.affected;
-};
-
-module.exports = {
-  addMusicians,
-  getAllCompositors,
-  getAllConductors,
-  getAllArrangers,
-  searchCompositorsByStartingLetter,
-  deleteAllMusicians,
 };

@@ -5,7 +5,7 @@ const Orchestra = require("../entities/Orchestra");
 // Describe
 // Adds orchestries to table,
 // returns saved count
-const addOrchestries = async (orchestraNames) => {
+export const addOrchestries = async (orchestraNames: string[]) => {
   const repo = getRepository(Orchestra);
 
   const objects = orchestraNames.map((x) => {
@@ -21,11 +21,9 @@ const addOrchestries = async (orchestraNames) => {
 // Describe
 // Deletes all orchestries from table,
 // returns deleted count
-const deleteAllOrchestries = async () => {
+export const deleteAllOrchestries = async () => {
   const repo = getRepository(Orchestra);
 
   const result = await repo.delete({});
   return result.affected;
 };
-
-module.exports = { addOrchestries, deleteAllOrchestries };

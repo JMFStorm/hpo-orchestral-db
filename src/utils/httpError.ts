@@ -1,4 +1,4 @@
-const httpError = (message, statusCode) => {
+const httpError = (message: any, statusCode: number) => {
   return {
     statusCode: statusCode,
     message: message,

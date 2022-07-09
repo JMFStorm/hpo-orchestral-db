@@ -28,7 +28,7 @@ const allPerformanceRelations = [
 // Describe
 // Adds concert & soloist performances to table,
 // returns saved count
-const addPerformances = async (symphonies) => {
+export const addPerformances = async (symphonies) => {
   const arrangerRepo = getRepository(Arrangers);
   const concertRepo = getRepository(Concert);
   const symphonyRepo = getRepository(Symphony);
@@ -128,38 +128,15 @@ const addPerformances = async (symphonies) => {
 
 // Describe
 // Get all performances
-const getAllPerformances = async () => {
+export const getAllPerformances = async () => {
   const repo = getRepository(ConcertPerformance);
   const result = await repo.find({ relations: allPerformanceRelations });
   return result;
 };
 
 // Describe
-// Get all performances with search params
-const getPerformancesSearch = async ({ compositorId, conductorId }) => {
-  const repo = getRepository(ConcertPerformance);
-
-  // Create query object
-  let whereQuery = {};
-
-  if (compositorId) {
-    whereQuery.compositor = { id: compositorId };
-  }
-  if (conductorId) {
-    whereQuery.conductor = { id: conductorId };
-  }
-
-  const result = await repo.find({
-    where: whereQuery,
-    relations: allPerformanceRelations,
-  });
-
-  return result;
-};
-
-// Describe
 // Get performances by performance id
-const getPerformancesByPerformanceId = async (performaceId) => {
+export const getPerformancesByPerformanceId = async (performaceId: string) => {
   const repo = getRepository(ConcertPerformance);
 
   const result = await repo.find({
@@ -172,7 +149,7 @@ const getPerformancesByPerformanceId = async (performaceId) => {
 
 // Describe
 // Get performances by conductor id
-const getPerformancesByConductorId = async (conductorId) => {
+export const getPerformancesByConductorId = async (conductorId: string) => {
   const repo = getRepository(ConcertPerformance);
 
   const result = await repo.find({
@@ -185,7 +162,7 @@ const getPerformancesByConductorId = async (conductorId) => {
 
 // Describe
 // Get performances by compositor id
-const getPerformancesByCompositorId = async (compositorId) => {
+export const getPerformancesByCompositorId = async (compositorId: string) => {
   const repo = getRepository(ConcertPerformance);
 
   const result = await repo.find({
@@ -199,7 +176,7 @@ const getPerformancesByCompositorId = async (compositorId) => {
 // Describe
 // Deletes all concert performances from table,
 // returns deleted count
-const deleteAllConcertPerformances = async () => {
+export const deleteAllConcertPerformances = async () => {
   const repo = getRepository(ConcertPerformance);
   const result = await repo.delete({});
   return result.affected;
@@ -208,19 +185,8 @@ const deleteAllConcertPerformances = async () => {
 // Describe
 // Deletes all soloist performances from table,
 // returns deleted count
-const deleteAllSoloistPerformances = async () => {
+export const deleteAllSoloistPerformances = async () => {
   const repo = getRepository(SoloistPerformance);
   const result = await repo.delete({});
   return result.affected;
-};
-
-module.exports = {
-  addPerformances,
-  getAllPerformances,
-  getPerformancesByPerformanceId,
-  getPerformancesByConductorId,
-  getPerformancesByCompositorId,
-  getPerformancesSearch,
-  deleteAllConcertPerformances,
-  deleteAllSoloistPerformances,
 };

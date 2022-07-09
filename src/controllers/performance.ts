@@ -99,4 +99,4 @@ controller.get("/premieretag", async (req, res, next) => {
   }
 });
 
-module.exports = controller;
+export default controller;

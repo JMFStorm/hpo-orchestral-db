@@ -5,7 +5,7 @@ const Location = require("../entities/Location");
 // Describe
 // Adds locations to table,
 // returns saved count
-const addLocations = async (locationNames) => {
+export const addLocations = async (locationNames: string[]) => {
   const repo = getRepository(Location);
 
   const objects = locationNames.map((x) => {
@@ -21,11 +21,9 @@ const addLocations = async (locationNames) => {
 // Describe
 // Deletes all locations from table,
 // returns deleted count
-const deleteAllLocations = async () => {
+export const deleteAllLocations = async () => {
   const repo = getRepository(Location);
 
   const result = await repo.delete({});
   return result.affected;
 };
-
-module.exports = { addLocations, deleteAllLocations };

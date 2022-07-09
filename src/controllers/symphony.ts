@@ -19,4 +19,4 @@ controller.get("/compositor/:compositorid", async (req, res, next) => {
   }
 });
 
-module.exports = controller;
+export default controller;

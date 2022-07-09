@@ -1,16 +1,13 @@
-const typeorm = require("typeorm");
-
-const { connectionConfig } = require("./db/dbConnection");
-const expressApp = require("./app");
-const { serverPort } = require("./utils/config");
+import dbConnection from "./db/dbConnection";
+import expressApp from "./app";
+import { serverPort } from "./utils/config";
 
 // Connect database
-typeorm
-  .createConnection(connectionConfig)
+dbConnection
   .then(async () => {
     console.log("Database connected");
   })
-  .catch((error) => {
+  .catch((error: any) => {
     console.log("Error:", error);
   });
 

@@ -1,25 +1,25 @@
-const { Router } = require("express");
+import { Router } from "express";
 
-const httpError = require("../utils/httpError");
-const { addMusicians, deleteAllMusicians } = require("../managers/musician");
-const { addInstruments, deleteAllInstruments } = require("../managers/instrument");
-const { addSymphonies, deleteAllSymphonyIds } = require("../managers/symphony");
-const { addOrchestries, deleteAllOrchestries } = require("../managers/orchestra");
-const { addLocations, deleteAllLocations } = require("../managers/location");
-const { addConcerts, addConcertTags, deleteAllConcertTags } = require("../managers/concert");
-const {
+import httpError from "../utils/httpError";
+import { addMusicians, deleteAllMusicians } from "../managers/musician";
+import { addInstruments, deleteAllInstruments } from "../managers/instrument";
+import { addSymphonies, deleteAllSymphonyIds } from "../managers/symphony";
+import { addOrchestries, deleteAllOrchestries } from "../managers/orchestra";
+import { addLocations, deleteAllLocations } from "../managers/location";
+import { addConcerts, addConcertTags, deleteAllConcertTags } from "../managers/concert";
+import {
   addPremiereTags,
   getAllPremiereTags,
   deleteAllPremiereTags,
-} = require("../managers/premiereTag");
-const {
+} from "../managers/premiereTag";
+import {
   addPerformances,
   deleteAllConcertPerformances,
   deleteAllSoloistPerformances,
-} = require("../managers/performance");
-const { addArrangers, deleteAllArrangers } = require("../managers/arrangers");
-const { csvDirectoryPath, premiereTags } = require("../utils/config");
-const { csvRowsToObjects } = require("../utils/csvRead");
+} from "../managers/performance";
+import { addArrangers, deleteAllArrangers } from "../managers/arrangers";
+import { csvDirectoryPath, premiereTags } from "../utils/config";
+import { csvRowsToObjects } from "../utils/csvRead";
 
 const controller = Router();
 
@@ -415,4 +415,4 @@ controller.post("/seed", async (req, res, next) => {
   }
 });
 
-module.exports = controller;
+export default controller;

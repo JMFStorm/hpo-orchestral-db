@@ -1,11 +1,11 @@
-const { getRepository } = require("typeorm");
+import { getRepository } from "typeorm";
 
-const Instrument = require("../entities/Instrument");
+import Instrument from "../entities/Instrument";
 
 // Describe
 // Adds instruments to table from an array of names,
 // filters duplicates, returns saved count
-const addInstruments = async (instrumentNames) => {
+export const addInstruments = async (instrumentNames: string[]) => {
   const repo = getRepository(Instrument);
 
   let objects = [];
@@ -45,14 +45,9 @@ const addInstruments = async (instrumentNames) => {
 // Describe
 // Deletes all instruments from table,
 // returns deleted count
-const deleteAllInstruments = async () => {
+export const deleteAllInstruments = async () => {
   const repo = getRepository(Instrument);
 
   const result = await repo.delete({});
   return result.affected;
-};
-
-module.exports = {
-  addInstruments,
-  deleteAllInstruments,
 };

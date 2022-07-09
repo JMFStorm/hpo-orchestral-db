@@ -1,11 +1,11 @@
-const { getRepository } = require("typeorm");
+import { getRepository } from "typeorm";
 
-const Arrangers = require("../entities/Arrangers");
+import Arrangers from "../entities/Arrangers";
 
 // Describe
 // Adds arrangers to table,
 // returns saved count
-const addArrangers = async (arrangerNames) => {
+const addArrangers = async (arrangerNames: string[]) => {
   const repo = getRepository(Arrangers);
 
   const objects = arrangerNames.map((x) => {

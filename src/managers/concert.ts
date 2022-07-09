@@ -1,15 +1,15 @@
-const { getRepository } = require("typeorm");
+import { getRepository } from "typeorm";
 
-const Concert = require("../entities/Concert");
-const ConcertTag = require("../entities/ConcertTag");
-const Location = require("../entities/Location");
-const Orchestra = require("../entities/Orchestra");
-const SymphonyPerformance = require("../entities/SymphonyPerformance");
+import Concert from "../entities/Concert";
+import ConcertTag from "../entities/ConcertTag";
+import Location from "../entities/Location";
+import Orchestra from "../entities/Orchestra";
+import SymphonyPerformance from "../entities/SymphonyPerformance";
 
 // Describe
 // Adds concerts to table
 // returns saved count
-const addConcerts = async (concerts) => {
+export const addConcerts = async (concerts) => {
   let result = [];
 
   let addedCount = 0;
@@ -64,20 +64,22 @@ const addConcerts = async (concerts) => {
 // Describe
 // Adds concert tags to table from an array of names,
 // returns saved count
-const addConcertTags = async (tagNames) => {
+export const addConcertTags = async (tagNames: string[]) => {
   const repo = getRepository(ConcertTag);
+
   const tagObjects = tagNames.map((x) => {
     return {
       name: x,
     };
   });
+
   const result = await repo.save(tagObjects);
   return result.length;
 };
 
 // Describe
 // Search concerts by symphony id
-const getConcertsBySymphonyId = async (symphonyId) => {
+export const getConcertsBySymphonyId = async (symphonyId: string) => {
   const repo = getRepository(SymphonyPerformance);
 
   const response = await repo.find({
@@ -85,7 +87,6 @@ const getConcertsBySymphonyId = async (symphonyId) => {
   });
 
   const filtered = response.filter((x) => x.symphony.id === symphonyId);
-
   const concertIds = filtered.map((x) => x.concert.id);
 
   const idQuery = concertIds.map((x) => {
@@ -107,16 +108,9 @@ const getConcertsBySymphonyId = async (symphonyId) => {
 // Describe
 // Deletes all concert tags from table,
 // returns deleted count
-const deleteAllConcertTags = async () => {
+export const deleteAllConcertTags = async () => {
   const repo = getRepository(ConcertTag);
 
   const result = await repo.delete({});
   return result.affected;
-};
-
-module.exports = {
-  addConcerts,
-  addConcertTags,
-  getConcertsBySymphonyId,
-  deleteAllConcertTags,
 };

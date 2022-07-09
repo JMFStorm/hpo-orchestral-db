@@ -1,19 +1,18 @@
-const express = require("express");
-const cors = require("cors");
-const path = require("path");
+import express from "express";
+import cors from "cors";
+import path from "path";
 
-const databaseController = require("./controllers/database");
-const performanceController = require("./controllers/performance");
-const musicianController = require("./controllers/musician");
-const symphonyController = require("./controllers/symphony");
-const concertController = require("./controllers/concert");
-const errorHandler = require("./middleware/errorHandler");
+import databaseController from "./controllers/database";
+import performanceController from "./controllers/performance";
+import musicianController from "./controllers/musician";
+import symphonyController from "./controllers/symphony";
+import concertController from "./controllers/concert";
+import errorHandler from "./middleware/errorHandler";
 
 const app = express();
 
 // Use cors
 app.use(cors());
-app.options("*", cors());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -33,4 +32,4 @@ app.use("/api/concert", concertController);
 // Use error handler endpoint
 app.use(errorHandler);
 
-module.exports = app;
+export default app;
