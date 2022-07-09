@@ -1,33 +1,20 @@
-const EntitySchema = require("typeorm").EntitySchema;
+import { BaseEntity, ManyToMany, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
-module.exports = new EntitySchema({
-  name: "soloist_performance",
-  tableName: "soloist_performances",
-  columns: {
-    id: {
-      primary: true,
-      type: "uuid",
-      generated: "uuid",
-    },
-  },
-  relations: {
-    soloist: {
-      target: "musician",
-      type: "many-to-one",
-      cascade: true,
-      onDelete: "CASCADE",
-    },
-    instrument: {
-      target: "instrument",
-      type: "many-to-one",
-      cascade: true,
-      onDelete: "CASCADE",
-    },
-    concert_performance: {
-      target: "symphony_performance",
-      type: "many-to-many",
-      cascade: true,
-      onDelete: "CASCADE",
-    },
-  },
-});
+import Musician from "./Musician";
+import Instrument from "./Instrument";
+import SymphonyPerformance from "./SymphonyPerformance";
+
+@Entity("soloist_performance", { name: "soloist_performances" })
+export default class SoloistPerformance extends BaseEntity {
+  @PrimaryGeneratedColumn("uuid")
+  id: string;
+
+  @ManyToOne(() => Musician, { onDelete: "CASCADE" })
+  soloist: Musician;
+
+  @ManyToOne(() => Instrument, { onDelete: "CASCADE" })
+  instrument: Instrument;
+
+  @ManyToMany(() => SymphonyPerformance, { onDelete: "CASCADE" })
+  symphony_performance: SymphonyPerformance;
+}

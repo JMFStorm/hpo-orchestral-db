@@ -1,48 +1,43 @@
-const EntitySchema = require("typeorm").EntitySchema;
+import {
+  BaseEntity,
+  Column,
+  OneToMany,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  Timestamp,
+} from "typeorm";
 
-module.exports = new EntitySchema({
-  name: "concert",
-  tableName: "concerts",
-  columns: {
-    id: {
-      primary: true,
-      type: "uuid",
-      generated: "uuid",
-    },
-    concert_id: {
-      type: "varchar",
-    },
-    date: {
-      type: "date",
-    },
-    starting_time: {
-      type: "time",
-      nullable: true,
-    },
-  },
-  relations: {
-    location: {
-      target: "location",
-      type: "many-to-one",
-      cascade: true,
-      onDelete: "CASCADE",
-    },
-    orchestra: {
-      target: "orchestra",
-      type: "many-to-one",
-      cascade: true,
-      onDelete: "CASCADE",
-    },
-    concert_tag: {
-      target: "concert_tag",
-      type: "many-to-one",
-      cascade: true,
-      onDelete: "CASCADE",
-    },
-    concert_performances: {
-      target: "symphony_performance",
-      type: "one-to-many",
-      cascade: true,
-    },
-  },
-});
+import Location from "./Location";
+import Orchestra from "./Orchestra";
+import ConcertTag from "./ConcertTag";
+import SymphonyPerformance from "./SymphonyPerformance";
+
+@Entity("concert", { name: "concerts" })
+export default class Concert extends BaseEntity {
+  @PrimaryGeneratedColumn("uuid")
+  id: string;
+
+  @Column()
+  concert_id: string;
+
+  @Column()
+  date: Date;
+
+  @Column({ nullable: true })
+  starting_time: Timestamp;
+
+  @ManyToOne(() => Location, { onDelete: "CASCADE" })
+  location: Location;
+
+  @ManyToOne(() => Orchestra, { onDelete: "CASCADE" })
+  orchestra: Orchestra;
+
+  @ManyToOne(() => ConcertTag, { onDelete: "CASCADE" })
+  concert_tag: ConcertTag;
+
+  @OneToMany(() => SymphonyPerformance, (symphony_performance) => symphony_performance.concert, {
+    onDelete: "CASCADE",
+  })
+  symphony_performance: SymphonyPerformance;
+}

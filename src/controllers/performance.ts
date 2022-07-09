@@ -1,14 +1,13 @@
-const { Router } = require("express");
+import { Router } from "express";
 
-const httpError = require("../utils/httpError");
-const { getAllPremiereTags } = require("../managers/premiereTag");
-const {
+import httpError from "../utils/httpError";
+import { getAllPremiereTags } from "../managers/premiereTag";
+import {
   getAllPerformances,
   getPerformancesByPerformanceId,
   getPerformancesByConductorId,
   getPerformancesByCompositorId,
-  getPerformancesSearch,
-} = require("../managers/performance");
+} from "../managers/performance";
 
 const controller = Router();
 
@@ -31,23 +30,6 @@ controller.get("/:id", async (req, res, next) => {
   try {
     const performaceId = req.params.id;
     const response = await getPerformancesByPerformanceId(performaceId);
-
-    return res.send(response);
-  } catch (err) {
-    console.error("err", err);
-    return next(httpError(err, 404));
-  }
-});
-
-// Describe
-// Get all performances with search params
-controller.get("/search", async (req, res, next) => {
-  try {
-    const compositorId = req.query.compositorId;
-    const conductorId = req.query.conductorId;
-
-    const searchParams = { compositorId, conductorId };
-    const response = await getPerformancesSearch(searchParams);
 
     return res.send(response);
   } catch (err) {

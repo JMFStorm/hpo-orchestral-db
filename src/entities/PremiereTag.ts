@@ -1,16 +1,10 @@
-const EntitySchema = require("typeorm").EntitySchema;
+import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
-module.exports = new EntitySchema({
-  name: "premiere_tag",
-  tableName: "premiere_tags",
-  columns: {
-    id: {
-      primary: true,
-      type: "uuid",
-      generated: "uuid",
-    },
-    name: {
-      type: "varchar",
-    },
-  },
-});
+@Entity("premiere_tag", { name: "premiere_tags" })
+export default class PremiereTag extends BaseEntity {
+  @PrimaryGeneratedColumn("uuid")
+  id: string;
+
+  @Column()
+  name: string;
+}

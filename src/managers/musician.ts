@@ -1,6 +1,6 @@
 import { getRepository } from "typeorm";
 
-import Arrangers from "../entities/Arrangers";
+import Arrangers from "../entities/Arranger";
 import Musician from "../entities/Musician";
 import ConcertPerformance from "../entities/SymphonyPerformance";
 
@@ -10,7 +10,7 @@ import ConcertPerformance from "../entities/SymphonyPerformance";
 export const addMusicians = async (musicianNames: string[]) => {
   const repo = getRepository(Musician);
 
-  let objects = [];
+  let objects: Partial<Musician>[] = [];
 
   // Filter duplicates and invalid
   musicianNames.forEach((name) => {
@@ -25,7 +25,7 @@ export const addMusicians = async (musicianNames: string[]) => {
     }
   });
 
-  let newObjects = [];
+  let newObjects: Partial<Musician>[] = [];
 
   const existingMusicians = await repo.find({});
 

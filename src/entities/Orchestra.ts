@@ -1,16 +1,10 @@
-const EntitySchema = require("typeorm").EntitySchema;
+import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
-module.exports = new EntitySchema({
-  name: "orchestra",
-  tableName: "orchestries",
-  columns: {
-    id: {
-      primary: true,
-      type: "uuid",
-      generated: "uuid",
-    },
-    name: {
-      type: "varchar",
-    },
-  },
-});
+@Entity("orchestra", { name: "orchestries" })
+export default class Orchestra extends BaseEntity {
+  @PrimaryGeneratedColumn("uuid")
+  id: string;
+
+  @Column()
+  name: string;
+}

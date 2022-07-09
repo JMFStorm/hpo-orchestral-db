@@ -1,5 +1,7 @@
 require("dotenv").config();
 
+import PremiereTagConfig from "src/interfaces/PremiereTagConfig";
+
 export type Environment = string | undefined;
 
 const getServerPort = (env: Environment) => {
@@ -29,7 +31,7 @@ const getCsvDirectoryPath = (env: Environment) => {
   }
 };
 
-export const premiereTags = [
+export const premiereTags: PremiereTagConfig[] = [
   {
     regex: /\(ke.\)/,
     sqlName: "premiere",

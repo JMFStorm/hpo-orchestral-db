@@ -1,10 +1,10 @@
 import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity("location", { name: "locations" })
-export default class Location extends BaseEntity {
+@Entity("arrangers", { name: "arrangers" })
+export default class Arranger extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
   @Column()
-  name: string;
+  names: string;
 }

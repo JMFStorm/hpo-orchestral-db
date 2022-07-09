@@ -1,28 +1,17 @@
-const EntitySchema = require("typeorm").EntitySchema;
+import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
-module.exports = new EntitySchema({
-  name: "musician",
-  tableName: "musicians",
-  columns: {
-    id: {
-      primary: true,
-      type: "uuid",
-      generated: "uuid",
-    },
-    name: {
-      type: "varchar",
-    },
-  },
-  relations: {
-    soloist_performances: {
-      target: "soloist_performance",
-      type: "one-to-many",
-      cascade: true,
-    },
-    concert_performance: {
-      target: "symphony_performance",
-      type: "one-to-many",
-      cascade: true,
-    },
-  },
-});
+import SoloistPerformance from "./SoloistPerformance";
+
+@Entity("musician", { name: "musicians" })
+export default class Musician extends BaseEntity {
+  @PrimaryGeneratedColumn("uuid")
+  id: string;
+
+  @Column()
+  name: string;
+
+  @OneToMany(() => SoloistPerformance, (soloist_performances) => soloist_performances.soloist, {
+    onDelete: "CASCADE",
+  })
+  soloist_performances: SoloistPerformance[];
+}

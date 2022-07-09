@@ -1,11 +1,12 @@
-const { getRepository } = require("typeorm");
+import { getRepository } from "typeorm";
 
-const PremiereTag = require("../entities/PremiereTag");
+import PremiereTagConfig from "src/interfaces/PremiereTagConfig";
+import PremiereTag from "../entities/PremiereTag";
 
 // Describe
 // Adds premiere tags to table,
 // returns saved count
-export const addPremiereTags = async (premiereTags) => {
+export const addPremiereTags = async (premiereTags: PremiereTagConfig[]) => {
   let addedCount = 0;
   const premiereTagRepo = getRepository(PremiereTag);
 

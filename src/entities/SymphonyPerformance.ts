@@ -1,73 +1,44 @@
-const EntitySchema = require("typeorm").EntitySchema;
+import { BaseEntity, ManyToMany, Entity, Column, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
-const { Entity, PrimaryGeneratedColumn, Column, OneToMany } = require("typeorm");
+import Concert from "./Concert";
+import Symphony from "./Symphony";
+import Musician from "./Musician";
+import Arranger from "./Arranger";
+import SoloistPerformance from "./SoloistPerformance";
+import PremiereTag from "./PremiereTag";
 
-module.exports = new EntitySchema({
-  name: "symphony_performance",
-  tableName: "symphony_performances",
-  columns: {
-    id: {
-      primary: true,
-      type: "uuid",
-      generated: "uuid",
-    },
-    order: {
-      type: "int",
-    },
-    footnote: {
-      type: "varchar",
-      nullable: true,
-    },
-    archive_info: {
-      type: "varchar",
-      nullable: true,
-    },
-  },
-  relations: {
-    concert: {
-      target: "concert",
-      type: "many-to-one",
-      cascade: true,
-      treeParent: true,
-    },
-    symphony: {
-      target: "symphony",
-      type: "many-to-one",
-      cascade: true,
-      onDelete: "CASCADE",
-    },
-    conductors: {
-      target: "musician",
-      type: "many-to-many",
-      cascade: true,
-      onDelete: "CASCADE",
-      joinTable: true,
-    },
-    compositors: {
-      target: "musician",
-      type: "many-to-many",
-      cascade: true,
-      onDelete: "CASCADE",
-      joinTable: true,
-    },
-    arrangers: {
-      target: "arrangers",
-      type: "many-to-one",
-      cascade: true,
-      onDelete: "CASCADE",
-    },
-    soloist_performances: {
-      target: "soloist_performance",
-      type: "many-to-many",
-      cascade: true,
-      onDelete: "CASCADE",
-      joinTable: true,
-    },
-    premiere_tag: {
-      target: "premiere_tag",
-      type: "many-to-one",
-      cascade: true,
-      onDelete: "CASCADE",
-    },
-  },
-});
+@Entity("symphony_performance", { name: "symphony_performances" })
+export default class SymphonyPerformance extends BaseEntity {
+  @PrimaryGeneratedColumn("uuid")
+  id: string;
+
+  @Column()
+  order: number;
+
+  @Column()
+  footnote: string;
+
+  @Column()
+  archive_info: string;
+
+  @ManyToOne(() => Concert, { onDelete: "CASCADE" })
+  concert: Concert;
+
+  @ManyToOne(() => Symphony, { onDelete: "CASCADE" })
+  symphony: Symphony;
+
+  @ManyToMany(() => Musician, { onDelete: "CASCADE" })
+  conductors: Musician;
+
+  @ManyToOne(() => Musician, { onDelete: "CASCADE" })
+  compositors: Musician;
+
+  @ManyToOne(() => Arranger, { onDelete: "CASCADE" })
+  arrangers: Arranger;
+
+  @ManyToMany(() => SoloistPerformance, { onDelete: "CASCADE" })
+  soloist_performances: SoloistPerformance;
+
+  @ManyToOne(() => PremiereTag, { onDelete: "CASCADE" })
+  premiere_tag: PremiereTag;
+}

@@ -1,13 +1,13 @@
-const { getRepository } = require("typeorm");
+import { getRepository } from "typeorm";
 
-const PremiereTag = require("../entities/PremiereTag");
-const ConcertPerformance = require("../entities/SymphonyPerformance");
-const SoloistPerformance = require("../entities/SoloistPerformance");
-const Instrument = require("../entities/Instrument");
-const Musician = require("../entities/Musician");
-const Concert = require("../entities/Concert");
-const Symphony = require("../entities/Symphony");
-const Arrangers = require("../entities/Arrangers");
+import PremiereTag from "../entities/PremiereTag";
+import ConcertPerformance from "../entities/SymphonyPerformance";
+import SoloistPerformance from "../entities/SoloistPerformance";
+import Instrument from "../entities/Instrument";
+import Musician from "../entities/Musician";
+import Concert from "../entities/Concert";
+import Symphony from "../entities/Symphony";
+import Arranger from "../entities/Arranger";
 
 // To get all relational tables from performances
 const allPerformanceRelations = [
@@ -29,7 +29,7 @@ const allPerformanceRelations = [
 // Adds concert & soloist performances to table,
 // returns saved count
 export const addPerformances = async (symphonies) => {
-  const arrangerRepo = getRepository(Arrangers);
+  const arrangerRepo = getRepository(Arranger);
   const concertRepo = getRepository(Concert);
   const symphonyRepo = getRepository(Symphony);
   const instrumentRepo = getRepository(Instrument);

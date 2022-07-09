@@ -1,7 +1,7 @@
-const { Router } = require("express");
+import { Router } from "express";
 
-const httpError = require("../utils/httpError");
-const { getConcertsBySymphonyId } = require("../managers/concert");
+import httpError from "../utils/httpError";
+import { getConcertsBySymphonyId } from "../managers/concert";
 
 const controller = Router();
 

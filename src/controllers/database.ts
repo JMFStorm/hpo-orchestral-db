@@ -20,6 +20,11 @@ import {
 import { addArrangers, deleteAllArrangers } from "../managers/arrangers";
 import { csvDirectoryPath, premiereTags } from "../utils/config";
 import { csvRowsToObjects } from "../utils/csvRead";
+import CsvRowObject from "../interfaces/CsvRowObject";
+import SymphonyObject from "src/interfaces/SymphonyObject";
+import ConcertObject from "src/interfaces/ConcertObject";
+import PerformanceObject from "src/interfaces/PerformanceObject";
+import SoloistPerformanceObject from "src/interfaces/SoloistPerformanceObject";
 
 const controller = Router();
 
@@ -27,7 +32,7 @@ const controller = Router();
 // Seed database from stratch with CSV data
 controller.post("/seed", async (req, res, next) => {
   try {
-    let rowObjects = [];
+    let rowObjects: CsvRowObject[] = [];
 
     // Read CSV file
     const csvTestFileName = req.body.csvTestFileName;
@@ -67,7 +72,7 @@ controller.post("/seed", async (req, res, next) => {
     await addPremiereTags(premiereTags);
 
     // Collect musicians from conductors
-    let musicians = [];
+    let musicians: string[] = [];
 
     rowObjects.map((x) => {
       const conductor = x.Kapellimestari.trim();
@@ -119,7 +124,7 @@ controller.post("/seed", async (req, res, next) => {
       }
     });
 
-    let arrangers = [];
+    let arrangers: string[] = [];
 
     // Collect arrangers
     rowObjects
@@ -141,7 +146,7 @@ controller.post("/seed", async (req, res, next) => {
       });
 
     // Collect instruments from soloists
-    let instruments = [];
+    let instruments: string[] = [];
 
     // And collect musicians from soloist
     rowObjects
@@ -176,7 +181,7 @@ controller.post("/seed", async (req, res, next) => {
       });
 
     // Collect symphony ids
-    let symphonies = [];
+    let symphonies: Partial<SymphonyObject>[] = [];
 
     rowObjects.map((row) => {
       const symphonyIdCell = row.TeoksenId;
@@ -204,7 +209,7 @@ controller.post("/seed", async (req, res, next) => {
         }
       }
 
-      const symphonyObj = {
+      const symphonyObj: SymphonyObject = {
         symphony_id: symphonyIdCell,
         name: symphonyName,
       };
@@ -219,7 +224,7 @@ controller.post("/seed", async (req, res, next) => {
     });
 
     // Collect orchestries
-    let orchestraNames = [];
+    let orchestraNames: string[] = [];
 
     rowObjects.map((row) => {
       const orchestra = row.Orkesteri;
@@ -229,7 +234,7 @@ controller.post("/seed", async (req, res, next) => {
     });
 
     // Collect locations
-    let locationNames = [];
+    let locationNames: string[] = [];
 
     rowObjects.map((row) => {
       const location = row.Konserttipaikka;
@@ -239,7 +244,7 @@ controller.post("/seed", async (req, res, next) => {
     });
 
     // Collect concert tags
-    let concertTagNames = [];
+    let concertTagNames: string[] = [];
 
     rowObjects.map((row) => {
       const tag = row.KonsertinNimike.trim();
@@ -249,7 +254,7 @@ controller.post("/seed", async (req, res, next) => {
     });
 
     // Collect concerts
-    let concerts = [];
+    let concerts: ConcertObject[] = [];
 
     rowObjects.map((row) => {
       const concertId = row.KonserttiId.trim();
@@ -260,7 +265,7 @@ controller.post("/seed", async (req, res, next) => {
       const orchestra = row.Orkesteri.trim();
 
       if (!concerts.some((x) => x.concert_id === concertId) && concertId !== "") {
-        const concertObject = {
+        const concertObject: ConcertObject = {
           concert_id: concertId,
           date: date,
           starting_time: time,
@@ -274,12 +279,12 @@ controller.post("/seed", async (req, res, next) => {
 
     // Collect both soloist and concert performances
     // and connect premiere tags
-    let performances = [];
+    let performances: PerformanceObject[] = [];
 
     const premiereTagObjects = await getAllPremiereTags();
 
     rowObjects.map((row) => {
-      const soloistPerformances = [];
+      const soloistPerformances: SoloistPerformanceObject[] = [];
       const soloistsCell = row.Solisti;
 
       // Check for multiple soloists in one cell
@@ -320,7 +325,7 @@ controller.post("/seed", async (req, res, next) => {
       });
 
       const conductorCell = row.Kapellimestari.trim();
-      let conductorsArr = [];
+      let conductorsArr: string[] = [];
 
       // Check for multiple conductors in cell
       // and add them for array
@@ -330,7 +335,7 @@ controller.post("/seed", async (req, res, next) => {
       });
 
       const compositorCell = row.Saveltaja.trim();
-      let compositorsArr = [];
+      let compositorsArr: string[] = [];
 
       // Check for multiple compositors in cell
       // and add them for array
@@ -340,7 +345,7 @@ controller.post("/seed", async (req, res, next) => {
       });
 
       // Initialize defaults
-      let newPerformance = {};
+      let premiereTag = "";
       const symphonyNameCell = row.TeoksenNimi.trim();
 
       // Check for premeiere tag in name cell
@@ -349,7 +354,7 @@ controller.post("/seed", async (req, res, next) => {
           const premiereTagObject = premiereTagObjects.find((x) => x.name === tag.sqlName);
 
           if (premiereTagObject) {
-            newPerformance.premiere_tag = premiereTagObject.name;
+            premiereTag = premiereTagObject.name;
           }
         }
       });
@@ -370,8 +375,8 @@ controller.post("/seed", async (req, res, next) => {
       const footnote = row.TietoaKonsertista ? row.TietoaKonsertista.trim() : "";
       const archiveInfo = row.LisatietoaKonsertista ? row.LisatietoaKonsertista.trim() : "";
 
-      newPerformance = {
-        ...newPerformance,
+      const newPerformance: PerformanceObject = {
+        premiere_tag: premiereTag,
         order: order,
         concertId: concertId,
         symphonyId: symphonyId,

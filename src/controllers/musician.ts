@@ -1,12 +1,12 @@
-const { Router } = require("express");
+import { Router } from "express";
 
-const httpError = require("../utils/httpError");
-const {
+import httpError from "../utils/httpError";
+import {
   getAllCompositors,
   getAllArrangers,
   getAllConductors,
   searchCompositorsByStartingLetter,
-} = require("../managers/musician");
+} from "../managers/musician";
 
 const controller = Router();
 
@@ -27,10 +27,14 @@ controller.get("/compositor", async (req, res, next) => {
 controller.get("/compositor/lettersearch", async (req, res, next) => {
   try {
     let startingLetters = req.query.char;
-    let lettersArr = startingLetters;
+    let lettersArr: string[] = [];
 
-    if (typeof startingLetters == "string" || !startingLetters) {
+    if (typeof startingLetters == "string") {
       lettersArr = [startingLetters];
+    } else if (startingLetters) {
+      lettersArr = startingLetters as string[];
+    } else {
+      lettersArr = [];
     }
 
     const response = await searchCompositorsByStartingLetter(lettersArr);
