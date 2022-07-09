@@ -8,13 +8,11 @@ import Instrument from "../entities/Instrument";
 export const addInstruments = async (instrumentNames: string[]) => {
   const repo = getRepository(Instrument);
 
-  let objects = [];
-  let invalid = 0;
+  let objects: Partial<Instrument>[] = [];
 
   // Filter duplicates and invalid
   instrumentNames.forEach((name) => {
     if (name.trim() === "") {
-      invalid++;
       return;
     }
 
@@ -25,7 +23,7 @@ export const addInstruments = async (instrumentNames: string[]) => {
     }
   });
 
-  let newObjects = [];
+  let newObjects: Partial<Instrument>[] = [];
 
   const existingInstruments = await repo.find({});
 

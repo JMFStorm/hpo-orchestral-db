@@ -1,23 +1,25 @@
-const { getRepository } = require("typeorm");
+import SymphonyObject from "src/interfaces/SymphonyObject";
 
-const Symphony = require("../entities/Symphony");
-const SymphonyPerformance = require("../entities/SymphonyPerformance");
+import { getRepository } from "typeorm";
+
+import Symphony from "../entities/Symphony";
+import SymphonyPerformance from "../entities/SymphonyPerformance";
 
 // Describe
 // Adds symphonies to table,
 // returns saved count
-export const addSymphonies = async (symphonies) => {
+export const addSymphonies = async (symphonies: Partial<SymphonyObject>[]) => {
   let addedCount = 0;
 
   for (const symph of symphonies) {
     const repo = getRepository(Symphony);
 
-    let symphonyObject = null;
     const idObject = { symphony_id: symph.symphony_id, name: symph.name };
     const idExists = await repo.findOne(idObject);
 
     if (!idExists) {
-      symphonyObject = await repo.save(idObject);
+      await repo.save(idObject);
+      addedCount++;
     }
   }
 

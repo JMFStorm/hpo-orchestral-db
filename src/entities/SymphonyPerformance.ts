@@ -28,16 +28,16 @@ export default class SymphonyPerformance extends BaseEntity {
   symphony: Symphony;
 
   @ManyToMany(() => Musician, { onDelete: "CASCADE" })
-  conductors: Musician;
+  conductors: Musician[];
 
-  @ManyToOne(() => Musician, { onDelete: "CASCADE" })
-  compositors: Musician;
+  @ManyToMany(() => Musician, { onDelete: "CASCADE" })
+  compositors: Musician[];
 
   @ManyToOne(() => Arranger, { onDelete: "CASCADE" })
   arrangers: Arranger;
 
   @ManyToMany(() => SoloistPerformance, { onDelete: "CASCADE" })
-  soloist_performances: SoloistPerformance;
+  soloist_performances: SoloistPerformance[];
 
   @ManyToOne(() => PremiereTag, { onDelete: "CASCADE" })
   premiere_tag: PremiereTag;

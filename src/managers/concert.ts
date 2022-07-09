@@ -1,3 +1,4 @@
+import ConcertObject from "src/interfaces/ConcertObject";
 import { getRepository } from "typeorm";
 
 import Concert from "../entities/Concert";
@@ -9,8 +10,8 @@ import SymphonyPerformance from "../entities/SymphonyPerformance";
 // Describe
 // Adds concerts to table
 // returns saved count
-export const addConcerts = async (concerts) => {
-  let result = [];
+export const addConcerts = async (concerts: ConcertObject[]) => {
+  let result: any = [];
 
   let addedCount = 0;
   const concertCount = concerts.length;
@@ -25,9 +26,9 @@ export const addConcerts = async (concerts) => {
     const locationRepo = getRepository(Location);
     const orchestraRepo = getRepository(Orchestra);
 
-    let concertObject = {};
+    let concertObject: Partial<Concert> = {};
 
-    const parseDate = (date) => {
+    const parseDate = (date: string) => {
       const dateArr = date.split(".");
       return `${dateArr[2]}-${dateArr[1]}-${dateArr[0]}`;
     };
@@ -38,7 +39,7 @@ export const addConcerts = async (concerts) => {
     // Parse date and time
     // Recommended date: 1999-01-08 -> January 8, 1999
     concertObject.date = parseDate(concert.date);
-    concertObject.starting_time = concert.starting_time === "" ? null : concert.starting_time;
+    concertObject.starting_time = concert.starting_time;
 
     // Fill fields from existing table rows
     await Promise.all([

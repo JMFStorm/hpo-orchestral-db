@@ -1,12 +1,4 @@
-import {
-  BaseEntity,
-  Column,
-  OneToMany,
-  Entity,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-  Timestamp,
-} from "typeorm";
+import { BaseEntity, Column, OneToMany, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 import Location from "./Location";
 import Orchestra from "./Orchestra";
@@ -22,10 +14,10 @@ export default class Concert extends BaseEntity {
   concert_id: string;
 
   @Column()
-  date: Date;
+  date: string;
 
   @Column({ nullable: true })
-  starting_time: Timestamp;
+  starting_time: string;
 
   @ManyToOne(() => Location, { onDelete: "CASCADE" })
   location: Location;

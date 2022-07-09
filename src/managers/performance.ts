@@ -8,6 +8,9 @@ import Musician from "../entities/Musician";
 import Concert from "../entities/Concert";
 import Symphony from "../entities/Symphony";
 import Arranger from "../entities/Arranger";
+import PerformanceObject from "src/interfaces/PerformanceObject";
+import SoloistPerformanceObject from "src/interfaces/SoloistPerformanceObject";
+import SymphonyPerformance from "../entities/SymphonyPerformance";
 
 // To get all relational tables from performances
 const allPerformanceRelations = [
@@ -28,7 +31,7 @@ const allPerformanceRelations = [
 // Describe
 // Adds concert & soloist performances to table,
 // returns saved count
-export const addPerformances = async (symphonies) => {
+export const addPerformances = async (performances: PerformanceObject[]) => {
   const arrangerRepo = getRepository(Arranger);
   const concertRepo = getRepository(Concert);
   const symphonyRepo = getRepository(Symphony);
@@ -39,14 +42,14 @@ export const addPerformances = async (symphonies) => {
   const soloistPerfRepo = getRepository(SoloistPerformance);
 
   let addedCount = 0;
-  const symphoniesCount = symphonies.length;
+  const performancesCount = performances.length;
 
-  for (const symph of symphonies) {
+  for (const performance of performances) {
     if (addedCount % 50 == 0) {
-      console.log(`Saving performance: (${addedCount}/${symphoniesCount})`);
+      console.log(`Saving performance: (${addedCount}/${performancesCount})`);
     }
 
-    const saveSoloistPerformances = async (performances) => {
+    const saveSoloistPerformances = async (performances: SoloistPerformanceObject[]) => {
       let soloistObjectsArray = [];
 
       // Iterate soloist performances to object array
@@ -64,10 +67,10 @@ export const addPerformances = async (symphonies) => {
         soloistObjectsArray.push(savedSoloistPerf);
       }
 
-      return soloistObjectsArray;
+      return soloistObjectsArray as SoloistPerformance[];
     };
 
-    const setConductorObjectsArray = async (conductorNames) => {
+    const setConductorObjectsArray = async (conductorNames: string[]) => {
       let conductorObjectsArray = [];
 
       for (const name of conductorNames) {
@@ -75,10 +78,10 @@ export const addPerformances = async (symphonies) => {
         conductorObjectsArray.push(conductorObj);
       }
 
-      return conductorObjectsArray;
+      return conductorObjectsArray as Musician[];
     };
 
-    const setCompositorObjectsArray = async (conmpositorNames) => {
+    const setCompositorObjectsArray = async (conmpositorNames: string[]) => {
       let compositorObjectsArray = [];
 
       for (const name of conmpositorNames) {
@@ -86,34 +89,36 @@ export const addPerformances = async (symphonies) => {
         compositorObjectsArray.push(conmpositorObj);
       }
 
-      return compositorObjectsArray;
+      return compositorObjectsArray as Musician[];
     };
 
-    let concertPerfObj = {
-      order: symph.order,
-      footnote: symph.footnote,
-      archive_info: symph.archive_info,
+    let concertPerfObj: Partial<SymphonyPerformance> = {
+      order: Number(performance.order),
+      footnote: performance.footnote,
+      archive_info: performance.archive_info,
     };
 
     // Get all existing fields from tables
     await Promise.all([
       await concertRepo
-        .findOne({ concert_id: symph.concertId })
+        .findOne({ concert_id: performance.concertId })
         .then((x) => (concertPerfObj.concert = x)),
       await symphonyRepo
-        .findOne({ symphony_id: symph.symphonyId })
+        .findOne({ symphony_id: performance.symphonyId })
         .then((x) => (concertPerfObj.symphony = x)),
       await arrangerRepo
-        .findOne({ names: symph.arrangers })
+        .findOne({ names: performance.arrangers })
         .then((x) => (concertPerfObj.arrangers = x)),
       await premiereTagRepo
-        .findOne({ name: symph.premiere_tag })
+        .findOne({ name: performance.premiere_tag })
         .then((x) => (concertPerfObj.premiere_tag = x)),
-      await saveSoloistPerformances(symph.soloist_performances).then(
+      await saveSoloistPerformances(performance.soloist_performances).then(
         (x) => (concertPerfObj.soloist_performances = x)
       ),
-      await setConductorObjectsArray(symph.conductors).then((x) => (concertPerfObj.conductors = x)),
-      await setCompositorObjectsArray(symph.compositors).then(
+      await setConductorObjectsArray(performance.conductors).then(
+        (x) => (concertPerfObj.conductors = x)
+      ),
+      await setCompositorObjectsArray(performance.compositors).then(
         (x) => (concertPerfObj.compositors = x)
       ),
     ]);

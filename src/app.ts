@@ -7,7 +7,7 @@ import performanceController from "./controllers/performance";
 import musicianController from "./controllers/musician";
 import symphonyController from "./controllers/symphony";
 import concertController from "./controllers/concert";
-import errorHandler from "./middleware/errorHandler";
+import { errorHandler } from "./middleware/errorHandler";
 
 const app = express();
 
