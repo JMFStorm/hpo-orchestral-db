@@ -50,6 +50,19 @@ export const addSymphoniesAndRelatedCompositors = async (symphonies: SymphonyObj
 };
 
 // Describe
+// Get symphony by composerId
+export const getSymphoniesByComposerId = async (composerId: string) => {
+  const repo = getRepository(Compositor);
+  const response = await repo.find({
+    where: { id: composerId },
+    relations: ["symphonies"],
+    take: 1,
+  });
+  const result = response?.length > 0 ? response[0].symphonies : undefined;
+  return result;
+};
+
+// Describe
 // Get symphony by csv symphony_id
 export const getSymphonyByCsvId = async (symphonyCsvId: string) => {
   const repo = getRepository(Symphony);

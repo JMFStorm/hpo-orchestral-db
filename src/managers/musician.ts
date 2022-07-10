@@ -1,3 +1,4 @@
+import Compositor from "../entities/Compositor";
 import { getRepository } from "typeorm";
 
 import Arrangers from "../entities/Arranger";
@@ -45,21 +46,9 @@ export const addMusicians = async (musicianNames: string[]) => {
 // Describe
 // Gets all compositor musicians from table
 export const getAllCompositors = async () => {
-  const repo = getRepository(ConcertPerformance);
-  const response = await repo.find({ relations: ["compositors"] });
-
-  const compositors = response
-    .map((x) => x.compositors)
-    .flat(1)
-    .filter((x) => x);
-
-  // Filter array to uniques
-  const filtered = compositors.filter(
-    (current, index, self) =>
-      index === self.findIndex((x) => x.id === current.id && x.name === current.name)
-  );
-
-  return filtered;
+  const repo = getRepository(Compositor);
+  const response = await repo.find();
+  return response;
 };
 
 // Describe
