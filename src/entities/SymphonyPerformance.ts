@@ -8,7 +8,6 @@ import {
   JoinTable,
 } from "typeorm";
 
-import Compositor from "./Compositor";
 import Concert from "./Concert";
 import Symphony from "./Symphony";
 import Musician from "./Musician";
@@ -39,10 +38,6 @@ export default class SymphonyPerformance extends BaseEntity {
   @ManyToMany(() => Musician, { onDelete: "CASCADE" })
   @JoinTable()
   conductors: Musician[];
-
-  @ManyToMany(() => Compositor, { onDelete: "CASCADE" })
-  @JoinTable()
-  compositors: Compositor[];
 
   @ManyToOne(() => Arranger, { onDelete: "CASCADE" })
   arrangers: Arranger;

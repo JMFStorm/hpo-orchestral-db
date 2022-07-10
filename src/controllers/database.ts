@@ -3,7 +3,7 @@ import { Router } from "express";
 import httpError from "../utils/httpError";
 import { addMusicians, deleteAllMusicians } from "../managers/musician";
 import { addInstruments, deleteAllInstruments } from "../managers/instrument";
-import { addSymphonies, deleteAllSymphonyIds } from "../managers/symphony";
+import { addSymphoniesAndRelatedCompositors, deleteAllSymphonyIds } from "../managers/symphony";
 import { addOrchestries, deleteAllOrchestries } from "../managers/orchestra";
 import { addLocations, deleteAllLocations } from "../managers/location";
 import { addConcerts, addConcertTags, deleteAllConcertTags } from "../managers/concert";
@@ -25,7 +25,7 @@ import SymphonyObject from "src/interfaces/SymphonyObject";
 import ConcertObject from "src/interfaces/ConcertObject";
 import PerformanceObject from "src/interfaces/PerformanceObject";
 import SoloistPerformanceObject from "src/interfaces/SoloistPerformanceObject";
-import { addEntitiesByName, deleteAllFromRepo } from "../managers/database";
+import { deleteAllFromRepo } from "../managers/database";
 
 const controller = Router();
 
@@ -74,6 +74,72 @@ controller.post("/seed", async (req, res, next) => {
     // Create premiere tag tables
     await addPremiereTags(premiereTags);
 
+    // Add symphonies
+    let symphoniesWithCompositors: SymphonyObject[] = [];
+
+    rowObjects.map((row) => {
+      // Read compositor
+      let compositorsArr: string[] = [];
+      const compositorCell = row.Saveltaja.trim();
+
+      const regexEmpty = new RegExp("\\*");
+      const regexMultiple = new RegExp("/");
+
+      if (regexEmpty.test(compositorCell) || compositorCell === "") {
+        compositorsArr = [];
+      } else if (regexMultiple.test(compositorCell)) {
+        const compsArr = compositorCell.split("/").map((x) => x.trim());
+        compsArr.forEach((x) => {
+          compositorsArr.push(x.trim());
+        });
+      } else if (compositorCell !== "") {
+        compositorsArr.push(compositorCell.trim());
+      }
+
+      // Read symphony
+      const symphonyIdCell = row.TeoksenId;
+      const symphonyNameCell = row.TeoksenNimi;
+
+      // Determine symphony name
+      let symphonyName = symphonyNameCell;
+
+      // Premiere tag names
+      const premieresRegexList = premiereTags.map((x) => x.regex);
+
+      if (premieresRegexList.some((rx) => rx.test(symphonyNameCell))) {
+        const indexStart = symphonyNameCell.lastIndexOf("(");
+        const indexEnd = symphonyNameCell.lastIndexOf(")");
+
+        if (indexStart < indexEnd) {
+          symphonyName = symphonyNameCell.substring(0, indexStart).trim();
+        } else {
+          console.log(
+            "Something not right with brackets: ",
+            indexStart,
+            indexEnd,
+            symphonyNameCell
+          );
+        }
+      }
+
+      const symphonyObj: SymphonyObject = {
+        symphony_id: symphonyIdCell,
+        name: symphonyName,
+        compositorNames: compositorsArr,
+      };
+
+      if (
+        !symphoniesWithCompositors.some(
+          (x) => x.symphony_id === symphonyObj.symphony_id && x.name === symphonyObj.name
+        )
+      ) {
+        symphoniesWithCompositors.push(symphonyObj);
+      }
+    });
+
+    const addedSymphonies = await addSymphoniesAndRelatedCompositors(symphoniesWithCompositors);
+    console.log(`Added ${addedSymphonies} new symphonies.`);
+
     // Collect musicians from conductors
     let musicians: string[] = [];
 
@@ -95,37 +161,6 @@ controller.post("/seed", async (req, res, next) => {
         });
       } else if (conductor !== "" && !musicians.includes(conductor)) {
         musicians.push(conductor);
-      }
-    });
-
-    // Collect compositors
-    let compositors: string[] = [];
-
-    rowObjects.map((x) => {
-      const compositor = x.Saveltaja.trim();
-
-      // Check for 'empty'
-      const regex1 = new RegExp("\\*");
-
-      if (regex1.test(compositor) || compositor === "") {
-        return;
-      }
-
-      // Check for multiple in one cell
-      const regex2 = new RegExp("/");
-
-      if (regex2.test(compositor)) {
-        const compsArr = compositor.split("/").map((x) => x.trim());
-        compsArr.forEach((x) => {
-          const comp = x.trim();
-
-          if (!compositors.includes(comp)) {
-            compositors.push(comp);
-            return;
-          }
-        });
-      } else if (compositor !== "" && !compositors.includes(compositor)) {
-        compositors.push(compositor);
       }
     });
 
@@ -184,49 +219,6 @@ controller.post("/seed", async (req, res, next) => {
           }
         });
       });
-
-    // Collect symphony ids
-    let symphonies: Partial<SymphonyObject>[] = [];
-
-    rowObjects.map((row) => {
-      const symphonyIdCell = row.TeoksenId;
-      const symphonyNameCell = row.TeoksenNimi;
-
-      // Determine symphony name
-      let symphonyName = symphonyNameCell;
-
-      // Premiere tag names
-      const premieresRegexList = premiereTags.map((x) => x.regex);
-
-      if (premieresRegexList.some((rx) => rx.test(symphonyNameCell))) {
-        const indexStart = symphonyNameCell.lastIndexOf("(");
-        const indexEnd = symphonyNameCell.lastIndexOf(")");
-
-        if (indexStart < indexEnd) {
-          symphonyName = symphonyNameCell.substring(0, indexStart).trim();
-        } else {
-          console.log(
-            "Something not right with brackets: ",
-            indexStart,
-            indexEnd,
-            symphonyNameCell
-          );
-        }
-      }
-
-      const symphonyObj: SymphonyObject = {
-        symphony_id: symphonyIdCell,
-        name: symphonyName,
-      };
-
-      if (
-        !symphonies.some(
-          (x) => x.symphony_id === symphonyObj.symphony_id && x.name === symphonyObj.name
-        )
-      ) {
-        symphonies.push(symphonyObj);
-      }
-    });
 
     // Collect orchestries
     let orchestraNames: string[] = [];
@@ -401,11 +393,13 @@ controller.post("/seed", async (req, res, next) => {
     // Save all 'loosely' collected
     console.log("Saving 'loose' tables...");
     Promise.all([
-      await addEntitiesByName(compositors, "compositor").then(() =>
+      /*
+      await addEntitiesByName(compositorsArr, "compositor").then(() =>
         console.log("Saved compositors")
       ),
+      */
       await addMusicians(musicians).then(() => console.log("Saved musicians")),
-      await addSymphonies(symphonies).then(() => console.log("Saved symphonies")),
+      ,
       await addInstruments(instruments).then(() => console.log("Saved instruments")),
       await addOrchestries(orchestraNames).then(() => console.log("Saved orchestraNames")),
       await addLocations(locationNames).then(() => console.log("Saved locationNames")),

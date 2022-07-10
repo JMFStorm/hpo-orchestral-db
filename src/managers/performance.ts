@@ -141,9 +141,11 @@ export const addPerformances = async (performances: PerformanceObject[]) => {
       await setConductorObjectsArray(performance.conductors).then(
         (x) => (concertPerfObj.conductors = x)
       ),
+      /*
       await setCompositorObjectsArray(performance.compositors, symphony).then(
         (x) => (concertPerfObj.compositors = x)
       ),
+      */
     ]);
 
     // Save

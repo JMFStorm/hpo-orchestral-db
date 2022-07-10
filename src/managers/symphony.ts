@@ -1,45 +1,59 @@
+import Compositor from "../entities/Compositor";
 import SymphonyObject from "src/interfaces/SymphonyObject";
 
 import { getRepository } from "typeorm";
 
 import Symphony from "../entities/Symphony";
-import SymphonyPerformance from "../entities/SymphonyPerformance";
 
 // Describe
-// Adds symphonies to table,
-// returns saved count
-export const addSymphonies = async (symphonies: Partial<SymphonyObject>[]) => {
+// Get all symphonies
+export const getAllSymphonies = async () => {
+  const repo = getRepository(Symphony);
+  const result = await repo.find({ relations: ["compositors"] });
+  return result;
+};
+
+// Describe
+// Adds symphonies with related compositors
+// return added count
+export const addSymphoniesAndRelatedCompositors = async (symphonies: SymphonyObject[]) => {
   let addedCount = 0;
 
-  for (const symph of symphonies) {
-    const repo = getRepository(Symphony);
+  console.log("symphonies", symphonies);
 
-    const idObject = { symphony_id: symph.symphony_id, name: symph.name };
-    const idExists = await repo.findOne(idObject);
+  const SymphonyRepo = getRepository(Symphony);
+  const compositorRepo = getRepository(Compositor);
 
-    if (!idExists) {
-      await repo.save(idObject);
-      addedCount++;
+  for (const symphony of symphonies) {
+    let compositorObjects: Compositor[] = [];
+
+    for (const compositorName of symphony.compositorNames) {
+      let existingComp = await compositorRepo.findOne({ name: compositorName });
+
+      if (!existingComp) {
+        const newComp: Partial<Compositor> = { name: compositorName };
+        existingComp = await compositorRepo.save(newComp);
+      }
+      compositorObjects.push(existingComp);
     }
+    const newSymphony: Partial<Symphony> = {
+      name: symphony.name,
+      symphony_id: symphony.symphony_id,
+      compositors: compositorObjects,
+    };
+
+    await SymphonyRepo.save(newSymphony);
+    addedCount++;
   }
 
   return addedCount;
 };
 
 // Describe
-// Search symphonies by compositor id
-export const getSymphoniesByCompositorId = async (compositorId: string) => {
-  const repo = getRepository(SymphonyPerformance);
-
-  const response = await repo.find({
-    relations: ["symphony", "compositors"],
-  });
-
-  const relatedPerformances = response.filter((x) =>
-    x.compositors.map((x) => x.id).includes(compositorId)
-  );
-
-  const result = relatedPerformances.map((x) => x.symphony);
+// Get symphony by csv symphony_id
+export const getSymphonyByCsvId = async (symphonyCsvId: string) => {
+  const repo = getRepository(Symphony);
+  const result = repo.findOne({ symphony_id: symphonyCsvId });
   return result;
 };
 

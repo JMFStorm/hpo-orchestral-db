@@ -1,17 +1,15 @@
 import { Router } from "express";
 
+import { getAllSymphonies } from "../managers/symphony";
 import httpError from "../utils/httpError";
-import { getSymphoniesByCompositorId } from "../managers/symphony";
 
 const controller = Router();
 
 // Describe
 // Get symphonies by compositor id
-controller.get("/compositor/:compositorid", async (req, res, next) => {
+controller.get("/", async (req, res, next) => {
   try {
-    const compositorId = req.params.compositorid;
-
-    const response = await getSymphoniesByCompositorId(compositorId);
+    const response = await getAllSymphonies();
     return res.send(response);
   } catch (err) {
     console.error("err", err);
