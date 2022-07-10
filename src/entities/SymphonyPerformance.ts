@@ -1,4 +1,12 @@
-import { BaseEntity, ManyToMany, Entity, Column, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import {
+  BaseEntity,
+  ManyToMany,
+  Entity,
+  Column,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  JoinTable,
+} from "typeorm";
 
 import Concert from "./Concert";
 import Symphony from "./Symphony";
@@ -15,7 +23,7 @@ export default class SymphonyPerformance extends BaseEntity {
   @Column()
   order: number;
 
-  @Column()
+  @Column({ nullable: true })
   footnote: string;
 
   @Column()
@@ -28,15 +36,18 @@ export default class SymphonyPerformance extends BaseEntity {
   symphony: Symphony;
 
   @ManyToMany(() => Musician, { onDelete: "CASCADE" })
+  @JoinTable()
   conductors: Musician[];
 
   @ManyToMany(() => Musician, { onDelete: "CASCADE" })
+  @JoinTable()
   compositors: Musician[];
 
   @ManyToOne(() => Arranger, { onDelete: "CASCADE" })
   arrangers: Arranger;
 
   @ManyToMany(() => SoloistPerformance, { onDelete: "CASCADE" })
+  @JoinTable()
   soloist_performances: SoloistPerformance[];
 
   @ManyToOne(() => PremiereTag, { onDelete: "CASCADE" })

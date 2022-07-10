@@ -13,10 +13,10 @@ export default class Concert extends BaseEntity {
   @Column()
   concert_id: string;
 
-  @Column()
+  @Column("date", { nullable: true })
   date: string;
 
-  @Column({ nullable: true })
+  @Column("time", { nullable: true })
   starting_time: string;
 
   @ManyToOne(() => Location, { onDelete: "CASCADE" })

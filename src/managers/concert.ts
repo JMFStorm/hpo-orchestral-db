@@ -39,7 +39,7 @@ export const addConcerts = async (concerts: ConcertObject[]) => {
     // Parse date and time
     // Recommended date: 1999-01-08 -> January 8, 1999
     concertObject.date = parseDate(concert.date);
-    concertObject.starting_time = concert.starting_time;
+    concertObject.starting_time = concert.starting_time !== "" ? concert.starting_time : undefined;
 
     // Fill fields from existing table rows
     await Promise.all([

@@ -70,7 +70,6 @@ controller.post("/seed", async (req, res, next) => {
     console.log("Deleted existing tables.");
 
     // Create premiere tag tables
-    console.log("Creating premiere_tag table with premiere tags:", premiereTags);
     await addPremiereTags(premiereTags);
 
     // Collect musicians from conductors
