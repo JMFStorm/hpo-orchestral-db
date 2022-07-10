@@ -50,10 +50,10 @@ export const addPerformances = async (performances: PerformanceObject[]) => {
       console.log(`Saving performance: (${addedCount}/${performancesCount})`);
     }
 
+    // Soloists
     const saveSoloistPerformances = async (performances: SoloistPerformanceObject[]) => {
       let soloistObjectsArray = [];
 
-      // Iterate soloist performances to object array
       for (const performance of performances) {
         const soloistObj = await musicianRepo.findOne({ name: performance.soloistName });
         const instrumentObj = await instrumentRepo.findOne({ name: performance.instrumentName });
@@ -63,7 +63,6 @@ export const addPerformances = async (performances: PerformanceObject[]) => {
           instrument: instrumentObj,
         };
 
-        // Save soloist performance
         const savedSoloistPerf = await soloistPerfRepo.save(soloistPerfObject);
         soloistObjectsArray.push(savedSoloistPerf);
       }
@@ -82,21 +81,47 @@ export const addPerformances = async (performances: PerformanceObject[]) => {
       return conductorObjectsArray as Musician[];
     };
 
-    const setCompositorObjectsArray = async (conmpositorNames: string[]) => {
-      let compositorObjectsArray = [];
+    // Compositors
+    const setCompositorObjectsArray = async (
+      conmpositorNames: string[],
+      symphony: Symphony | undefined
+    ) => {
+      let compositorObjectsArray: Compositor[] = [];
 
       for (const name of conmpositorNames) {
-        const compositorObj = await compositorRepo.findOne({ names: name });
-        compositorObjectsArray.push(compositorObj);
+        const result = await compositorRepo.find({
+          relations: ["symphonies"],
+          where: {
+            name: name,
+          },
+          take: 1,
+        });
+
+        const compositorObj = result[0];
+
+        // Set symphony for compositors
+        if (
+          compositorObj &&
+          symphony &&
+          !compositorObj.symphonies?.map((x) => x.symphony_id).includes(symphony.symphony_id)
+        ) {
+          compositorObjectsArray.push(compositorObj);
+        }
       }
+
+      console.log("compositorObjectsArray", compositorObjectsArray);
 
       return compositorObjectsArray as Compositor[];
     };
 
+    const symphony = await symphonyRepo.findOne({ symphony_id: performance.symphonyId });
+
+    // Init performance object
     let concertPerfObj: Partial<SymphonyPerformance> = {
       order: Number(performance.order),
       footnote: performance.footnote,
       archive_info: performance.archive_info,
+      symphony: symphony,
     };
 
     // Get all existing fields from tables
@@ -104,9 +129,6 @@ export const addPerformances = async (performances: PerformanceObject[]) => {
       await concertRepo
         .findOne({ concert_id: performance.concertId })
         .then((x) => (concertPerfObj.concert = x)),
-      await symphonyRepo
-        .findOne({ symphony_id: performance.symphonyId })
-        .then((x) => (concertPerfObj.symphony = x)),
       await arrangerRepo
         .findOne({ names: performance.arrangers })
         .then((x) => (concertPerfObj.arrangers = x)),
@@ -119,7 +141,7 @@ export const addPerformances = async (performances: PerformanceObject[]) => {
       await setConductorObjectsArray(performance.conductors).then(
         (x) => (concertPerfObj.conductors = x)
       ),
-      await setCompositorObjectsArray(performance.compositors).then(
+      await setCompositorObjectsArray(performance.compositors, symphony).then(
         (x) => (concertPerfObj.compositors = x)
       ),
     ]);

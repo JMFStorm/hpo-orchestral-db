@@ -1,4 +1,5 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
+import Symphony from "./Symphony";
 
 @Entity("compositor", { name: "compositors" })
 export default class Arranger extends BaseEntity {
@@ -6,5 +7,12 @@ export default class Arranger extends BaseEntity {
   id: string;
 
   @Column()
-  names: string;
+  name: string;
+
+  @ManyToMany(() => Symphony, (symphonies) => symphonies.compositors, {
+    onDelete: "CASCADE",
+    cascade: true,
+  })
+  @JoinTable()
+  symphonies: Symphony[];
 }

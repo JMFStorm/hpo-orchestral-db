@@ -8,7 +8,7 @@ export const addEntitiesByName = async (names: string[], repoName: string) => {
 
   const objects = names.map((x) => {
     return {
-      names: x,
+      name: x,
     };
   });
 
