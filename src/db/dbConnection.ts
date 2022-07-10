@@ -18,6 +18,7 @@ import Concert from "../entities/Concert";
 import ConcertTag from "../entities/ConcertTag";
 import SymphonyPerformance from "../entities/SymphonyPerformance";
 import PremiereTag from "../entities/PremiereTag";
+import Compositor from "../entities/Compositor";
 
 const entitiesList = [
   Arranger,
@@ -31,6 +32,7 @@ const entitiesList = [
   ConcertTag,
   SymphonyPerformance,
   PremiereTag,
+  Compositor,
 ];
 
 const configDev: ConnectionOptions = {

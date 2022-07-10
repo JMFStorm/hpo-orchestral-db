@@ -10,6 +10,7 @@ import Symphony from "../entities/Symphony";
 import Arranger from "../entities/Arranger";
 import PerformanceObject from "src/interfaces/PerformanceObject";
 import SoloistPerformanceObject from "src/interfaces/SoloistPerformanceObject";
+import Compositor from "../entities/Compositor";
 
 // To get all relational tables from performances
 const allPerformanceRelations = [
@@ -36,6 +37,7 @@ export const addPerformances = async (performances: PerformanceObject[]) => {
   const symphonyRepo = getRepository(Symphony);
   const instrumentRepo = getRepository(Instrument);
   const musicianRepo = getRepository(Musician);
+  const compositorRepo = getRepository(Compositor);
   const premiereTagRepo = getRepository(PremiereTag);
   const concertPerfRepo = getRepository(SymphonyPerformance);
   const soloistPerfRepo = getRepository(SoloistPerformance);
@@ -84,11 +86,11 @@ export const addPerformances = async (performances: PerformanceObject[]) => {
       let compositorObjectsArray = [];
 
       for (const name of conmpositorNames) {
-        const conmpositorObj = await musicianRepo.findOne({ name: name });
-        compositorObjectsArray.push(conmpositorObj);
+        const compositorObj = await compositorRepo.findOne({ names: name });
+        compositorObjectsArray.push(compositorObj);
       }
 
-      return compositorObjectsArray as Musician[];
+      return compositorObjectsArray as Compositor[];
     };
 
     let concertPerfObj: Partial<SymphonyPerformance> = {

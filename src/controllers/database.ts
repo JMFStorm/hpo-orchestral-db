@@ -25,6 +25,7 @@ import SymphonyObject from "src/interfaces/SymphonyObject";
 import ConcertObject from "src/interfaces/ConcertObject";
 import PerformanceObject from "src/interfaces/PerformanceObject";
 import SoloistPerformanceObject from "src/interfaces/SoloistPerformanceObject";
+import { addEntitiesByName, deleteAllFromRepo } from "../managers/database";
 
 const controller = Router();
 
@@ -55,6 +56,7 @@ controller.post("/seed", async (req, res, next) => {
 
     // Delete existing data
     Promise.all([
+      await deleteAllFromRepo("compositor"),
       await deleteAllConcertPerformances(),
       await deleteAllSoloistPerformances(),
       await deleteAllMusicians(),
@@ -96,7 +98,9 @@ controller.post("/seed", async (req, res, next) => {
       }
     });
 
-    // Collect musicians from compositors
+    // Collect compositors
+    let compositors: string[] = [];
+
     rowObjects.map((x) => {
       const compositor = x.Saveltaja.trim();
 
@@ -115,13 +119,13 @@ controller.post("/seed", async (req, res, next) => {
         compsArr.forEach((x) => {
           const comp = x.trim();
 
-          if (!musicians.includes(comp)) {
-            musicians.push(comp);
+          if (!compositors.includes(comp)) {
+            compositors.push(comp);
             return;
           }
         });
-      } else if (compositor !== "" && !musicians.includes(compositor)) {
-        musicians.push(compositor);
+      } else if (compositor !== "" && !compositors.includes(compositor)) {
+        compositors.push(compositor);
       }
     });
 
@@ -397,6 +401,9 @@ controller.post("/seed", async (req, res, next) => {
     // Save all 'loosely' collected
     console.log("Saving 'loose' tables...");
     Promise.all([
+      await addEntitiesByName(compositors, "compositor").then(() =>
+        console.log("Saved compositors")
+      ),
       await addMusicians(musicians).then(() => console.log("Saved musicians")),
       await addSymphonies(symphonies).then(() => console.log("Saved symphonies")),
       await addInstruments(instruments).then(() => console.log("Saved instruments")),
