@@ -19,8 +19,6 @@ export const getAllSymphonies = async () => {
 export const addSymphoniesAndRelatedCompositors = async (symphonies: SymphonyObject[]) => {
   let addedCount = 0;
 
-  console.log("symphonies", symphonies);
-
   const SymphonyRepo = getRepository(Symphony);
   const compositorRepo = getRepository(Compositor);
 
