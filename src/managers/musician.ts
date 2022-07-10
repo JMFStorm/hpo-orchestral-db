@@ -1,9 +1,10 @@
-import Compositor from "../entities/Compositor";
 import { getRepository } from "typeorm";
 
+import Compositor from "../entities/Compositor";
 import Arrangers from "../entities/Arranger";
 import Musician from "../entities/Musician";
 import ConcertPerformance from "../entities/SymphonyPerformance";
+import { sortStringsFunction } from "../utils/functions";
 
 // Describe
 // Adds musicians to table from an array of names,
@@ -47,7 +48,7 @@ export const addMusicians = async (musicianNames: string[]) => {
 // Gets all compositor musicians from table
 export const getAllCompositors = async () => {
   const repo = getRepository(Compositor);
-  const response = await repo.find();
+  const response = await repo.find({ order: { name: "ASC" } });
   return response;
 };
 
@@ -62,7 +63,7 @@ export const searchCompositorsByStartingLetter = async (lettersArr: string[]) =>
   const filteredByStaringLetter = response.filter((comp) =>
     regexArr.some((reg) => reg.test(comp.name))
   );
-  return filteredByStaringLetter;
+  return filteredByStaringLetter.sort((a, b) => sortStringsFunction(a.name, b.name));
 };
 
 // Describe
