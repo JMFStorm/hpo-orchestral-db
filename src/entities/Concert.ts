@@ -1,4 +1,12 @@
-import { BaseEntity, Column, OneToMany, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import {
+  BaseEntity,
+  Column,
+  OneToMany,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  JoinTable,
+} from "typeorm";
 
 import Location from "./Location";
 import Orchestra from "./Orchestra";
@@ -28,8 +36,9 @@ export default class Concert extends BaseEntity {
   @ManyToOne(() => ConcertTag, { onDelete: "CASCADE" })
   concert_tag: ConcertTag;
 
-  @OneToMany(() => SymphonyPerformance, (symphony_performance) => symphony_performance.concert, {
+  @OneToMany(() => SymphonyPerformance, (symphony_performances) => symphony_performances.concert, {
     onDelete: "CASCADE",
   })
-  symphony_performance: SymphonyPerformance;
+  @JoinTable()
+  symphony_performances: SymphonyPerformance[];
 }

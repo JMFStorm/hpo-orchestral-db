@@ -1,9 +1,9 @@
 import Compositor from "../entities/Compositor";
-import SymphonyObject from "src/interfaces/SymphonyObject";
+import SymphonyObject from "../interfaces/SymphonyObject";
+import { sortStringsFunction } from "../utils/functions";
+import Symphony from "../entities/Symphony";
 
 import { getRepository } from "typeorm";
-
-import Symphony from "../entities/Symphony";
 
 // Describe
 // Get all symphonies
@@ -59,7 +59,8 @@ export const getSymphoniesByComposerId = async (composerId: string) => {
     take: 1,
   });
   const result = response?.length > 0 ? response[0].symphonies : undefined;
-  return result;
+
+  return result ? result.sort((a, b) => sortStringsFunction(a.name, b.name)) : [];
 };
 
 // Describe

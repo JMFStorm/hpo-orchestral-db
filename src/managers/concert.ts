@@ -1,11 +1,11 @@
-import ConcertObject from "src/interfaces/ConcertObject";
-import { getRepository } from "typeorm";
+import SymphonyPerformance from "../entities/SymphonyPerformance";
+import ConcertObject from "../interfaces/ConcertObject";
+import { getRepository, Any } from "typeorm";
 
 import Concert from "../entities/Concert";
 import ConcertTag from "../entities/ConcertTag";
 import Location from "../entities/Location";
 import Orchestra from "../entities/Orchestra";
-import SymphonyPerformance from "../entities/SymphonyPerformance";
 
 // Describe
 // Adds concerts to table
@@ -81,29 +81,30 @@ export const addConcertTags = async (tagNames: string[]) => {
 // Describe
 // Search concerts by symphony id
 export const getConcertsBySymphonyId = async (symphonyId: string) => {
-  const repo = getRepository(SymphonyPerformance);
-
-  const response = await repo.find({
-    relations: ["concert", "symphony"],
-  });
-
-  const filtered = response.filter((x) => x.symphony.id === symphonyId);
-  const concertIds = filtered.map((x) => x.concert.id);
-
-  const idQuery = concertIds.map((x) => {
-    return {
-      id: x,
-    };
-  });
-
+  const performanceRepo = getRepository(SymphonyPerformance);
   const concertRepo = getRepository(Concert);
 
-  const result = await concertRepo.find({
-    relations: ["location", "orchestra", "concert_tag"],
-    where: idQuery,
+  const response = await performanceRepo.find({
+    where: { symphony: { id: symphonyId } },
+    relations: ["concert"],
   });
 
-  return result;
+  const concertIds = response.map((x) => x.concert.id);
+
+  // Filter array to uniques
+  const uniqueIds = concertIds.filter(
+    (current, index, self) => index === self.findIndex((x) => x === current)
+  );
+
+  const concerts = await concertRepo.find({
+    where: { id: Any(uniqueIds) },
+    relations: ["location", "orchestra", "concert_tag"],
+    order: {
+      date: "DESC",
+    },
+  });
+
+  return concerts;
 };
 
 // Describe
