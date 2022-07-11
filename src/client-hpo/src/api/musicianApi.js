@@ -15,9 +15,9 @@ const getAllConductors = async () => {
   }
 };
 
-const getAllCompositors = async () => {
+const getAllComposers = async () => {
   try {
-    const url = requestUrl + "compositor";
+    const url = requestUrl + "composer";
     const response = await axios.get(url);
     return response.data;
   } catch (err) {
@@ -25,4 +25,4 @@ const getAllCompositors = async () => {
   }
 };
 
-export { getAllConductors, getAllCompositors };
+export { getAllConductors, getAllComposers };

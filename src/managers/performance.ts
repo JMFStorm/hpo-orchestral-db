@@ -18,7 +18,7 @@ const allPerformanceRelations = [
   "concert.concert_tag",
   "concert.orchestra",
   "symphony",
-  "symphony.compositors",
+  "symphony.composers",
   "conductors",
   "arrangers",
   "premiere_tag",
@@ -151,12 +151,12 @@ export const getPerformancesByConductorId = async (conductorId: string) => {
 };
 
 // Describe
-// Get performances by compositor id
-export const getPerformancesByCompositorId = async (compositorId: string) => {
+// Get performances by composer id
+export const getPerformancesByComposerId = async (composerId: string) => {
   const repo = getRepository(SymphonyPerformance);
 
   const result = await repo.find({
-    where: { compositor: { id: compositorId } },
+    where: { composer: { id: composerId } },
     relations: allPerformanceRelations,
   });
 

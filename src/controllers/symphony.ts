@@ -6,7 +6,7 @@ import httpError from "../utils/httpError";
 const controller = Router();
 
 // Describe
-// Get symphonies by compositor id
+// Get symphonies by composer id
 controller.get("/", async (req, res, next) => {
   try {
     const response = await getAllSymphonies();
@@ -18,8 +18,8 @@ controller.get("/", async (req, res, next) => {
 });
 
 // Describe
-// Get symphonies by compositor id
-controller.get("/compositor/:composerid", async (req, res, next) => {
+// Get symphonies by composer id
+controller.get("/composer/:composerid", async (req, res, next) => {
   try {
     const composerId = req.params.composerid;
 

@@ -6,7 +6,7 @@ import {
   getAllPerformances,
   getPerformancesByPerformanceId,
   getPerformancesByConductorId,
-  getPerformancesByCompositorId,
+  getPerformancesByComposerId,
 } from "../managers/performance";
 
 const controller = Router();
@@ -54,12 +54,12 @@ controller.get("/conductor/:id", async (req, res, next) => {
 });
 
 // Describe
-// Get performances by compositor id
-controller.get("/compositor/:id", async (req, res, next) => {
+// Get performances by composer id
+controller.get("/composer/:id", async (req, res, next) => {
   try {
-    const compositorId = req.params.id;
+    const composerId = req.params.id;
 
-    const response = await getPerformancesByCompositorId(compositorId);
+    const response = await getPerformancesByComposerId(composerId);
 
     return res.send(response);
   } catch (err) {

@@ -2,19 +2,19 @@ import { Router } from "express";
 
 import httpError from "../utils/httpError";
 import {
-  getAllCompositors,
+  getAllcomposers,
   getAllArrangers,
   getAllConductors,
-  searchCompositorsByStartingLetter,
+  searchComposersByStartingLetter,
 } from "../managers/musician";
 
 const controller = Router();
 
 // Describe
-// Get all compositors
-controller.get("/compositor", async (req, res, next) => {
+// Get all composers
+controller.get("/composer", async (req, res, next) => {
   try {
-    const response = await getAllCompositors();
+    const response = await getAllcomposers();
     return res.send(response);
   } catch (err) {
     console.error("err", err);
@@ -23,8 +23,8 @@ controller.get("/compositor", async (req, res, next) => {
 });
 
 // Describe
-// Search compositors with staring letter(s)
-controller.get("/compositor/lettersearch", async (req, res, next) => {
+// Search composers with staring letter(s)
+controller.get("/composer/lettersearch", async (req, res, next) => {
   try {
     let startingLetters = req.query.char;
     let lettersArr: string[] = [];
@@ -37,7 +37,7 @@ controller.get("/compositor/lettersearch", async (req, res, next) => {
       lettersArr = [];
     }
 
-    const response = await searchCompositorsByStartingLetter(lettersArr);
+    const response = await searchComposersByStartingLetter(lettersArr);
     return res.send(response);
   } catch (err) {
     console.error("err", err);

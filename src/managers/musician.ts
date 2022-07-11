@@ -1,6 +1,6 @@
 import { getRepository } from "typeorm";
 
-import Compositor from "../entities/Compositor";
+import Composer from "../entities/Composer";
 import Arrangers from "../entities/Arranger";
 import Musician from "../entities/Musician";
 import ConcertPerformance from "../entities/SymphonyPerformance";
@@ -45,20 +45,20 @@ export const addMusicians = async (musicianNames: string[]) => {
 };
 
 // Describe
-// Gets all compositor musicians from table
-export const getAllCompositors = async () => {
-  const repo = getRepository(Compositor);
+// Gets all composer musicians from table
+export const getAllcomposers = async () => {
+  const repo = getRepository(Composer);
   const response = await repo.find({ order: { name: "ASC" } });
   return response;
 };
 
 // Describe
-// Search compositors by the starting letter
-export const searchCompositorsByStartingLetter = async (lettersArr: string[]) => {
+// Search composers by the starting letter
+export const searchComposersByStartingLetter = async (lettersArr: string[]) => {
   const regexString = (str: string) => `^${str}`;
   const regexArr = lettersArr.map((x) => new RegExp(regexString(x), "i"));
 
-  const response = await getAllCompositors();
+  const response = await getAllcomposers();
 
   const filteredByStaringLetter = response.filter((comp) =>
     regexArr.some((reg) => reg.test(comp.name))

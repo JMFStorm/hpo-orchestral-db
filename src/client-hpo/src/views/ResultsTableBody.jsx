@@ -9,7 +9,7 @@ const ResultsTableBody = (props) => {
         <TableRow key={row.id + row.order}>
           <TableCell align="left">{row.concert.date}</TableCell>
           <TableCell align="left">{row.symphony.name}</TableCell>
-          <TableCell align="left">{row.compositor?.name}</TableCell>
+          <TableCell align="left">{row.composer?.name}</TableCell>
           <TableCell align="left">{row.concert.concert_tag.name}</TableCell>
           <TableCell align="left">{row.conductor?.name}</TableCell>
         </TableRow>

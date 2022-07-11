@@ -3,7 +3,7 @@ import { Router } from "express";
 import httpError from "../utils/httpError";
 import { addMusicians, deleteAllMusicians } from "../managers/musician";
 import { addInstruments, deleteAllInstruments } from "../managers/instrument";
-import { addSymphoniesAndRelatedCompositors, deleteAllSymphonyIds } from "../managers/symphony";
+import { addSymphoniesAndRelatedComposers, deleteAllSymphonyIds } from "../managers/symphony";
 import { addOrchestries, deleteAllOrchestries } from "../managers/orchestra";
 import { addLocations, deleteAllLocations } from "../managers/location";
 import { addConcerts, addConcertTags, deleteAllConcertTags } from "../managers/concert";
@@ -56,7 +56,7 @@ controller.post("/seed", async (req, res, next) => {
 
     // Delete existing data
     Promise.all([
-      await deleteAllFromRepo("compositor"),
+      await deleteAllFromRepo("composer"),
       await deleteAllConcertPerformances(),
       await deleteAllSoloistPerformances(),
       await deleteAllMusicians(),
@@ -75,25 +75,25 @@ controller.post("/seed", async (req, res, next) => {
     await addPremiereTags(premiereTags);
 
     // Add symphonies
-    let symphoniesWithCompositors: SymphonyObject[] = [];
+    let symphoniesWithComposers: SymphonyObject[] = [];
 
     rowObjects.map((row) => {
-      // Read compositor
-      let compositorsArr: string[] = [];
-      const compositorCell = row.Saveltaja.trim();
+      // Read composer
+      let composersArr: string[] = [];
+      const composerCell = row.Saveltaja.trim();
 
       const regexEmpty = new RegExp("\\*");
       const regexMultiple = new RegExp("/");
 
-      if (regexEmpty.test(compositorCell) || compositorCell === "") {
-        compositorsArr = [];
-      } else if (regexMultiple.test(compositorCell)) {
-        const compsArr = compositorCell.split("/").map((x) => x.trim());
+      if (regexEmpty.test(composerCell) || composerCell === "") {
+        composersArr = [];
+      } else if (regexMultiple.test(composerCell)) {
+        const compsArr = composerCell.split("/").map((x) => x.trim());
         compsArr.forEach((x) => {
-          compositorsArr.push(x.trim());
+          composersArr.push(x.trim());
         });
-      } else if (compositorCell !== "") {
-        compositorsArr.push(compositorCell.trim());
+      } else if (composerCell !== "") {
+        composersArr.push(composerCell.trim());
       }
 
       // Read symphony
@@ -125,19 +125,19 @@ controller.post("/seed", async (req, res, next) => {
       const symphonyObj: SymphonyObject = {
         symphony_id: symphonyIdCell,
         name: symphonyName,
-        compositorNames: compositorsArr,
+        composerNames: composersArr,
       };
 
       if (
-        !symphoniesWithCompositors.some(
+        !symphoniesWithComposers.some(
           (x) => x.symphony_id === symphonyObj.symphony_id && x.name === symphonyObj.name
         )
       ) {
-        symphoniesWithCompositors.push(symphonyObj);
+        symphoniesWithComposers.push(symphonyObj);
       }
     });
 
-    const addedSymphonies = await addSymphoniesAndRelatedCompositors(symphoniesWithCompositors);
+    const addedSymphonies = await addSymphoniesAndRelatedComposers(symphoniesWithComposers);
     console.log(`Added ${addedSymphonies} new symphonies.`);
 
     // Collect musicians from conductors
@@ -331,14 +331,14 @@ controller.post("/seed", async (req, res, next) => {
         conductorsArr.push(conductor);
       });
 
-      const compositorCell = row.Saveltaja.trim();
-      let compositorsArr: string[] = [];
+      const composerCell = row.Saveltaja.trim();
+      let composersArr: string[] = [];
 
-      // Check for multiple compositors in cell
+      // Check for multiple composers in cell
       // and add them for array
-      compositorCell.split("/").map((x) => {
-        const compositor = x.trim();
-        compositorsArr.push(compositor);
+      composerCell.split("/").map((x) => {
+        const composer = x.trim();
+        composersArr.push(composer);
       });
 
       // Initialize defaults
@@ -378,7 +378,7 @@ controller.post("/seed", async (req, res, next) => {
         concertId: concertId,
         symphonyId: symphonyId,
         conductors: conductorsArr,
-        compositors: compositorsArr,
+        composers: composersArr,
         arrangers: arranger,
         soloist_performances: soloistPerformances,
         footnote: footnote,
@@ -393,13 +393,7 @@ controller.post("/seed", async (req, res, next) => {
     // Save all 'loosely' collected
     console.log("Saving 'loose' tables...");
     Promise.all([
-      /*
-      await addEntitiesByName(compositorsArr, "compositor").then(() =>
-        console.log("Saved compositors")
-      ),
-      */
       await addMusicians(musicians).then(() => console.log("Saved musicians")),
-      ,
       await addInstruments(instruments).then(() => console.log("Saved instruments")),
       await addOrchestries(orchestraNames).then(() => console.log("Saved orchestraNames")),
       await addLocations(locationNames).then(() => console.log("Saved locationNames")),

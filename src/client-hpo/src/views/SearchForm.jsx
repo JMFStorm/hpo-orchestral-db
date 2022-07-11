@@ -2,13 +2,13 @@ import { useState } from "react";
 import { Button, FormGroup, MenuItem, InputLabel, Select } from "@mui/material";
 
 const SearchForm = (props) => {
-  const { compositors, conductors, submitForm } = props;
+  const { composers, conductors, submitForm } = props;
 
-  const [compositorId, setCompositorId] = useState("");
+  const [composerId, setComposerId] = useState("");
   const [conductorId, setConductorId] = useState("");
 
-  const handleCompositor = (event) => {
-    setCompositorId(event.target.value);
+  const handleComposer = (event) => {
+    setComposerId(event.target.value);
   };
 
   const handleConductor = (event) => {
@@ -16,26 +16,26 @@ const SearchForm = (props) => {
   };
 
   const handleSubmit = () => {
-    submitForm(compositorId, conductorId);
+    submitForm(composerId, conductorId);
   };
 
   return (
     <div className="SearchForm">
       <FormGroup fullwidth={"true"}>
-        {/* Select compositors */}
+        {/* Select composers */}
         <InputLabel>Säveltäjä</InputLabel>
         <Select
           defaultValue=""
-          value={compositorId}
-          labelId="select-compositor"
-          label="Compositor"
-          onChange={handleCompositor}
+          value={composerId}
+          labelId="select-composer"
+          label="Composer"
+          onChange={handleComposer}
         >
           <MenuItem value="">
             <em>Tyhjä</em>
           </MenuItem>
-          {compositors.length > 0 &&
-            compositors
+          {composers.length > 0 &&
+            composers
               .sort((a, b) => {
                 if (a.name < b.name) {
                   return -1;
