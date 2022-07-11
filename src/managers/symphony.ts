@@ -68,13 +68,3 @@ export const getSymphonyByCsvId = async (symphonyCsvId: string) => {
   const result = repo.findOne({ symphony_id: symphonyCsvId });
   return result;
 };
-
-// Describe
-// Deletes all symphonies from table,
-// returns deleted count
-export const deleteAllSymphonyIds = async () => {
-  const repo = getRepository(Symphony);
-
-  const result = await repo.delete({});
-  return result.affected;
-};

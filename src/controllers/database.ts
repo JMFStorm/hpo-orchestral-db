@@ -1,23 +1,15 @@
 import { Router } from "express";
 
 import httpError from "../utils/httpError";
-import { addMusicians, deleteAllMusicians } from "../managers/musician";
-import { addInstruments, deleteAllInstruments } from "../managers/instrument";
-import { addSymphoniesAndRelatedComposers, deleteAllSymphonyIds } from "../managers/symphony";
-import { addOrchestries, deleteAllOrchestries } from "../managers/orchestra";
-import { addLocations, deleteAllLocations } from "../managers/location";
-import { addConcerts, addConcertTags, deleteAllConcertTags } from "../managers/concert";
-import {
-  addPremiereTags,
-  getAllPremiereTags,
-  deleteAllPremiereTags,
-} from "../managers/premiereTag";
-import {
-  addPerformances,
-  deleteAllConcertPerformances,
-  deleteAllSoloistPerformances,
-} from "../managers/performance";
-import { addArrangers, deleteAllArrangers } from "../managers/arrangers";
+import { addMusicians } from "../managers/musician";
+import { addInstruments } from "../managers/instrument";
+import { addSymphoniesAndRelatedComposers } from "../managers/symphony";
+import { addOrchestries } from "../managers/orchestra";
+import { addLocations } from "../managers/location";
+import { addConcerts, addConcertTags } from "../managers/concert";
+import { addPremiereTags, getAllPremiereTags } from "../managers/premiereTag";
+import { addPerformances } from "../managers/performance";
+import { addArrangers } from "../managers/arrangers";
 import { csvDirectoryPath, premiereTags } from "../utils/config";
 import { csvRowsToObjects } from "../utils/csvRead";
 import CsvRowObject from "../interfaces/CsvRowObject";
@@ -39,6 +31,7 @@ controller.post("/seed", async (req, res, next) => {
     const csvTestFileName = req.body.csvTestFileName;
 
     if (csvTestFileName) {
+      // Read test csv from filepath
       const csvPath = csvDirectoryPath + csvTestFileName;
       console.log(`Using ${csvPath} as a test seed filepath`);
       rowObjects = await csvRowsToObjects(csvPath);
@@ -56,17 +49,18 @@ controller.post("/seed", async (req, res, next) => {
 
     // Delete existing data
     Promise.all([
+      await deleteAllFromRepo("arranger"),
       await deleteAllFromRepo("composer"),
-      await deleteAllConcertPerformances(),
-      await deleteAllSoloistPerformances(),
-      await deleteAllMusicians(),
-      await deleteAllInstruments(),
-      await deleteAllSymphonyIds(),
-      await deleteAllOrchestries(),
-      await deleteAllLocations(),
-      await deleteAllConcertTags(),
-      await deleteAllPremiereTags(),
-      await deleteAllArrangers(),
+      await deleteAllFromRepo("concert"),
+      await deleteAllFromRepo("concert_tag"),
+      await deleteAllFromRepo("instrument"),
+      await deleteAllFromRepo("location"),
+      await deleteAllFromRepo("musician"),
+      await deleteAllFromRepo("orchestra"),
+      await deleteAllFromRepo("performance"),
+      await deleteAllFromRepo("premiere_tag"),
+      await deleteAllFromRepo("soloist_performance"),
+      await deleteAllFromRepo("symphony"),
     ]);
 
     console.log("Deleted existing tables.");

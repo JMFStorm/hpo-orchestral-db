@@ -17,13 +17,3 @@ export const addOrchestries = async (orchestraNames: string[]) => {
   const res = await repo.save(objects);
   return res.length;
 };
-
-// Describe
-// Deletes all orchestries from table,
-// returns deleted count
-export const deleteAllOrchestries = async () => {
-  const repo = getRepository(Orchestra);
-
-  const result = await repo.delete({});
-  return result.affected;
-};

@@ -1,7 +1,7 @@
 import { getRepository } from "typeorm";
 
 import PremiereTag from "../entities/PremiereTag";
-import SymphonyPerformance from "../entities/SymphonyPerformance";
+import Performance from "../entities/Performance";
 import SoloistPerformance from "../entities/SoloistPerformance";
 import Instrument from "../entities/Instrument";
 import Musician from "../entities/Musician";
@@ -37,7 +37,7 @@ export const addPerformances = async (performances: PerformanceObject[]) => {
   const instrumentRepo = getRepository(Instrument);
   const musicianRepo = getRepository(Musician);
   const premiereTagRepo = getRepository(PremiereTag);
-  const concertPerfRepo = getRepository(SymphonyPerformance);
+  const concertPerfRepo = getRepository(Performance);
   const soloistPerfRepo = getRepository(SoloistPerformance);
 
   let addedCount = 0;
@@ -82,7 +82,7 @@ export const addPerformances = async (performances: PerformanceObject[]) => {
     const symphony = await symphonyRepo.findOne({ symphony_id: performance.symphonyId });
 
     // Init performance object
-    let concertPerfObj: Partial<SymphonyPerformance> = {
+    let concertPerfObj: Partial<Performance> = {
       order: Number(performance.order),
       footnote: performance.footnote,
       archive_info: performance.archive_info,
@@ -119,7 +119,7 @@ export const addPerformances = async (performances: PerformanceObject[]) => {
 // Describe
 // Get all performances
 export const getAllPerformances = async () => {
-  const repo = getRepository(SymphonyPerformance);
+  const repo = getRepository(Performance);
   const result = await repo.find({ relations: allPerformanceRelations });
   return result;
 };
@@ -127,7 +127,7 @@ export const getAllPerformances = async () => {
 // Describe
 // Get performances by performance id
 export const getPerformancesByPerformanceId = async (performaceId: string) => {
-  const repo = getRepository(SymphonyPerformance);
+  const repo = getRepository(Performance);
 
   const result = await repo.find({
     where: { id: performaceId },
@@ -140,7 +140,7 @@ export const getPerformancesByPerformanceId = async (performaceId: string) => {
 // Describe
 // Get performances by conductor id
 export const getPerformancesByConductorId = async (conductorId: string) => {
-  const repo = getRepository(SymphonyPerformance);
+  const repo = getRepository(Performance);
 
   const result = await repo.find({
     where: { conductor: { id: conductorId } },
@@ -153,7 +153,7 @@ export const getPerformancesByConductorId = async (conductorId: string) => {
 // Describe
 // Get performances by composer id
 export const getPerformancesByComposerId = async (composerId: string) => {
-  const repo = getRepository(SymphonyPerformance);
+  const repo = getRepository(Performance);
 
   const result = await repo.find({
     where: { composer: { id: composerId } },
@@ -161,22 +161,4 @@ export const getPerformancesByComposerId = async (composerId: string) => {
   });
 
   return result;
-};
-
-// Describe
-// Deletes all concert performances from table,
-// returns deleted count
-export const deleteAllConcertPerformances = async () => {
-  const repo = getRepository(SymphonyPerformance);
-  const result = await repo.delete({});
-  return result.affected;
-};
-
-// Describe
-// Deletes all soloist performances from table,
-// returns deleted count
-export const deleteAllSoloistPerformances = async () => {
-  const repo = getRepository(SoloistPerformance);
-  const result = await repo.delete({});
-  return result.affected;
 };

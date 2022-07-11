@@ -15,8 +15,8 @@ import Arranger from "./Arranger";
 import SoloistPerformance from "./SoloistPerformance";
 import PremiereTag from "./PremiereTag";
 
-@Entity("symphony_performance", { name: "symphony_performances" })
-export default class SymphonyPerformance extends BaseEntity {
+@Entity("performance", { name: "performances" })
+export default class Performance extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 

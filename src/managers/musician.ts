@@ -3,7 +3,7 @@ import { getRepository } from "typeorm";
 import Composer from "../entities/Composer";
 import Arrangers from "../entities/Arranger";
 import Musician from "../entities/Musician";
-import ConcertPerformance from "../entities/SymphonyPerformance";
+import ConcertPerformance from "../entities/Performance";
 import { sortStringsFunction } from "../utils/functions";
 
 // Describe
@@ -92,14 +92,4 @@ export const getAllArrangers = async () => {
   const repo = getRepository(Arrangers);
   const response = await repo.find();
   return response;
-};
-
-// Describe
-// Deletes all musicians from table,
-// returns deleted count
-export const deleteAllMusicians = async () => {
-  const repo = getRepository(Musician);
-
-  const result = await repo.delete({});
-  return result.affected;
 };

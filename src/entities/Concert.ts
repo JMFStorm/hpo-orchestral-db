@@ -11,7 +11,7 @@ import {
 import Location from "./Location";
 import Orchestra from "./Orchestra";
 import ConcertTag from "./ConcertTag";
-import SymphonyPerformance from "./SymphonyPerformance";
+import Performance from "./Performance";
 
 @Entity("concert", { name: "concerts" })
 export default class Concert extends BaseEntity {
@@ -36,9 +36,9 @@ export default class Concert extends BaseEntity {
   @ManyToOne(() => ConcertTag, { onDelete: "CASCADE" })
   concert_tag: ConcertTag;
 
-  @OneToMany(() => SymphonyPerformance, (symphony_performances) => symphony_performances.concert, {
+  @OneToMany(() => Performance, (performances) => performances.concert, {
     onDelete: "CASCADE",
   })
   @JoinTable()
-  symphony_performances: SymphonyPerformance[];
+  performances: Performance[];
 }

@@ -16,7 +16,7 @@ import Orchestra from "../entities/Orchestra";
 import Location from "../entities/Location";
 import Concert from "../entities/Concert";
 import ConcertTag from "../entities/ConcertTag";
-import SymphonyPerformance from "../entities/SymphonyPerformance";
+import Performance from "../entities/Performance";
 import PremiereTag from "../entities/PremiereTag";
 import Composer from "../entities/Composer";
 
@@ -30,7 +30,7 @@ const entitiesList = [
   Location,
   Concert,
   ConcertTag,
-  SymphonyPerformance,
+  Performance,
   PremiereTag,
   Composer,
 ];

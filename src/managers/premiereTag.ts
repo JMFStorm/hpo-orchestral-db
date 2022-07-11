@@ -39,13 +39,3 @@ export const getPremiereTagByName = async (name: string) => {
   const result = await repo.findOne({ name: name });
   return result;
 };
-
-// Describe
-// Deletes all premiere tags from table,
-// returns deleted count
-export const deleteAllPremiereTags = async () => {
-  const repo = getRepository(PremiereTag);
-
-  const result = await repo.delete({});
-  return result.affected;
-};

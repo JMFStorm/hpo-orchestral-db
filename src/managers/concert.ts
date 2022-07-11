@@ -1,4 +1,4 @@
-import SymphonyPerformance from "../entities/SymphonyPerformance";
+import Performance from "../entities/Performance";
 import ConcertObject from "../interfaces/ConcertObject";
 import { getRepository, Any } from "typeorm";
 
@@ -81,7 +81,7 @@ export const addConcertTags = async (tagNames: string[]) => {
 // Describe
 // Search concerts by symphony id
 export const getConcertsBySymphonyId = async (symphonyId: string) => {
-  const performanceRepo = getRepository(SymphonyPerformance);
+  const performanceRepo = getRepository(Performance);
   const concertRepo = getRepository(Concert);
 
   const response = await performanceRepo.find({
@@ -108,11 +108,27 @@ export const getConcertsBySymphonyId = async (symphonyId: string) => {
 };
 
 // Describe
-// Deletes all concert tags from table,
-// returns deleted count
-export const deleteAllConcertTags = async () => {
-  const repo = getRepository(ConcertTag);
+// Get concert by id
+export const getConcertById = async (concertId: string) => {
+  const repo = getRepository(Concert);
 
-  const result = await repo.delete({});
-  return result.affected;
+  const response = await repo.find({
+    where: { id: concertId },
+    relations: [
+      "location",
+      "orchestra",
+      "concert_tag",
+      "performances",
+      "performances.symphony",
+      "performances.conductors",
+      "performances.arrangers",
+      "performances.soloist_performances",
+      "performances.premiere_tag",
+    ],
+    take: 1,
+  });
+
+  const result = response.length > 0 ? response[0] : undefined;
+
+  return result;
 };

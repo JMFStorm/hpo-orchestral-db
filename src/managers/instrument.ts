@@ -39,13 +39,3 @@ export const addInstruments = async (instrumentNames: string[]) => {
   const result = await repo.save(newObjects);
   return result.length;
 };
-
-// Describe
-// Deletes all instruments from table,
-// returns deleted count
-export const deleteAllInstruments = async () => {
-  const repo = getRepository(Instrument);
-
-  const result = await repo.delete({});
-  return result.affected;
-};
