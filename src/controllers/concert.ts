@@ -1,7 +1,7 @@
 import { Router } from "express";
 
 import httpError from "../utils/httpError";
-import { getConcertsBySymphonyId, getConcertById } from "../managers/concert";
+import { getConcertsBySymphonyId, getConcertById, getAllConcerts } from "../managers/concert";
 
 const controller = Router();
 
@@ -26,6 +26,18 @@ controller.get("/:concertid", async (req, res, next) => {
     const concertId = req.params.concertid;
 
     const response = await getConcertById(concertId);
+    return res.send(response);
+  } catch (err) {
+    console.error("err", err);
+    return next(httpError(err, 404));
+  }
+});
+
+// Describe
+// Get concerts by symphony id
+controller.get("/", async (req, res, next) => {
+  try {
+    const response = await getAllConcerts();
     return res.send(response);
   } catch (err) {
     console.error("err", err);

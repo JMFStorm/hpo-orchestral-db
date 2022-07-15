@@ -3,8 +3,8 @@ import { getRepository } from "typeorm";
 import Composer from "../entities/Composer";
 import Arrangers from "../entities/Arranger";
 import Musician from "../entities/Musician";
-import ConcertPerformance from "../entities/Performance";
 import { sortStringsFunction } from "../utils/functions";
+import Concert from "../entities/Concert";
 
 // Describe
 // Adds musicians to table from an array of names,
@@ -69,7 +69,7 @@ export const searchComposersByStartingLetter = async (lettersArr: string[]) => {
 // Describe
 // Gets all conductor musicians from table
 export const getAllConductors = async () => {
-  const repo = getRepository(ConcertPerformance);
+  const repo = getRepository(Concert);
   const response = await repo.find({ relations: ["conductors"] });
 
   const conductors = response

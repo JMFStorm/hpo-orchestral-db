@@ -17,9 +17,9 @@ const allPerformanceRelations = [
   "concert.location",
   "concert.concert_tag",
   "concert.orchestra",
+  "concert.conductors",
   "symphony",
   "symphony.composers",
-  "conductors",
   "arrangers",
   "premiere_tag",
   "soloist_performances",
@@ -68,17 +68,6 @@ export const addPerformances = async (performances: PerformanceObject[]) => {
       return soloistObjectsArray as SoloistPerformance[];
     };
 
-    const setConductorObjectsArray = async (conductorNames: string[]) => {
-      let conductorObjectsArray = [];
-
-      for (const name of conductorNames) {
-        const conductorObj = await musicianRepo.findOne({ name: name });
-        conductorObjectsArray.push(conductorObj);
-      }
-
-      return conductorObjectsArray as Musician[];
-    };
-
     const symphony = await symphonyRepo.findOne({ symphony_id: performance.symphonyId });
 
     // Init performance object
@@ -102,9 +91,6 @@ export const addPerformances = async (performances: PerformanceObject[]) => {
         .then((x) => (concertPerfObj.premiere_tag = x)),
       await saveSoloistPerformances(performance.soloist_performances).then(
         (x) => (concertPerfObj.soloist_performances = x)
-      ),
-      await setConductorObjectsArray(performance.conductors).then(
-        (x) => (concertPerfObj.conductors = x)
       ),
     ]);
 

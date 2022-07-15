@@ -18,8 +18,9 @@ export const addPremiereTags = async (premiereTags: PremiereTagConfig[]) => {
     // Save
     await premiereTagRepo.save(premiereTagObject);
     addedCount++;
-    console.log("Added premiere_tag:", premiereTagObject);
   }
+
+  console.log(`Added ${addedCount} premiere tags`);
 
   return addedCount;
 };

@@ -4,7 +4,6 @@ export default interface PerformanceObject {
   order: string;
   concertId: string;
   symphonyId: string;
-  conductors: string[];
   composers: string[];
   arrangers: string;
   soloist_performances: SoloistPerformanceObject[];

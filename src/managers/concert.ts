@@ -6,9 +6,17 @@ import Concert from "../entities/Concert";
 import ConcertTag from "../entities/ConcertTag";
 import Location from "../entities/Location";
 import Orchestra from "../entities/Orchestra";
+import Musician from "../entities/Musician";
+
+// Parse date and time
+// Recommended date: 1999-01-08 -> January 8, 1999
+const parseDate = (date: string) => {
+  const dateArr = date.split(".");
+  return `${dateArr[2]}-${dateArr[1]}-${dateArr[0]}`;
+};
 
 // Describe
-// Adds concerts to table
+// Add concerts to table
 // returns saved count
 export const addConcerts = async (concerts: ConcertObject[]) => {
   let result: any = [];
@@ -21,6 +29,7 @@ export const addConcerts = async (concerts: ConcertObject[]) => {
       console.log(`Saving concerts: (${addedCount}/${concertCount})`);
     }
 
+    const musicianRepo = getRepository(Musician);
     const concertRepo = getRepository(Concert);
     const concertTagRepo = getRepository(ConcertTag);
     const locationRepo = getRepository(Location);
@@ -28,20 +37,37 @@ export const addConcerts = async (concerts: ConcertObject[]) => {
 
     let concertObject: Partial<Concert> = {};
 
-    const parseDate = (date: string) => {
-      const dateArr = date.split(".");
-      return `${dateArr[2]}-${dateArr[1]}-${dateArr[0]}`;
-    };
-
     // Fill concert object fields
     concertObject.concert_id = concert.concert_id;
-
-    // Parse date and time
-    // Recommended date: 1999-01-08 -> January 8, 1999
     concertObject.date = parseDate(concert.date);
     concertObject.starting_time = concert.starting_time !== "" ? concert.starting_time : undefined;
 
+    const getConductor = async (name?: string) => {
+      if (!name) {
+        return;
+      }
+      const result = await musicianRepo.findOne({ name: name });
+      if (!result) {
+        throw "Conductor " + name + " missing from musicians";
+      }
+      return result;
+    };
+
+    const conductorObjects: Musician[] = [];
+
     // Fill fields from existing table rows
+
+    // Add only from valid conductor names
+    concert.conductors.forEach(
+      async (x) =>
+        await getConductor(x)
+          .then((x) => (x ? conductorObjects.push(x) : null))
+          .catch((err: Error) => {
+            console.error(err);
+          })
+    );
+    concertObject.conductors = conductorObjects;
+
     await Promise.all([
       await concertTagRepo
         .findOne({ name: concert.concert_tag })
@@ -98,13 +124,26 @@ export const getConcertsBySymphonyId = async (symphonyId: string) => {
 
   const concerts = await concertRepo.find({
     where: { id: Any(uniqueIds) },
-    relations: ["location", "orchestra", "concert_tag"],
+    relations: ["location", "orchestra", "concert_tag", "conductors"],
     order: {
       date: "DESC",
     },
   });
 
   return concerts;
+};
+
+// Describe
+// Get all concerts
+export const getAllConcerts = async () => {
+  const repo = getRepository(Concert);
+  const result = await repo.find({
+    relations: ["location", "orchestra", "concert_tag", "conductors"],
+    order: {
+      date: "DESC",
+    },
+  });
+  return result;
 };
 
 // Describe
@@ -118,9 +157,9 @@ export const getConcertById = async (concertId: string) => {
       "location",
       "orchestra",
       "concert_tag",
+      "conductors",
       "performances",
       "performances.symphony",
-      "performances.conductors",
       "performances.arrangers",
       "performances.soloist_performances",
       "performances.premiere_tag",

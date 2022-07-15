@@ -255,6 +255,16 @@ controller.post("/seed", async (req, res, next) => {
       const tag = row.KonsertinNimike.trim();
       const orchestra = row.Orkesteri.trim();
 
+      const conductorCell = row.Kapellimestari.trim();
+      let conductorsArr: string[] = [];
+
+      // Check for multiple conductors in cell
+      // and add them for array
+      conductorCell.split("/").map((x) => {
+        const conductor = x.trim();
+        conductorsArr.push(conductor);
+      });
+
       if (!concerts.some((x) => x.concert_id === concertId) && concertId !== "") {
         const concertObject: ConcertObject = {
           concert_id: concertId,
@@ -263,6 +273,7 @@ controller.post("/seed", async (req, res, next) => {
           location: location,
           concert_tag: tag,
           orchestra: orchestra,
+          conductors: conductorsArr,
         };
         concerts.push(concertObject);
       }
@@ -315,16 +326,6 @@ controller.post("/seed", async (req, res, next) => {
         }
       });
 
-      const conductorCell = row.Kapellimestari.trim();
-      let conductorsArr: string[] = [];
-
-      // Check for multiple conductors in cell
-      // and add them for array
-      conductorCell.split("/").map((x) => {
-        const conductor = x.trim();
-        conductorsArr.push(conductor);
-      });
-
       const composerCell = row.Saveltaja.trim();
       let composersArr: string[] = [];
 
@@ -371,7 +372,6 @@ controller.post("/seed", async (req, res, next) => {
         order: order,
         concertId: concertId,
         symphonyId: symphonyId,
-        conductors: conductorsArr,
         composers: composersArr,
         arrangers: arranger,
         soloist_performances: soloistPerformances,

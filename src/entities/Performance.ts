@@ -10,7 +10,6 @@ import {
 
 import Concert from "./Concert";
 import Symphony from "./Symphony";
-import Musician from "./Musician";
 import Arranger from "./Arranger";
 import SoloistPerformance from "./SoloistPerformance";
 import PremiereTag from "./PremiereTag";
@@ -34,10 +33,6 @@ export default class Performance extends BaseEntity {
 
   @ManyToOne(() => Symphony, { onDelete: "CASCADE" })
   symphony: Symphony;
-
-  @ManyToMany(() => Musician, { onDelete: "CASCADE" })
-  @JoinTable()
-  conductors: Musician[];
 
   @ManyToOne(() => Arranger, { onDelete: "CASCADE" })
   arrangers: Arranger;

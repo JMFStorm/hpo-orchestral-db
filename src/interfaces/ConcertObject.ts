@@ -5,4 +5,5 @@ export default interface ConcertObject {
   location: string;
   concert_tag: string;
   orchestra: string;
+  conductors: string[];
 }
