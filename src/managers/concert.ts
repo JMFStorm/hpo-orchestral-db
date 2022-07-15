@@ -1,19 +1,13 @@
+import { getRepository, Any, Between } from "typeorm";
+
 import Performance from "../entities/Performance";
 import ConcertObject from "../interfaces/ConcertObject";
-import { getRepository, Any } from "typeorm";
-
 import Concert from "../entities/Concert";
 import ConcertTag from "../entities/ConcertTag";
 import Location from "../entities/Location";
 import Orchestra from "../entities/Orchestra";
 import Musician from "../entities/Musician";
-
-// Parse date and time
-// Recommended date: 1999-01-08 -> January 8, 1999
-const parseDate = (date: string) => {
-  const dateArr = date.split(".");
-  return `${dateArr[2]}-${dateArr[1]}-${dateArr[0]}`;
-};
+import { parseStringToDate } from "../utils/functions";
 
 // Describe
 // Add concerts to table
@@ -39,7 +33,7 @@ export const addConcerts = async (concerts: ConcertObject[]) => {
 
     // Fill concert object fields
     concertObject.concert_id = concert.concert_id;
-    concertObject.date = parseDate(concert.date);
+    concertObject.date = parseStringToDate(concert.date);
     concertObject.starting_time = concert.starting_time !== "" ? concert.starting_time : undefined;
 
     const getConductor = async (name?: string) => {
@@ -106,7 +100,12 @@ export const addConcertTags = async (tagNames: string[]) => {
 
 // Describe
 // Search concerts by symphony id
-export const getConcertsBySymphonyId = async (symphonyId: string) => {
+// Expect date format: yyyy-mm-dd (1999-01-08)
+export const getConcertsBySymphonyId = async (
+  symphonyId: string,
+  startDate: Date,
+  endDate: Date
+) => {
   const performanceRepo = getRepository(Performance);
   const concertRepo = getRepository(Concert);
 
@@ -122,8 +121,14 @@ export const getConcertsBySymphonyId = async (symphonyId: string) => {
     (current, index, self) => index === self.findIndex((x) => x === current)
   );
 
+  const start = startDate.toISOString();
+  const end = endDate.toISOString();
+
   const concerts = await concertRepo.find({
-    where: { id: Any(uniqueIds) },
+    where: {
+      id: Any(uniqueIds),
+      date: Between(start, end),
+    },
     relations: ["location", "orchestra", "concert_tag", "conductors"],
     order: {
       date: "DESC",
