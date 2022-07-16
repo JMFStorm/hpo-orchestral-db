@@ -66,12 +66,14 @@ controller.post("/seed", async (req, res, next) => {
     console.log("Deleted existing tables.");
 
     // Create premiere tag tables
-    await addPremiereTags(premiereTags);
+    const premsRes = await addPremiereTags(premiereTags);
+
+    console.log(`Added ${premsRes} premiere tags`);
 
     // Add symphonies
     let symphoniesWithComposers: SymphonyObject[] = [];
 
-    rowObjects.map((row) => {
+    rowObjects.forEach((row) => {
       // Read composer
       let composersArr: string[] = [];
       const composerCell = row.Saveltaja.trim();
@@ -131,7 +133,10 @@ controller.post("/seed", async (req, res, next) => {
       }
     });
 
+    console.log(`Adding new symphonies.`);
+
     const addedSymphonies = await addSymphoniesAndRelatedComposers(symphoniesWithComposers);
+
     console.log(`Added ${addedSymphonies} new symphonies.`);
 
     // Collect musicians from conductors

@@ -20,8 +20,6 @@ export const addPremiereTags = async (premiereTags: PremiereTagConfig[]) => {
     addedCount++;
   }
 
-  console.log(`Added ${addedCount} premiere tags`);
-
   return addedCount;
 };
 

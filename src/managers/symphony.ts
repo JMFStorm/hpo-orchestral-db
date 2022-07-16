@@ -18,11 +18,16 @@ export const getAllSymphonies = async () => {
 // return added count
 export const addSymphoniesAndRelatedComposers = async (symphonies: SymphonyObject[]) => {
   let addedCount = 0;
+  const symphoniesCount = symphonies.length;
 
   const SymphonyRepo = getRepository(Symphony);
   const composerRepo = getRepository(Composer);
 
   for (const symphony of symphonies) {
+    if (addedCount % 250 == 0) {
+      console.log(`Saving symphony: (${addedCount}/${symphoniesCount})`);
+    }
+
     let composerObjects: Composer[] = [];
 
     for (const composerName of symphony.composerNames) {
@@ -32,15 +37,23 @@ export const addSymphoniesAndRelatedComposers = async (symphonies: SymphonyObjec
         const newComp: Partial<Composer> = { name: composerName };
         existingComp = await composerRepo.save(newComp);
       }
-      composerObjects.push(existingComp);
+      if (!composerObjects.some((x) => x.name === composerName)) {
+        composerObjects.push(existingComp);
+      }
     }
+
     const newSymphony: Partial<Symphony> = {
       name: symphony.name,
       symphony_id: symphony.symphony_id,
       composers: composerObjects,
     };
-
-    await SymphonyRepo.save(newSymphony);
+    try {
+      await SymphonyRepo.save(newSymphony);
+    } catch (err) {
+      console.log("Error with", newSymphony);
+      console.error(err);
+      process.exit();
+    }
     addedCount++;
   }
 

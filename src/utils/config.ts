@@ -37,7 +37,7 @@ export const premiereTags: PremiereTagConfig[] = [
     sqlName: "premiere",
   },
   {
-    regex: /\(ekS.\)/,
+    regex: /\(ekS\)/,
     sqlName: "premiere_in_finland",
   },
   {
