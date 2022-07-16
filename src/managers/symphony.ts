@@ -24,7 +24,7 @@ export const addSymphoniesAndRelatedComposers = async (symphonies: SymphonyObjec
   const composerRepo = getRepository(Composer);
 
   for (const symphony of symphonies) {
-    if (addedCount % 250 == 0) {
+    if (addedCount % 500 == 0) {
       console.log(`Saving symphony: (${addedCount}/${symphoniesCount})`);
     }
 

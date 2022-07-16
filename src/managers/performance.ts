@@ -44,7 +44,7 @@ export const addPerformances = async (performances: PerformanceObject[]) => {
   const performancesCount = performances.length;
 
   for (const performance of performances) {
-    if (addedCount % 500 == 0) {
+    if (addedCount % 1000 == 0) {
       console.log(`Saving performance: (${addedCount}/${performancesCount})`);
     }
 
