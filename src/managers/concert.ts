@@ -167,6 +167,8 @@ export const getConcertById = async (concertId: string) => {
       "performances.symphony",
       "performances.arrangers",
       "performances.soloist_performances",
+      "performances.soloist_performances.soloist",
+      "performances.soloist_performances.instrument",
       "performances.premiere_tag",
     ],
     take: 1,
