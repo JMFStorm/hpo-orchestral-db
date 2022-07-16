@@ -129,7 +129,7 @@ export const getConcertsBySymphonyId = async (
       id: Any(uniqueIds),
       date: Between(start, end),
     },
-    relations: ["location", "orchestra", "concert_tag", "conductors"],
+    relations: ["concert_tag", "conductors"],
     order: {
       date: "DESC",
     },
@@ -165,6 +165,7 @@ export const getConcertById = async (concertId: string) => {
       "conductors",
       "performances",
       "performances.symphony",
+      "performances.symphony.composers",
       "performances.arrangers",
       "performances.soloist_performances",
       "performances.soloist_performances.soloist",

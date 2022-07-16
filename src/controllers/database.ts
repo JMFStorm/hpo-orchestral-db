@@ -170,14 +170,7 @@ controller.post("/seed", async (req, res, next) => {
       .filter((x) => x.Sovittaja.trim().length !== 0)
       .map((x) => {
         const current = x.Sovittaja;
-        let arranger = current;
-
-        // Filter string with regex
-        const regex = new RegExp("^sov./arr.");
-
-        if (regex.test(current)) {
-          arranger = current.substring(9).trim();
-        }
+        const arranger = current;
 
         if (!arrangers.includes(arranger)) {
           arrangers.push(arranger);
@@ -356,18 +349,11 @@ controller.post("/seed", async (req, res, next) => {
         }
       });
 
-      // Arranger regex
-      let arranger = row.Sovittaja.trim();
-      const regex = new RegExp("^sov./arr.");
-
-      if (regex.test(arranger)) {
-        arranger = arranger.substring(9).trim();
-      }
-
       // Build concert performance object from the rest
       const concertId = row.KonserttiId.trim();
       const order = row.Esitysjarjestys.trim();
       const symphonyId = row.TeoksenId.trim();
+      const arranger = row.Sovittaja.trim();
 
       const footnote = row.TietoaKonsertista ? row.TietoaKonsertista.trim() : "";
       const archiveInfo = row.LisatietoaKonsertista ? row.LisatietoaKonsertista.trim() : "";
