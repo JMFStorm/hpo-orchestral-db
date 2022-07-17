@@ -111,19 +111,6 @@ export const getAllPerformances = async () => {
 };
 
 // Describe
-// Get performances by performance id
-export const getPerformancesByPerformanceId = async (performaceId: string) => {
-  const repo = getRepository(Performance);
-
-  const result = await repo.find({
-    where: { id: performaceId },
-    relations: allPerformanceRelations,
-  });
-
-  return result;
-};
-
-// Describe
 // Get performances by conductor id
 export const getPerformancesByConductorId = async (conductorId: string) => {
   const repo = getRepository(Performance);
@@ -137,14 +124,43 @@ export const getPerformancesByConductorId = async (conductorId: string) => {
 };
 
 // Describe
-// Get performances by composer id
-export const getPerformancesByComposerId = async (composerId: string) => {
-  const repo = getRepository(Performance);
+// Get performances by premiere tag composer Id
+export const getPerformancesByComposerAndPremiereTag = async (
+  composerId: string,
+  premiereTagIds: string[]
+) => {
+  const performanceRelationsForList = [
+    "concert",
+    "concert.concert_tag",
+    "symphony",
+    "symphony.composers",
+    "premiere_tag",
+  ];
 
-  const result = await repo.find({
-    where: { composer: { id: composerId } },
-    relations: allPerformanceRelations,
+  const tagRepo = getRepository(PremiereTag);
+  const performanceRepo = getRepository(Performance);
+
+  let tags: PremiereTag[] = [];
+
+  for (const tagId of premiereTagIds) {
+    const res = await tagRepo.findOne({ id: tagId });
+    if (res) {
+      tags.push(res);
+    }
+  }
+
+  const tagsQuery = tags.map((tag) => ({
+    premiere_tag: { id: tag.id },
+  }));
+
+  const performances = await performanceRepo.find({
+    where: tagsQuery,
+    relations: performanceRelationsForList,
   });
 
-  return result;
+  const filtered = performances.filter((perf) =>
+    perf.symphony.composers.find((comp) => comp.id == composerId)
+  );
+
+  return filtered;
 };

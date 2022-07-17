@@ -4,9 +4,8 @@ import httpError from "../utils/httpError";
 import { getAllPremiereTags } from "../managers/premiereTag";
 import {
   getAllPerformances,
-  getPerformancesByPerformanceId,
   getPerformancesByConductorId,
-  getPerformancesByComposerId,
+  getPerformancesByComposerAndPremiereTag,
 } from "../managers/performance";
 
 const controller = Router();
@@ -16,20 +15,6 @@ const controller = Router();
 controller.get("/", async (req, res, next) => {
   try {
     const response = await getAllPerformances();
-
-    return res.send(response);
-  } catch (err) {
-    console.error("err", err);
-    return next(httpError(err, 404));
-  }
-});
-
-// Describe
-// Get all performance by performace id
-controller.get("/:id", async (req, res, next) => {
-  try {
-    const performaceId = req.params.id;
-    const response = await getPerformancesByPerformanceId(performaceId);
 
     return res.send(response);
   } catch (err) {
@@ -54,12 +39,23 @@ controller.get("/conductor/:id", async (req, res, next) => {
 });
 
 // Describe
-// Get performances by composer id
-controller.get("/composer/:id", async (req, res, next) => {
+// Get performances by composer id and premiere tag
+controller.get("/composer/:composerid", async (req, res, next) => {
   try {
-    const composerId = req.params.id;
+    const composerId = req.params.composerid;
+    const premieretags = req.query.premieretagid;
 
-    const response = await getPerformancesByComposerId(composerId);
+    let tagsArr: string[] = [];
+
+    if (typeof premieretags == "string") {
+      tagsArr = [premieretags];
+    } else if (premieretags) {
+      tagsArr = premieretags as string[];
+    } else {
+      tagsArr = [];
+    }
+
+    const response = await getPerformancesByComposerAndPremiereTag(composerId, tagsArr);
 
     return res.send(response);
   } catch (err) {
