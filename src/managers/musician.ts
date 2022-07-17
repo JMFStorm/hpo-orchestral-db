@@ -3,7 +3,7 @@ import { getRepository } from "typeorm";
 import Composer from "../entities/Composer";
 import Arrangers from "../entities/Arranger";
 import Musician from "../entities/Musician";
-import { sortStringsFunction } from "../utils/functions";
+import { filterUniquesById, sortStringsFunction } from "../utils/functions";
 import Concert from "../entities/Concert";
 
 // Describe
@@ -77,12 +77,7 @@ export const getAllConductors = async () => {
     .flat(1)
     .filter((x) => x);
 
-  // Filter array to uniques
-  const filtered = conductors.filter(
-    (current, index, self) =>
-      index === self.findIndex((x) => x.id === current.id && x.name === current.name)
-  );
-
+  const filtered = filterUniquesById(conductors);
   return filtered;
 };
 

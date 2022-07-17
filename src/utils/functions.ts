@@ -16,3 +16,11 @@ export const parseStringToDate = (date: string) => {
   const dateArr = date.split(".");
   return `${dateArr[2]}-${dateArr[1]}-${dateArr[0]}`;
 };
+
+// Filter uniques from object array by 'id' field
+export const filterUniquesById = (array: any[]) => {
+  const filtered = array.filter(
+    (current, index, self) => index === self.findIndex((x) => x.id === current.id)
+  );
+  return filtered;
+};

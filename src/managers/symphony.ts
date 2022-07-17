@@ -1,9 +1,10 @@
+import { getRepository } from "typeorm";
+
 import Composer from "../entities/Composer";
 import SymphonyObject from "../interfaces/SymphonyObject";
-import { sortStringsFunction } from "../utils/functions";
+import { filterUniquesById, sortStringsFunction } from "../utils/functions";
 import Symphony from "../entities/Symphony";
-
-import { getRepository } from "typeorm";
+import Performance from "../entities/Performance";
 
 // Describe
 // Get all symphonies
@@ -64,14 +65,37 @@ export const addSymphoniesAndRelatedComposers = async (symphonies: SymphonyObjec
 // Get symphony by composerId
 export const getSymphoniesByComposerId = async (composerId: string) => {
   const repo = getRepository(Composer);
+
   const response = await repo.find({
     where: { id: composerId },
     relations: ["symphonies"],
     take: 1,
   });
-  const result = response?.length > 0 ? response[0].symphonies : undefined;
 
-  return result ? result.sort((a, b) => sortStringsFunction(a.name, b.name)) : [];
+  const symphonies: Symphony[] = response?.length > 0 ? response[0].symphonies : [];
+
+  if (!symphonies) {
+    return [];
+  }
+
+  const performanceRepo = getRepository(Performance);
+
+  const results = await Promise.all(
+    symphonies.map(async (symphony) => {
+      const res = await performanceRepo.find({
+        where: { symphony: { id: symphony.id } },
+        relations: ["concert", "symphony"],
+      });
+
+      const concerts = res.map((x) => x.concert);
+
+      const count = filterUniquesById(concerts).length;
+
+      return { ...symphony, concertsCount: count };
+    })
+  );
+
+  return results.sort((a, b) => sortStringsFunction(a.name, b.name));
 };
 
 // Describe

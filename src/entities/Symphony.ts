@@ -1,5 +1,6 @@
-import { BaseEntity, Column, Entity, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, Entity, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import Composer from "./Composer";
+import Performance from "./Performance";
 
 @Entity("symphony", { name: "symphonies" })
 export default class Symphony extends BaseEntity {
@@ -16,4 +17,7 @@ export default class Symphony extends BaseEntity {
     onDelete: "CASCADE",
   })
   composers: Composer[];
+
+  @OneToMany(() => Performance, (performance) => performance.symphony)
+  performances: Performance[];
 }
