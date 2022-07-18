@@ -28,3 +28,17 @@ export const filterUniquesById = (array: Partial<WithIdField>[]) => {
   );
   return filtered;
 };
+
+export const findStringArrayMatch = (
+  arr: string[],
+  substring?: string,
+  defaultReturn: boolean = false
+) => {
+  if (!substring) {
+    return defaultReturn;
+  }
+  const find: string | undefined = arr
+    .map((x) => x.toLowerCase())
+    .find((element) => element.includes(substring.toLowerCase()));
+  return !!find;
+};

@@ -7,7 +7,7 @@ import ConcertTag from "../entities/ConcertTag";
 import Location from "../entities/Location";
 import Orchestra from "../entities/Orchestra";
 import Musician from "../entities/Musician";
-import { filterUniquesById, parseStringToDate } from "../utils/functions";
+import { filterUniquesById, findStringArrayMatch, parseStringToDate } from "../utils/functions";
 import Composer from "../entities/Composer";
 import Conductor from "../entities/Conductor";
 
@@ -193,20 +193,18 @@ export const searchConcertsByNames = async (
 
   let composerConcerts: Concert[] = [];
   let musicianConcerts: Concert[] = [];
+  let conductorConcerts: Concert[] = [];
 
   const composerRepo = getRepository(Composer);
-
   const composerResponse = await composerRepo.find({
     where: { name: Like(`%${composer}%`) },
     relations: ["symphonies", "symphonies.performances", "symphonies.performances.concert"],
   });
-
   composerConcerts = composerResponse
     .map((x) => x.symphonies.map((x) => x.performances.map((x) => x.concert)))
     .flat(2);
 
   const musicianRepo = getRepository(Musician);
-
   const musicianResponse = await musicianRepo.find({
     where: { name: Like(`%${soloist}%`) },
     relations: [
@@ -215,15 +213,67 @@ export const searchConcertsByNames = async (
       "soloist_performances.performance.concert",
     ],
   });
-
   musicianConcerts = musicianResponse
     .map((x) => x.soloist_performances.map((x) => x.performance))
     .flat(2)
     .map((x) => x.concert);
 
-  const array = composerConcerts.concat(musicianConcerts);
+  const conductorRepo = getRepository(Conductor);
+  const conductorResponse = await conductorRepo.find({
+    where: { name: Like(`%${conductor}%`) },
+    relations: ["concerts"],
+  });
+  conductorConcerts = conductorResponse.map((x) => x.concerts).flat(1);
 
-  const resultArr = filterUniquesById(array);
+  const array = composerConcerts.concat(musicianConcerts).concat(conductorConcerts);
+  const concertIdObjects = filterUniquesById(array).map((x) => ({ id: x.id }));
 
-  return resultArr;
+  const concertRepo = getRepository(Concert);
+  const concertsResponse = await concertRepo.find({
+    where: concertIdObjects,
+    relations: [
+      "conductors",
+      "performances",
+      "performances.soloist_performances",
+      "performances.soloist_performances.soloist",
+      "performances.symphony",
+      "performances.symphony.composers",
+    ],
+  });
+
+  const filterComposers = (concert: Concert) =>
+    findStringArrayMatch(
+      concert.performances
+        .map((x) => x.symphony.composers)
+        .flat()
+        .map((x) => x.name),
+      composer,
+      true
+    );
+
+  const filterConductors = (concert: Concert) =>
+    findStringArrayMatch(
+      concert.conductors.map((x) => x.name),
+      conductor,
+      true
+    );
+
+  const filterSoloists = (concert: Concert) =>
+    findStringArrayMatch(
+      concert.performances
+        .map((x) => x.soloist_performances)
+        .flat()
+        .map((x) => x.soloist)
+        .map((x) => x.name),
+      soloist,
+      true
+    );
+
+  const results = concertsResponse
+    .filter(
+      (concert) => filterComposers(concert) && filterConductors(concert) && filterSoloists(concert)
+    )
+    .flat(1);
+
+  return results;
 };
