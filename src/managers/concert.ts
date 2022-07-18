@@ -183,6 +183,8 @@ export const getConcertById = async (concertId: string) => {
 // Describe
 // Search concerts by composer, conductor and soloist name
 export const searchConcertsByNames = async (
+  startDate: Date,
+  endDate: Date,
   composer?: string,
   conductor?: string,
   soloist?: string
@@ -194,6 +196,9 @@ export const searchConcertsByNames = async (
   let composerConcerts: Concert[] = [];
   let musicianConcerts: Concert[] = [];
   let conductorConcerts: Concert[] = [];
+
+  const start = startDate.toISOString();
+  const end = endDate.toISOString();
 
   const composerRepo = getRepository(Composer);
   const composerResponse = await composerRepo.find({
@@ -226,11 +231,14 @@ export const searchConcertsByNames = async (
   conductorConcerts = conductorResponse.map((x) => x.concerts).flat(1);
 
   const array = composerConcerts.concat(musicianConcerts).concat(conductorConcerts);
-  const concertIdObjects = filterUniquesById(array).map((x) => ({ id: x.id }));
+  const whereQuery = filterUniquesById(array).map((x) => ({
+    id: x.id,
+    date: Between(start, end),
+  }));
 
   const concertRepo = getRepository(Concert);
   const concertsResponse = await concertRepo.find({
-    where: concertIdObjects,
+    where: whereQuery,
     relations: [
       "conductors",
       "performances",

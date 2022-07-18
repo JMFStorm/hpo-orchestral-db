@@ -1,6 +1,4 @@
-export default (message: any, statusCode: number) => {
-  return {
-    statusCode: statusCode,
-    message: message,
-  };
-};
+export default (message: any, statusCode: number) => ({
+  statusCode: statusCode,
+  message: message,
+});
