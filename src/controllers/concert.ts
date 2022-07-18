@@ -1,7 +1,12 @@
 import { Router } from "express";
 
 import httpError from "../utils/httpError";
-import { getConcertsBySymphonyId, getConcertById, getAllConcerts } from "../managers/concert";
+import {
+  getConcertsBySymphonyId,
+  getConcertById,
+  getAllConcerts,
+  searchConcertsByNames,
+} from "../managers/concert";
 
 const controller = Router();
 
@@ -45,6 +50,22 @@ controller.get("/:concertid", async (req, res, next) => {
     const concertId = req.params.concertid;
 
     const response = await getConcertById(concertId);
+    return res.send(response);
+  } catch (err) {
+    console.error("err", err);
+    return next(httpError(err, 404));
+  }
+});
+
+// Describe
+// Search concerts by composer, conductor and soloist name
+controller.get("/combination/search", async (req, res, next) => {
+  try {
+    const composer = req.query.composer as string | undefined;
+    const conductor = req.query.conductor as string | undefined;
+    const soloist = req.query.soloist as string | undefined;
+
+    const response = await searchConcertsByNames(composer, conductor, soloist);
     return res.send(response);
   } catch (err) {
     console.error("err", err);

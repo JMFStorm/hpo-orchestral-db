@@ -2,7 +2,7 @@ import { Router } from "express";
 
 import httpError from "../utils/httpError";
 import {
-  getAllcomposers,
+  getAllComposers,
   getAllArrangers,
   getAllConductors,
   searchComposersByStartingLetter,
@@ -14,7 +14,7 @@ const controller = Router();
 // Get all composers
 controller.get("/composer", async (req, res, next) => {
   try {
-    const response = await getAllcomposers();
+    const response = await getAllComposers();
     return res.send(response);
   } catch (err) {
     console.error("err", err);

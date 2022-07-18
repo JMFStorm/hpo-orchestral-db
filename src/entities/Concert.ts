@@ -13,7 +13,7 @@ import Location from "./Location";
 import Orchestra from "./Orchestra";
 import ConcertTag from "./ConcertTag";
 import Performance from "./Performance";
-import Musician from "./Musician";
+import Conductor from "./Conductor";
 
 @Entity("concert", { name: "concerts" })
 export default class Concert extends BaseEntity {
@@ -38,9 +38,9 @@ export default class Concert extends BaseEntity {
   @ManyToOne(() => ConcertTag, { onDelete: "CASCADE" })
   concert_tag: ConcertTag;
 
-  @ManyToMany(() => Musician, { onDelete: "CASCADE" })
+  @ManyToMany(() => Conductor, (conductor) => conductor.concerts, { onDelete: "CASCADE" })
   @JoinTable()
-  conductors: Musician[];
+  conductors: Conductor[];
 
   @OneToMany(() => Performance, (performances) => performances.concert, {
     onDelete: "CASCADE",

@@ -1,7 +1,7 @@
 import { Router } from "express";
 
 import httpError from "../utils/httpError";
-import { addMusicians } from "../managers/musician";
+import { addConductors, addMusicians } from "../managers/musician";
 import { addInstruments } from "../managers/instrument";
 import { addSymphoniesAndRelatedComposers } from "../managers/symphony";
 import { addOrchestries } from "../managers/orchestra";
@@ -51,6 +51,7 @@ controller.post("/seed", async (req, res, next) => {
     Promise.all([
       await deleteAllFromRepo("arranger"),
       await deleteAllFromRepo("composer"),
+      await deleteAllFromRepo("conductor"),
       await deleteAllFromRepo("concert"),
       await deleteAllFromRepo("concert_tag"),
       await deleteAllFromRepo("instrument"),
@@ -134,15 +135,13 @@ controller.post("/seed", async (req, res, next) => {
     });
 
     console.log(`Adding new symphonies.`);
-
     const addedSymphonies = await addSymphoniesAndRelatedComposers(symphoniesWithComposers);
-
     console.log(`Added ${addedSymphonies} new symphonies.`);
 
-    // Collect musicians from conductors
-    let musicians: string[] = [];
+    // Collect conductors
+    let conductors: string[] = [];
 
-    rowObjects.map((x) => {
+    rowObjects.forEach((x) => {
       const conductor = x.Kapellimestari.trim();
 
       // Check for multiple in one cell
@@ -153,13 +152,13 @@ controller.post("/seed", async (req, res, next) => {
         condsArr.forEach((x) => {
           const cond = x.trim();
 
-          if (!musicians.includes(cond)) {
-            musicians.push(cond);
+          if (!conductors.includes(cond)) {
+            conductors.push(cond);
             return;
           }
         });
-      } else if (conductor !== "" && !musicians.includes(conductor)) {
-        musicians.push(conductor);
+      } else if (conductor !== "" && !conductors.includes(conductor)) {
+        conductors.push(conductor);
       }
     });
 
@@ -179,6 +178,7 @@ controller.post("/seed", async (req, res, next) => {
 
     // Collect instruments from soloists
     let instruments: string[] = [];
+    let musicians: string[] = [];
 
     // And collect musicians from soloist
     rowObjects
@@ -245,7 +245,7 @@ controller.post("/seed", async (req, res, next) => {
     // Collect concerts
     let concerts: ConcertObject[] = [];
 
-    rowObjects.map((row) => {
+    rowObjects.forEach((row) => {
       const concertId = row.KonserttiId.trim();
       const date = row.Paivamaara.trim();
       const time = row.Aloitusaika.trim();
@@ -283,13 +283,13 @@ controller.post("/seed", async (req, res, next) => {
 
     const premiereTagObjects = await getAllPremiereTags();
 
-    rowObjects.map((row) => {
+    rowObjects.forEach((row) => {
       const soloistPerformances: SoloistPerformanceObject[] = [];
       const soloistsCell = row.Solisti;
 
       // Check for multiple soloists in one cell
       const soloistArr = soloistsCell.split(",");
-      soloistArr.map((x) => {
+      soloistArr.forEach((x) => {
         const current = x.trim();
 
         let soloistTemp;
@@ -378,6 +378,7 @@ controller.post("/seed", async (req, res, next) => {
     // Save all 'loosely' collected
     console.log("Saving 'loose' tables...");
     Promise.all([
+      await addConductors(conductors).then(() => console.log("Saved conductors")),
       await addMusicians(musicians).then(() => console.log("Saved musicians")),
       await addInstruments(instruments).then(() => console.log("Saved instruments")),
       await addOrchestries(orchestraNames).then(() => console.log("Saved orchestraNames")),

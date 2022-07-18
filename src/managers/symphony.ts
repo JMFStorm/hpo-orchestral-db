@@ -88,7 +88,6 @@ export const getSymphoniesByComposerId = async (composerId: string) => {
       });
 
       const concerts = res.map((x) => x.concert);
-
       const count = filterUniquesById(concerts).length;
 
       return { ...symphony, concertsCount: count };

@@ -1,3 +1,7 @@
+interface WithIdField {
+  id: string;
+}
+
 export const sortStringsFunction = (a: string, b: string) => {
   const nameA = a.toUpperCase();
   const nameB = b.toUpperCase();
@@ -18,7 +22,7 @@ export const parseStringToDate = (date: string) => {
 };
 
 // Filter uniques from object array by 'id' field
-export const filterUniquesById = (array: any[]) => {
+export const filterUniquesById = (array: Partial<WithIdField>[]) => {
   const filtered = array.filter(
     (current, index, self) => index === self.findIndex((x) => x.id === current.id)
   );

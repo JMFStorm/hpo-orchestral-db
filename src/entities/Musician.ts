@@ -1,4 +1,5 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import SoloistPerformance from "./SoloistPerformance";
 
 @Entity("musician", { name: "musicians" })
 export default class Musician extends BaseEntity {
@@ -7,4 +8,7 @@ export default class Musician extends BaseEntity {
 
   @Column()
   name: string;
+
+  @OneToMany(() => SoloistPerformance, (performance) => performance.soloist)
+  soloist_performances: SoloistPerformance[];
 }

@@ -37,7 +37,9 @@ export default class Performance extends BaseEntity {
   @ManyToOne(() => Arranger, { onDelete: "CASCADE" })
   arrangers: Arranger;
 
-  @ManyToMany(() => SoloistPerformance, { onDelete: "CASCADE" })
+  @ManyToMany(() => SoloistPerformance, (soloistPerf) => soloistPerf.performance, {
+    onDelete: "CASCADE",
+  })
   @JoinTable()
   soloist_performances: SoloistPerformance[];
 

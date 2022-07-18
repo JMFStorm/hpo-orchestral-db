@@ -1,4 +1,4 @@
-import { getRepository, Any, Between } from "typeorm";
+import { getRepository, Any, Between, Like } from "typeorm";
 
 import Performance from "../entities/Performance";
 import ConcertObject from "../interfaces/ConcertObject";
@@ -7,7 +7,9 @@ import ConcertTag from "../entities/ConcertTag";
 import Location from "../entities/Location";
 import Orchestra from "../entities/Orchestra";
 import Musician from "../entities/Musician";
-import { parseStringToDate } from "../utils/functions";
+import { filterUniquesById, parseStringToDate } from "../utils/functions";
+import Composer from "../entities/Composer";
+import Conductor from "../entities/Conductor";
 
 // Describe
 // Add concerts to table
@@ -23,7 +25,7 @@ export const addConcerts = async (concerts: ConcertObject[]) => {
       console.log(`Saving concerts: (${addedCount}/${concertCount})`);
     }
 
-    const musicianRepo = getRepository(Musician);
+    const conductorRepo = getRepository(Conductor);
     const concertRepo = getRepository(Concert);
     const concertTagRepo = getRepository(ConcertTag);
     const locationRepo = getRepository(Location);
@@ -40,16 +42,14 @@ export const addConcerts = async (concerts: ConcertObject[]) => {
       if (!name) {
         return;
       }
-      const result = await musicianRepo.findOne({ name: name });
+      const result = await conductorRepo.findOne({ name: name });
       if (!result) {
-        throw "Conductor " + name + " missing from musicians";
+        throw "Conductor " + name + " missing from conductors";
       }
       return result;
     };
 
-    const conductorObjects: Musician[] = [];
-
-    // Fill fields from existing table rows
+    const conductorObjects: Conductor[] = [];
 
     // Add only from valid conductor names
     concert.conductors.forEach(
@@ -178,4 +178,52 @@ export const getConcertById = async (concertId: string) => {
   const result = response.length > 0 ? response[0] : undefined;
 
   return result;
+};
+
+// Describe
+// Search concerts by composer, conductor and soloist name
+export const searchConcertsByNames = async (
+  composer?: string,
+  conductor?: string,
+  soloist?: string
+) => {
+  if (!composer && !conductor && !soloist) {
+    return [];
+  }
+
+  let composerConcerts: Concert[] = [];
+  let musicianConcerts: Concert[] = [];
+
+  const composerRepo = getRepository(Composer);
+
+  const composerResponse = await composerRepo.find({
+    where: { name: Like(`%${composer}%`) },
+    relations: ["symphonies", "symphonies.performances", "symphonies.performances.concert"],
+  });
+
+  composerConcerts = composerResponse
+    .map((x) => x.symphonies.map((x) => x.performances.map((x) => x.concert)))
+    .flat(2);
+
+  const musicianRepo = getRepository(Musician);
+
+  const musicianResponse = await musicianRepo.find({
+    where: { name: Like(`%${soloist}%`) },
+    relations: [
+      "soloist_performances",
+      "soloist_performances.performance",
+      "soloist_performances.performance.concert",
+    ],
+  });
+
+  musicianConcerts = musicianResponse
+    .map((x) => x.soloist_performances.map((x) => x.performance))
+    .flat(2)
+    .map((x) => x.concert);
+
+  const array = composerConcerts.concat(musicianConcerts);
+
+  const resultArr = filterUniquesById(array);
+
+  return resultArr;
 };

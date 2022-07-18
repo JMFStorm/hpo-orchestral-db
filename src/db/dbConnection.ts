@@ -19,9 +19,11 @@ import ConcertTag from "../entities/ConcertTag";
 import Performance from "../entities/Performance";
 import PremiereTag from "../entities/PremiereTag";
 import Composer from "../entities/Composer";
+import Conductor from "../entities/Conductor";
 
 const entitiesList = [
   Arranger,
+  Conductor,
   Musician,
   Instrument,
   SoloistPerformance,

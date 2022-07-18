@@ -15,6 +15,8 @@ export default class SoloistPerformance extends BaseEntity {
   @ManyToOne(() => Instrument, { onDelete: "CASCADE" })
   instrument: Instrument;
 
-  @ManyToMany(() => Performance, { onDelete: "CASCADE" })
+  @ManyToMany(() => Performance, (performance) => performance.soloist_performances, {
+    onDelete: "CASCADE",
+  })
   performance: Performance;
 }
