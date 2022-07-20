@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 
+import UploadCsv from "./UploadCsv";
 import "../styles/app.css";
 import {
   fetchAllComposers,
@@ -33,7 +34,12 @@ const App = () => {
     fetchEffect();
   }, []);
 
-  return <div>Hello world</div>;
+  return (
+    <div>
+      <h1>Hello world</h1>
+      <UploadCsv />
+    </div>
+  );
 };
 
 export default App;
