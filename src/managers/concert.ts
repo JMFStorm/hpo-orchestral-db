@@ -241,6 +241,7 @@ export const searchConcertsByNames = async (
     where: whereQuery,
     relations: [
       "conductors",
+      "concert_tag",
       "performances",
       "performances.soloist_performances",
       "performances.soloist_performances.soloist",
@@ -283,5 +284,13 @@ export const searchConcertsByNames = async (
     )
     .flat(1);
 
-  return results;
+  const mapped: Partial<Concert>[] = results.map((x) => ({
+    concert_id: x.concert_id,
+    concert_tag: x.concert_tag,
+    conductors: x.conductors,
+    id: x.id,
+    starting_time: x.starting_time,
+  }));
+
+  return mapped;
 };

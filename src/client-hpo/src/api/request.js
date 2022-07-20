@@ -17,16 +17,9 @@ export const fetchAllComposers = async () => {
   return composers;
 };
 
-export const fetchConcertsCombinationSearch = async (
-  startDate,
-  endDate,
-  composer,
-  soloist,
-  conductor
-) => {
+export const fetchConcertsCombinationSearch = async (startDate, endDate, composer, soloist, conductor) => {
   const start = startDate ?? "1800-01-01";
   const end = endDate ?? "2023-01-01";
-
   let urlPath = `api/concert/combination/search?start=${start}&end=${end}`;
 
   if (composer) {
@@ -43,12 +36,7 @@ export const fetchConcertsCombinationSearch = async (
   return concerts;
 };
 
-// http://localhost:4000/api/performance/composer/8b28beeb-bbca-4cca-be90-52ed1e183b04?premieretagid=78707c23-a68c-4cea-a78e-c3768f27dea9
-
-export const fetchPerformancesByComposerIdAndPremiereTag = async (
-  composerId,
-  premiereTagIdsArray
-) => {
+export const fetchPerformancesByComposerIdAndPremiereTag = async (composerId, premiereTagIdsArray) => {
   let urlPath = `api/performance/composer/${composerId}`;
 
   urlPath = urlPath.concat("?");
@@ -62,4 +50,40 @@ export const fetchPerformancesByComposerIdAndPremiereTag = async (
 
   const composers = await axiosRequest(axios.get, urlPath);
   return composers;
+};
+
+export const fetchComposersByStartingLetters = async (lettersArray) => {
+  let urlPath = `api/musician/composer/lettersearch`;
+
+  urlPath = urlPath.concat("?");
+
+  for (let i = 0; i < lettersArray.length; i++) {
+    if (0 < i) {
+      urlPath = urlPath.concat("&");
+    }
+    urlPath = urlPath.concat(`char=${lettersArray[i][0]}`);
+  }
+
+  const composers = await axiosRequest(axios.get, urlPath);
+  return composers;
+};
+
+export const fetchSymphoniesByComposerId = async (composerId) => {
+  let urlPath = `api/symphony/composer/${composerId}`;
+  const symphonies = await axiosRequest(axios.get, urlPath);
+  return symphonies;
+};
+
+export const fetchConcertsBySymphonyId = async (symphonyId) => {
+  let urlPath = `api/concert/symphony/${symphonyId}`;
+  const symphonies = await axiosRequest(axios.get, urlPath);
+  return symphonies;
+};
+
+// http://localhost:4000/api/concert/ddb118b0-d4b6-42e4-8f0c-d315fa2e309a
+
+export const fetchConcertById = async (concertId) => {
+  let urlPath = `api/concert/${concertId}`;
+  const symphonies = await axiosRequest(axios.get, urlPath);
+  return symphonies;
 };
