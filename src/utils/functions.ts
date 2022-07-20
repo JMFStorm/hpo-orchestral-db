@@ -23,17 +23,11 @@ export const parseStringToDate = (date: string) => {
 
 // Filter uniques from object array by 'id' field
 export const filterUniquesById = (array: Partial<WithIdField>[]) => {
-  const filtered = array.filter(
-    (current, index, self) => index === self.findIndex((x) => x.id === current.id)
-  );
+  const filtered = array.filter((current, index, self) => index === self.findIndex((x) => x.id === current.id));
   return filtered;
 };
 
-export const findStringArrayMatch = (
-  arr: string[],
-  substring?: string,
-  defaultReturn: boolean = false
-) => {
+export const findStringArrayMatch = (arr: string[], substring?: string, defaultReturn: boolean = false) => {
   if (!substring) {
     return defaultReturn;
   }

@@ -25,10 +25,14 @@ const controller = Router();
 // Seed database from stratch with CSV data
 controller.post("/seed", async (req, res, next) => {
   try {
+    console.log("Seed init");
+
     let rowObjects: CsvRowObject[] = [];
 
     // Read CSV file
     const csvTestFileName = req.body.csvTestFileName;
+
+    console.log("csvTestFileName", csvTestFileName);
 
     if (csvTestFileName) {
       // Read test csv from filepath
@@ -74,11 +78,11 @@ controller.post("/seed", async (req, res, next) => {
     // Add symphonies
     let symphoniesWithComposers: SymphonyObject[] = [];
 
-    rowObjects.forEach((row) => {
+    rowObjects.forEach((row, index) => {
       // Read composer
       let composersArr: string[] = [];
-      const composerCell = row.Saveltaja.trim();
 
+      const composerCell = row.Saveltaja.trim();
       const regexEmpty = new RegExp("\\*");
       const regexMultiple = new RegExp("/");
 
@@ -110,12 +114,7 @@ controller.post("/seed", async (req, res, next) => {
         if (indexStart < indexEnd) {
           symphonyName = symphonyNameCell.substring(0, indexStart).trim();
         } else {
-          console.log(
-            "Something not right with brackets: ",
-            indexStart,
-            indexEnd,
-            symphonyNameCell
-          );
+          console.log("Something not right with brackets: ", indexStart, indexEnd, symphonyNameCell);
         }
       }
 
@@ -126,9 +125,7 @@ controller.post("/seed", async (req, res, next) => {
       };
 
       if (
-        !symphoniesWithComposers.some(
-          (x) => x.symphony_id === symphonyObj.symphony_id && x.name === symphonyObj.name
-        )
+        !symphoniesWithComposers.some((x) => x.symphony_id === symphonyObj.symphony_id && x.name === symphonyObj.name)
       ) {
         symphoniesWithComposers.push(symphonyObj);
       }
