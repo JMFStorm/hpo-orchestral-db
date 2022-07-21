@@ -20,7 +20,6 @@ const post = async (urlPath, data) => {
         "Content-Type": "application/json",
       },
     };
-    console.log("data", data);
     const response = await axios.post(`${baseUrl}/${urlPath}`, data ?? {}, config);
     result = response.data;
   } catch (err) {
