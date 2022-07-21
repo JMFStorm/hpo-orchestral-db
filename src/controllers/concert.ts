@@ -1,12 +1,7 @@
 import { Router } from "express";
 
-import httpError from "../utils/httpError";
-import {
-  getConcertsBySymphonyId,
-  getConcertById,
-  getAllConcerts,
-  searchConcertsByNames,
-} from "../managers/concert";
+import { httpError } from "../utils/httpError";
+import { getConcertsBySymphonyId, getConcertById, getAllConcerts, searchConcertsByNames } from "../managers/concert";
 
 const controller = Router();
 

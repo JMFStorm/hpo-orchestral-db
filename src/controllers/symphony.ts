@@ -1,7 +1,7 @@
 import { Router } from "express";
 
 import { getAllSymphonies, getSymphoniesByComposerId } from "../managers/symphony";
-import httpError from "../utils/httpError";
+import { httpError } from "../utils/httpError";
 
 const controller = Router();
 

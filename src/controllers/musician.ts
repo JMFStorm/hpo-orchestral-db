@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import httpError from "../utils/httpError";
+import { httpError } from "../utils/httpError";
 import {
   getAllComposers,
   getAllArrangers,
