@@ -18,7 +18,7 @@ controller.get("/composer", async (req, res, next) => {
     return res.send(response);
   } catch (err) {
     console.error("err", err);
-    return next(httpError(err, 404));
+    return next(httpError(err));
   }
 });
 
@@ -41,7 +41,7 @@ controller.get("/composer/lettersearch", async (req, res, next) => {
     return res.send(response);
   } catch (err) {
     console.error("err", err);
-    return next(httpError(err, 404));
+    return next(httpError(err));
   }
 });
 
@@ -53,7 +53,7 @@ controller.get("/conductor", async (req, res, next) => {
     return res.send(response);
   } catch (err) {
     console.error("err", err);
-    return next(httpError(err, 404));
+    return next(httpError(err));
   }
 });
 
@@ -65,7 +65,7 @@ controller.get("/arrangers", async (req, res, next) => {
     return res.send(response);
   } catch (err) {
     console.error("err", err);
-    return next(httpError(err, 404));
+    return next(httpError(err));
   }
 });
 

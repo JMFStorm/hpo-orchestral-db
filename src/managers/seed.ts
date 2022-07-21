@@ -62,7 +62,6 @@ export const validateCsvData = (rows: CsvRowObject[]) => {
       const value = numbersIndexed[field];
       const asNum = Number(value);
       if (Number.isNaN(asNum)) {
-        console.log("Not a number");
         const err: CsvRowError = {
           rowNumber: csvRow,
           errorType: "value_not_number",

@@ -19,7 +19,7 @@ controller.get("/", async (req, res, next) => {
     return res.send(response);
   } catch (err) {
     console.error("err", err);
-    return next(httpError(err, 404));
+    return next(httpError(err));
   }
 });
 
@@ -34,7 +34,7 @@ controller.get("/conductor/:id", async (req, res, next) => {
     return res.send(response);
   } catch (err) {
     console.error("err", err);
-    return next(httpError(err, 404));
+    return next(httpError(err));
   }
 });
 
@@ -60,7 +60,7 @@ controller.get("/composer/:composerid", async (req, res, next) => {
     return res.send(response);
   } catch (err) {
     console.error("err", err);
-    return next(httpError(err, 404));
+    return next(httpError(err));
   }
 });
 
@@ -73,7 +73,7 @@ controller.get("/premieretag", async (req, res, next) => {
     return res.send(response);
   } catch (err) {
     console.error("err", err);
-    return next(httpError(err, 404));
+    return next(httpError(err));
   }
 });
 
