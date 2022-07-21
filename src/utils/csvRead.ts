@@ -1,6 +1,6 @@
 const fs = require("fs").promises;
-const csvReader = require("jquery-csv");
 
+import Papa from "papaparse";
 import CsvRowObject from "../interfaces/CsvRowObject";
 
 export const csvRowsToObjects = async (filePath: string) => {
@@ -10,11 +10,26 @@ export const csvRowsToObjects = async (filePath: string) => {
     }
   });
 
-  let result: CsvRowObject[] = [];
+  let data: CsvRowObject[] = [];
 
-  csvReader.toObjects(fileText, {}, (err: any, data: CsvRowObject[]) => {
-    result = data as CsvRowObject[];
+  const papaCallback = (result: Papa.ParseResult<CsvRowObject>) => {
+    if (result.errors) {
+      result.errors.forEach((err) => {
+        if (result.data && err.row === result.data.length - 1) {
+          // Slice last row off
+          result.data = result.data.slice(0, result.data.length - 1);
+        } else if (result.data && err.row !== result.data.length - 1) {
+          console.error("Csv reader error:", err);
+        }
+      });
+    }
+    data = result.data as CsvRowObject[];
+  };
+
+  Papa.parse<CsvRowObject>(fileText, {
+    header: true,
+    complete: papaCallback,
   });
 
-  return result;
+  return data;
 };

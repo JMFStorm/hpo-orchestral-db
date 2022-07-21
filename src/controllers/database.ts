@@ -26,12 +26,10 @@ const controller = Router();
 controller.post("/seed", async (req, res, next) => {
   try {
     console.log("Seed init");
-
     let rowObjects: CsvRowObject[] = [];
 
     // Read CSV file
     const csvTestFileName = req.body.csvTestFileName;
-
     console.log("csvTestFileName", csvTestFileName);
 
     if (csvTestFileName) {
@@ -55,9 +53,9 @@ controller.post("/seed", async (req, res, next) => {
     Promise.all([
       await deleteAllFromRepo("arranger"),
       await deleteAllFromRepo("composer"),
-      await deleteAllFromRepo("conductor"),
       await deleteAllFromRepo("concert"),
       await deleteAllFromRepo("concert_tag"),
+      await deleteAllFromRepo("conductor"),
       await deleteAllFromRepo("instrument"),
       await deleteAllFromRepo("location"),
       await deleteAllFromRepo("musician"),
