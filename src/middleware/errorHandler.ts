@@ -7,8 +7,6 @@ const instanceOfHttpError = (object: any): object is HttpErrorType =>
 
 // Error handler
 export const errorHandler = (error: HttpErrorType | any, req: Request, res: Response, next: NextFunction) => {
-  console.log("recieved error:", error);
-
   if (instanceOfHttpError(error)) {
     const errInstance = error as HttpErrorType;
 

@@ -8,25 +8,31 @@ interface CsvRowError {
   cellName: string;
 }
 
+const mapIndexedRows = (fields: string[], row: CsvRowObject) => {
+  let indexedRows: { [key: string]: string } = {};
+  fields.forEach((field) => {
+    indexedRows[field] = row[field as keyof CsvRowObject];
+  });
+  return indexedRows;
+};
+
 export const validateCsvData = (rows: CsvRowObject[]) => {
   let errors: CsvRowError[] = [];
 
-  const notNullFileds: string[] = ["TeoksenId", "TeoksenNimi"];
-
   rows.forEach((row, index) => {
-    console.log("row", row);
-
-    let indexedRows: { [key: string]: string } = {};
+    // Validate not nulls
+    const notNullFileds: string[] = ["KonserttiId", "Esitysjarjestys", "Paivamaara", "TeoksenId", "TeoksenNimi"];
+    const notNullsIndexed = mapIndexedRows(notNullFileds, row);
     notNullFileds.forEach((field) => {
-      indexedRows[field] = row[field as keyof CsvRowObject];
+      const value = notNullsIndexed[field];
+      if (!value) {
+        const csvRow = index + 2;
+        const err: CsvRowError = { rowNumber: csvRow, errorType: "value_missing", cellName: field };
+        errors.push(err);
+      }
     });
 
-    // Not null cells
-    if (!row.TeoksenId) {
-      const csvRow = index + 2;
-      const err: CsvRowError = { rowNumber: csvRow, errorType: "value_missing", cellName: "TeoksenId" };
-      errors.push(err);
-    }
+    // Validate formatting
   });
 
   return errors;

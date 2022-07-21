@@ -52,8 +52,6 @@ controller.post("/seed", async (req, res, next) => {
     console.log("Validating rows");
     const errors = validateCsvData(rowObjects);
 
-    console.log("errors", errors);
-
     if (0 < errors.length) {
       return next(httpError(errors, 400));
     }
