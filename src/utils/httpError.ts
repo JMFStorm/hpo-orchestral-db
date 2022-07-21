@@ -1,4 +1,9 @@
-export default (message: any, statusCode: number) => ({
+export interface HttpErrorType {
+  statusCode: number;
+  errorObjects: any[];
+}
+
+export const httpError = (errorObjects: any[], statusCode: number = 500): HttpErrorType => ({
   statusCode: statusCode,
-  message: message,
+  errorObjects: errorObjects,
 });

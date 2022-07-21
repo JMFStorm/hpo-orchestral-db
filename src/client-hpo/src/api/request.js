@@ -7,7 +7,7 @@ const get = async (urlPath) => {
     const response = await axios.get(`${baseUrl}/${urlPath}`);
     return response.data;
   } catch (err) {
-    console.log(err.response.data);
+    console.error(err.response.data);
     return undefined;
   }
 };
@@ -23,7 +23,7 @@ const post = async (urlPath, data) => {
     const response = await axios.post(`${baseUrl}/${urlPath}`, data ?? {}, config);
     return response.data;
   } catch (err) {
-    console.log(err.response.data);
+    console.error(err.response.data);
     return undefined;
   }
 };

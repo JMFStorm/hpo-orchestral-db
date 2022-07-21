@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import httpError from "../utils/httpError";
+import { httpError } from "../utils/httpError";
 import { addConductors, addMusicians } from "../managers/musician";
 import { addInstruments } from "../managers/instrument";
 import { addSymphoniesAndRelatedComposers } from "../managers/symphony";
@@ -18,6 +18,7 @@ import ConcertObject from "src/interfaces/ConcertObject";
 import PerformanceObject from "src/interfaces/PerformanceObject";
 import SoloistPerformanceObject from "src/interfaces/SoloistPerformanceObject";
 import { deleteAllFromRepo } from "../managers/database";
+import { validateCsvData } from "../managers/seed";
 
 const controller = Router();
 
@@ -47,7 +48,18 @@ controller.post("/seed", async (req, res, next) => {
       return res.send({ savedPerformances: 0 });
     }
 
-    console.log("Deleting existing tables.");
+    // Validate all rows
+    console.log("Validating rows");
+    const errors = validateCsvData(rowObjects);
+
+    console.log("errors", errors);
+
+    if (0 < errors.length) {
+      return next(httpError(errors, 400));
+    }
+
+    console.log("Rows validated");
+    console.log("Deleting existing tables");
 
     // Delete existing data
     Promise.all([
@@ -393,7 +405,7 @@ controller.post("/seed", async (req, res, next) => {
     return res.send({ savedPerformances: savedCount });
   } catch (err) {
     console.error("err", err);
-    return next(httpError(err, 404));
+    return next(httpError(err));
   }
 });
 
