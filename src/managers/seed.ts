@@ -19,7 +19,7 @@ const mapIndexedRows = (fields: string[], row: CsvRowObject) => {
 
 const notNullFileds: string[] = ["KonserttiId", "Esitysjarjestys", "Paivamaara", "TeoksenId", "TeoksenNimi"];
 const formattedFields = [
-  { name: "Aloitusaika", regEx: /^[0-1]?\d{1}:[0-5]{1}\d{1}$/ },
+  { name: "Aloitusaika", regEx: /^[0-2]?\d{1}:[0-5]{1}\d{1}$/ },
   { name: "Paivamaara", regEx: /^[0-3]?\d{1}.[0-1]?\d{1}.\d{1,4}$/ },
 ];
 
@@ -44,15 +44,17 @@ export const validateCsvData = (rows: CsvRowObject[]) => {
     );
     formattedFields.forEach((field) => {
       const value = formattedIndexed[field.name];
-      const valid = field.regEx.test(value);
-      if (!valid) {
-        const err: CsvRowError = {
-          rowNumber: csvRow,
-          errorType: "invalid_format",
-          cellName: field.name,
-          cellValue: value,
-        };
-        errors.push(err);
+      if (value) {
+        const valid = field.regEx.test(value);
+        if (!valid) {
+          const err: CsvRowError = {
+            rowNumber: csvRow,
+            errorType: "invalid_format",
+            cellName: field.name,
+            cellValue: value,
+          };
+          errors.push(err);
+        }
       }
     });
     // Validate numbers

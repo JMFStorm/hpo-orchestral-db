@@ -5,6 +5,7 @@ import { uploadCsvData } from "../api/request";
 
 const App = () => {
   const [fileData, setFileData] = useState([]);
+  const [uploadErrors, setUploadErrors] = useState([]);
 
   const parseCallback = (results) => {
     if (results.errors) {
@@ -28,7 +29,11 @@ const App = () => {
   };
 
   const onFileUpload = async () => {
-    await uploadCsvData(fileData);
+    setUploadErrors([]);
+    const { error } = await uploadCsvData(fileData);
+    if (error) {
+      setUploadErrors(error.errors);
+    }
   };
 
   return (
@@ -37,6 +42,18 @@ const App = () => {
         <input type="file" onChange={(e) => onFileChange(e)} />
         <button onClick={onFileUpload}>Upload!</button>
       </div>
+      {uploadErrors && (
+        <ul>
+          {uploadErrors.map((x) => (
+            <li key={x.rowNumber + x.cellName}>
+              {x.errorType}
+              {x.rowNumber}
+              {x.cellName}
+              {x.cellValue}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 };

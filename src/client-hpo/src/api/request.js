@@ -13,6 +13,7 @@ const get = async (urlPath) => {
 };
 
 const post = async (urlPath, data) => {
+  let result, error;
   try {
     const config = {
       headers: {
@@ -21,11 +22,12 @@ const post = async (urlPath, data) => {
     };
     console.log("data", data);
     const response = await axios.post(`${baseUrl}/${urlPath}`, data ?? {}, config);
-    return response.data;
+    result = response.data;
   } catch (err) {
     console.error(err.response.data);
-    return undefined;
+    error = err.response.data;
   }
+  return { result, error };
 };
 
 export const fetchAllComposers = async () => {

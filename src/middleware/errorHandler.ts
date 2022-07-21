@@ -11,14 +11,16 @@ export const errorHandler = (error: HttpErrorType | any, req: Request, res: Resp
     const errInstance = error as HttpErrorType;
 
     if (errInstance.statusCode !== 500) {
-      return res.status(errInstance.statusCode).json({ errors: errInstance.errorObjects });
+      return res
+        .status(errInstance.statusCode)
+        .json({ message: errInstance.message, errors: errInstance.errorObjects });
     }
   }
 
   if (process.env.NODE_ENV !== "production") {
-    return res.status(500).json({ errors: `${error.message}` });
+    return res.status(500).json({ message: `${error.message}` });
   }
 
   // Return 500 with error message
-  return res.status(500).json({ errors: "Unknown server error." });
+  return res.status(500).json({ message: "Unknown server error." });
 };
