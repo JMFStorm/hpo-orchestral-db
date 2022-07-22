@@ -51,7 +51,7 @@ const SearchComposers = () => {
       </>
       <ul>
         {composers.map((x) => (
-          <li>
+          <li key={x.id}>
             {x.name}
             <button onClick={() => searchComposerSymphonies(x.id)}>Hae teokset</button>
           </li>
@@ -59,7 +59,7 @@ const SearchComposers = () => {
       </ul>
       <ul>
         {symphonies.map((x) => (
-          <li>
+          <li key={x.id}>
             {x.name}, {x.concertsCount} konserttia
             <button onClick={() => searchSymphonyConcerts(x.id)}>Hae konsertit</button>
           </li>
@@ -67,10 +67,10 @@ const SearchComposers = () => {
       </ul>
       <ul>
         {concerts.map((x) => (
-          <li>
+          <li key={x.id}>
             {x.date}{" "}
             {x.conductors.map((x) => (
-              <span>{x.name} </span>
+              <span key={x.id}>{x.name} </span>
             ))}{" "}
             {x.concert_tag?.name}
             <button onClick={() => searchConcertById(x.id)}>Tutki konserttia</button>
@@ -79,25 +79,36 @@ const SearchComposers = () => {
       </ul>
       {selectedConcert && (
         <div>
-          <div>
-            {selectedConcert.date} {selectedConcert.starting_time}
-          </div>
+          <span>
+            {selectedConcert.date}, {selectedConcert.starting_time}
+          </span>
           <div>{selectedConcert.concert_tag.name}</div>
           {selectedConcert.conductors.map((x) => (
-            <span>{selectedConcert.name} </span>
+            <span key={x.id}>{selectedConcert.name} </span>
           ))}
-          <div>{selectedConcert.location?.name}</div>
-          <div>{selectedConcert.orchestra?.name}</div>
-          {selectedConcert.performances.map((x) => (
-            <div>
-              <span>
-                {x.symphony.name} {x.premiere_tag}
-              </span>
-              {x.composers?.map((x) => (
-                <span>{x.name} </span>
+          <span>
+            {selectedConcert.location?.name}, {selectedConcert.orchestra?.name}
+          </span>
+          <ul>
+            {selectedConcert.performances
+              .sort((a, b) => a.order - b.order)
+              .map((x) => (
+                <li key={x.id}>
+                  <span>
+                    Symphony: {x.order}. {x.symphony.name}. {x.premiere_tag}{" "}
+                  </span>
+                  {x.symphony.composers?.map((x) => (
+                    <span key={x.id}>Composer: {x.name} </span>
+                  ))}
+                  {x.soloist_performances?.map((x) => (
+                    <span key={x.id}>
+                      Soloist: {x.soloist.name} ({x.instrument.name}){" "}
+                    </span>
+                  ))}
+                  <div> - {x.footnote}</div>
+                </li>
               ))}
-            </div>
-          ))}
+          </ul>
         </div>
       )}
     </>
