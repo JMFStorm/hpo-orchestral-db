@@ -74,5 +74,9 @@ export const validateCsvData = (rows: CsvRowObject[]) => {
     });
   });
 
+  if (0 < errors.length) {
+    console.log(errors.length + " validation errors found");
+  }
+
   return errors;
 };

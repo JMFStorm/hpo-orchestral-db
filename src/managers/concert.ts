@@ -19,9 +19,10 @@ export const addConcerts = async (concerts: ConcertObject[]) => {
 
   let addedCount = 0;
   const concertCount = concerts.length;
+  const numeralPart = Math.floor(concertCount / 20);
 
   for (const concert of concerts) {
-    if (addedCount % 500 == 0) {
+    if (addedCount % numeralPart == 0) {
       console.log(`Saving concerts: (${addedCount}/${concertCount})`);
     }
 

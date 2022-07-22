@@ -20,12 +20,13 @@ export const getAllSymphonies = async () => {
 export const addSymphoniesAndRelatedComposers = async (symphonies: SymphonyObject[]) => {
   let addedCount = 0;
   const symphoniesCount = symphonies.length;
+  const numeralPart = Math.floor(symphoniesCount / 20);
 
   const SymphonyRepo = getRepository(Symphony);
   const composerRepo = getRepository(Composer);
 
   for (const symphony of symphonies) {
-    if (addedCount % 500 == 0) {
+    if (addedCount % numeralPart == 0) {
       console.log(`Saving symphony: (${addedCount}/${symphoniesCount})`);
     }
 

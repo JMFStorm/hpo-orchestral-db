@@ -48,14 +48,14 @@ const configDev: ConnectionOptions = {
   entities: entitiesList,
 };
 
-const configDemo: ConnectionOptions = {
-  url: process.env.DB_URI_DEMO,
+const configProd: ConnectionOptions = {
+  url: process.env.DB_URI_PROD,
   type: postgres,
-  host: process.env.DB_PORT_HOST,
-  port: Number(process.env.DB_PORT_DEMO),
-  username: process.env.DB_USER_DEMO,
-  password: process.env.DB_PASSWORD_DEMO,
-  database: process.env.DB_NAME_DEMO,
+  host: process.env.DB_PORT_PROD,
+  port: Number(process.env.DB_PORT_PROD),
+  username: process.env.DB_USER_PROD,
+  password: process.env.DB_PASSWORD_PROD,
+  database: process.env.DB_NAME_PROD,
   ssl: {
     rejectUnauthorized: false,
   },
@@ -68,7 +68,7 @@ const getDbConfig = (env: Environment) => {
     case "development":
       return configDev;
     case "production":
-      return configDemo;
+      return configProd;
     default:
       throw "Invalid node environment";
   }

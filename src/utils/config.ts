@@ -6,13 +6,13 @@ export type Environment = string | undefined;
 
 const getServerPort = (env: Environment) => {
   const serverPortDev = process.env.SERVER_PORT_DEV || 4000;
-  const serverPortDemo = process.env.PORT || 4000;
+  const serverPortProd = process.env.PORT || 4000;
 
   switch (env) {
     case "development":
       return serverPortDev;
     case "production":
-      return serverPortDemo;
+      return serverPortProd;
     default:
       throw "Invalid node environment";
   }
