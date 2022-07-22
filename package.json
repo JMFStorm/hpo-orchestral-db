@@ -6,7 +6,12 @@
   "scripts": {
     "start": "cross-env NODE_ENV=production node ./dist/index.js",
     "dev": "cross-env NODE_ENV=development nodemon ./dist/index.js",
-    "watch": "tsc -w"
+    "watch": "tsc -w",
+    "build:ui": "cd ./src/client-hpo && npm run build && Xcopy /y /s .\\build ..\\..\\dist\\build\\",
+    "copy:package": "copy package.json .\\dist\\",
+    "copy:dist:heroku": "xcopy /y /s .\\dist D:\\projects\\heroku-deploy\\hpo-orchestral-db-heroku",
+    "pre:deploy:heroku": "npm run build:ui && npm run copy:package && npm run copy:dist:heroku",
+    "deploy": "git add . && git commit -m deploy && git push heroku master"
   },
   "keywords": [],
   "author": "Janne Fagerström",
