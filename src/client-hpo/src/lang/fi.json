@@ -1,5 +1,5 @@
 {
-  "hello_world": "Hello world",
+  "hello_world": "Hei maailma",
   "upload_error.value_missing": "Virhe: Rivi {row}, solu '{cell}' - Arvo puuttuu.",
   "upload_error.invalid_format": "Virhe: Rivi {row}, solu '{cell}' - Väärä formatointi arvolla: '{value}'.",
   "upload_error.value_not_number": "Virhe: Rivi {row}, solu '{cell}' - Arvon '{value}' täytyy olla numero."

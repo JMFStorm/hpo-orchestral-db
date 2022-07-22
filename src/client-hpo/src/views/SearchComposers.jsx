@@ -37,7 +37,6 @@ const SearchComposers = () => {
   const searchConcertById = useCallback(
     async (concertId) => {
       const { result } = await fetchConcertById(concertId);
-      console.log("result", result);
       setSelectedConcert(result);
     },
     [setSelectedConcert]
