@@ -25,7 +25,6 @@ const formattedFields = [
 
 export const validateCsvData = (rows: CsvRowObject[]) => {
   let errors: CsvRowError[] = [];
-
   rows.forEach((row, index) => {
     const csvRow = index + 2;
     // Validate not nulls

@@ -3,13 +3,15 @@ import axios from "axios";
 import { baseUrl } from "../config";
 
 const get = async (urlPath) => {
+  let result, error;
   try {
     const response = await axios.get(`${baseUrl}/${urlPath}`);
-    return response.data;
+    result = response.data;
   } catch (err) {
     console.error(err.response.data);
-    return undefined;
+    error = err.response.data;
   }
+  return { result, error };
 };
 
 const post = async (urlPath, data) => {
@@ -30,8 +32,8 @@ const post = async (urlPath, data) => {
 };
 
 export const fetchAllComposers = async () => {
-  const composers = await get("api/musician/composer");
-  return composers;
+  const { result, error } = await get("api/musician/composer");
+  return { result, error };
 };
 
 export const fetchConcertsCombinationSearch = async (startDate, endDate, composer, soloist, conductor) => {
@@ -87,20 +89,20 @@ export const fetchComposersByStartingLetters = async (lettersArray) => {
 
 export const fetchSymphoniesByComposerId = async (composerId) => {
   const urlPath = `api/symphony/composer/${composerId}`;
-  const symphonies = await get(urlPath);
-  return symphonies;
+  const { result, error } = await get(urlPath);
+  return { result, error };
 };
 
 export const fetchConcertsBySymphonyId = async (symphonyId) => {
   const urlPath = `api/concert/symphony/${symphonyId}`;
-  const symphonies = await get(urlPath);
-  return symphonies;
+  const { result, error } = await get(urlPath);
+  return { result, error };
 };
 
 export const fetchConcertById = async (concertId) => {
   const urlPath = `api/concert/${concertId}`;
-  const symphonies = await get(urlPath);
-  return symphonies;
+  const { result, error } = await get(urlPath);
+  return { result, error };
 };
 
 export const uploadCsvData = async (csvData) => {

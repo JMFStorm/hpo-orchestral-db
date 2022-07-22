@@ -3,6 +3,8 @@ import React, { useState } from "react";
 import { parseCsv } from "../utils.js/csvParse";
 import { uploadCsvData } from "../api/request";
 
+import UploadErrors from "./UploadErrors";
+
 const App = () => {
   const [fileData, setFileData] = useState([]);
   const [uploadErrors, setUploadErrors] = useState([]);
@@ -22,12 +24,10 @@ const App = () => {
       setFileData(results.data);
     }
   };
-
   const onFileChange = (event) => {
     const inputFile = event.target.files[0];
     parseCsv(inputFile, parseCallback);
   };
-
   const onFileUpload = async () => {
     setUploadErrors([]);
     const { error } = await uploadCsvData(fileData);
@@ -35,26 +35,14 @@ const App = () => {
       setUploadErrors(error.errors);
     }
   };
-
   return (
-    <div>
+    <>
       <div>
         <input type="file" onChange={(e) => onFileChange(e)} />
         <button onClick={onFileUpload}>Upload!</button>
       </div>
-      {uploadErrors && (
-        <ul>
-          {uploadErrors.map((x) => (
-            <li key={x.rowNumber + x.cellName}>
-              {x.errorType}
-              {x.rowNumber}
-              {x.cellName}
-              {x.cellValue}
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
+      <UploadErrors uploadErrors={uploadErrors} />
+    </>
   );
 };
 

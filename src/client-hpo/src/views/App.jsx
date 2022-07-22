@@ -1,12 +1,12 @@
 import React, { useEffect, useReducer, useState } from "react";
 
 import "../styles/app.css";
-import { fetchAllComposers } from "../api/request";
 import { languageReducer } from "../lang/languageReducer";
 import LanguageContext from "../lang/languageContext";
 
 import Header from "./Header";
 import UploadCsv from "./UploadCsv";
+import SearchComposers from "./SearchComposers";
 
 const App = () => {
   const [language, setLanguage] = useState("en");
@@ -17,19 +17,13 @@ const App = () => {
     document.documentElement.lang = language;
   }, [language]);
 
-  useEffect(() => {
-    async function fetchEffect() {
-      console.log("composers", await fetchAllComposers());
-    }
-    fetchEffect();
-  }, []);
-
   return (
     <main>
       {appLanguage && (
         <LanguageContext.Provider value={appLanguage}>
           <Header language={language} setLanguage={setLanguage} />
           <UploadCsv />
+          <SearchComposers />
         </LanguageContext.Provider>
       )}
     </main>
