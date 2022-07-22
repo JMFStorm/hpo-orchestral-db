@@ -73,22 +73,14 @@ export const addPerformances = async (performances: PerformanceObject[]) => {
     // Init performance object
     let concertPerfObj: Partial<Performance> = {
       order: Number(performance.order),
-      footnote: performance.footnote,
-      archive_info: performance.archive_info,
       symphony: symphony,
     };
 
     // Get all existing fields from tables
     await Promise.all([
-      await concertRepo
-        .findOne({ concert_id: performance.concertId })
-        .then((x) => (concertPerfObj.concert = x)),
-      await arrangerRepo
-        .findOne({ names: performance.arrangers })
-        .then((x) => (concertPerfObj.arrangers = x)),
-      await premiereTagRepo
-        .findOne({ name: performance.premiere_tag })
-        .then((x) => (concertPerfObj.premiere_tag = x)),
+      await concertRepo.findOne({ concert_id: performance.concertId }).then((x) => (concertPerfObj.concert = x)),
+      await arrangerRepo.findOne({ names: performance.arrangers }).then((x) => (concertPerfObj.arrangers = x)),
+      await premiereTagRepo.findOne({ name: performance.premiere_tag }).then((x) => (concertPerfObj.premiere_tag = x)),
       await saveSoloistPerformances(performance.soloist_performances).then(
         (x) => (concertPerfObj.soloist_performances = x)
       ),
@@ -125,10 +117,7 @@ export const getPerformancesByConductorId = async (conductorId: string) => {
 
 // Describe
 // Get performances by premiere tag composer Id
-export const getPerformancesByComposerAndPremiereTag = async (
-  composerId: string,
-  premiereTagIds: string[]
-) => {
+export const getPerformancesByComposerAndPremiereTag = async (composerId: string, premiereTagIds: string[]) => {
   const performanceRelationsForList = [
     "concert",
     "concert.concert_tag",
@@ -158,9 +147,7 @@ export const getPerformancesByComposerAndPremiereTag = async (
     relations: performanceRelationsForList,
   });
 
-  const filtered = performances.filter((perf) =>
-    perf.symphony.composers.find((comp) => comp.id == composerId)
-  );
+  const filtered = performances.filter((perf) => perf.symphony.composers.find((comp) => comp.id == composerId));
 
   return filtered;
 };

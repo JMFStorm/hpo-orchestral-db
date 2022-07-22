@@ -257,6 +257,8 @@ controller.post("/seed", async (req, res, next) => {
       const location = row.Konserttipaikka.trim();
       const tag = row.KonsertinNimike.trim();
       const orchestra = row.Orkesteri.trim();
+      const footnote = row.TietoaKonsertista ? row.TietoaKonsertista.trim() : "";
+      const archiveInfo = row.LisatietoaKonsertista ? row.LisatietoaKonsertista.trim() : "";
 
       const conductorCell = row.Kapellimestari.trim();
       let conductorsArr: string[] = [];
@@ -277,6 +279,8 @@ controller.post("/seed", async (req, res, next) => {
           concert_tag: tag,
           orchestra: orchestra,
           conductors: conductorsArr,
+          footnote: footnote,
+          archive_info: archiveInfo,
         };
         concerts.push(concertObject);
       }
@@ -360,9 +364,6 @@ controller.post("/seed", async (req, res, next) => {
       const symphonyId = row.TeoksenId.trim();
       const arranger = row.Sovittaja.trim();
 
-      const footnote = row.TietoaKonsertista ? row.TietoaKonsertista.trim() : "";
-      const archiveInfo = row.LisatietoaKonsertista ? row.LisatietoaKonsertista.trim() : "";
-
       const newPerformance: PerformanceObject = {
         premiere_tag: premiereTag,
         order: order,
@@ -371,8 +372,6 @@ controller.post("/seed", async (req, res, next) => {
         composers: composersArr,
         arrangers: arranger,
         soloist_performances: soloistPerformances,
-        footnote: footnote,
-        archive_info: archiveInfo,
       };
 
       if (!performances.some((x) => x === newPerformance)) {

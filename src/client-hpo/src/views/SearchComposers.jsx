@@ -68,9 +68,10 @@ const SearchComposers = () => {
       <ul>
         {concerts.map((x) => (
           <li key={x.id}>
-            {x.date}{" "}
+            {x.date}
+            {". "}
             {x.conductors.map((x) => (
-              <span key={x.id}>{x.name} </span>
+              <span key={x.id}>{x.name}. </span>
             ))}{" "}
             {x.concert_tag?.name}
             <button onClick={() => searchConcertById(x.id)}>Tutki konserttia</button>
@@ -98,17 +99,18 @@ const SearchComposers = () => {
                     Symphony: {x.order}. {x.symphony.name}. {x.premiere_tag}{" "}
                   </span>
                   {x.symphony.composers?.map((x) => (
-                    <span key={x.id}>Composer: {x.name} </span>
+                    <span key={x.id}>Composer: {x.name}. </span>
                   ))}
                   {x.soloist_performances?.map((x) => (
                     <span key={x.id}>
                       Soloist: {x.soloist.name} ({x.instrument.name}){" "}
                     </span>
                   ))}
-                  <div> - {x.footnote}</div>
                 </li>
               ))}
           </ul>
+          <div>{selectedConcert.footnote}</div>
+          <div>{selectedConcert.archive_info}</div>
         </div>
       )}
     </>

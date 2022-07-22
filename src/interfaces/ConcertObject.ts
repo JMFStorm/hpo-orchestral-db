@@ -6,4 +6,6 @@ export default interface ConcertObject {
   concert_tag: string;
   orchestra: string;
   conductors: string[];
+  footnote: string;
+  archive_info: string;
 }

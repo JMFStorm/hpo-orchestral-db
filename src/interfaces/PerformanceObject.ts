@@ -7,7 +7,5 @@ export default interface PerformanceObject {
   composers: string[];
   arrangers: string;
   soloist_performances: SoloistPerformanceObject[];
-  footnote: string;
-  archive_info: string;
   premiere_tag: string;
 }

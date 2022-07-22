@@ -15,7 +15,6 @@ const Language = () => {
     }
     if (variables) {
       for (const [key, value] of Object.entries(variables)) {
-        console.log(`${key}: ${value}`);
         const regEx = new RegExp(`{${key}}`, "g");
         const found = regEx.test(keyValue);
         if (found) {

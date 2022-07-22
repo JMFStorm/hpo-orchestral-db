@@ -29,6 +29,12 @@ export default class Concert extends BaseEntity {
   @Column("time", { nullable: true })
   starting_time: string;
 
+  @Column({ nullable: true })
+  footnote: string;
+
+  @Column({ nullable: true })
+  archive_info: string;
+
   @ManyToOne(() => Location, { onDelete: "CASCADE" })
   location: Location;
 

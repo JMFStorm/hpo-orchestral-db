@@ -37,6 +37,8 @@ export const addConcerts = async (concerts: ConcertObject[]) => {
     concertObject.concert_id = concert.concert_id;
     concertObject.date = parseStringToDate(concert.date);
     concertObject.starting_time = concert.starting_time !== "" ? concert.starting_time : undefined;
+    concertObject.archive_info = concert.archive_info;
+    concertObject.footnote = concert.footnote;
 
     const getConductor = async (name?: string) => {
       if (!name) {
@@ -63,15 +65,9 @@ export const addConcerts = async (concerts: ConcertObject[]) => {
     concertObject.conductors = conductorObjects;
 
     await Promise.all([
-      await concertTagRepo
-        .findOne({ name: concert.concert_tag })
-        .then((x) => (concertObject.concert_tag = x)),
-      await locationRepo
-        .findOne({ name: concert.location })
-        .then((x) => (concertObject.location = x)),
-      await orchestraRepo
-        .findOne({ name: concert.orchestra })
-        .then((x) => (concertObject.orchestra = x)),
+      await concertTagRepo.findOne({ name: concert.concert_tag }).then((x) => (concertObject.concert_tag = x)),
+      await locationRepo.findOne({ name: concert.location }).then((x) => (concertObject.location = x)),
+      await orchestraRepo.findOne({ name: concert.orchestra }).then((x) => (concertObject.orchestra = x)),
     ]);
 
     // Save result
@@ -101,11 +97,7 @@ export const addConcertTags = async (tagNames: string[]) => {
 // Describe
 // Search concerts by symphony id
 // Expect date format: yyyy-mm-dd (1999-01-08)
-export const getConcertsBySymphonyId = async (
-  symphonyId: string,
-  startDate: Date,
-  endDate: Date
-) => {
+export const getConcertsBySymphonyId = async (symphonyId: string, startDate: Date, endDate: Date) => {
   const performanceRepo = getRepository(Performance);
   const concertRepo = getRepository(Concert);
 
@@ -117,9 +109,7 @@ export const getConcertsBySymphonyId = async (
   const concertIds = response.map((x) => x.concert.id);
 
   // Filter array to uniques
-  const uniqueIds = concertIds.filter(
-    (current, index, self) => index === self.findIndex((x) => x === current)
-  );
+  const uniqueIds = concertIds.filter((current, index, self) => index === self.findIndex((x) => x === current));
 
   const start = startDate.toISOString();
   const end = endDate.toISOString();
@@ -205,18 +195,12 @@ export const searchConcertsByNames = async (
     where: { name: Like(`%${composer}%`) },
     relations: ["symphonies", "symphonies.performances", "symphonies.performances.concert"],
   });
-  composerConcerts = composerResponse
-    .map((x) => x.symphonies.map((x) => x.performances.map((x) => x.concert)))
-    .flat(2);
+  composerConcerts = composerResponse.map((x) => x.symphonies.map((x) => x.performances.map((x) => x.concert))).flat(2);
 
   const musicianRepo = getRepository(Musician);
   const musicianResponse = await musicianRepo.find({
     where: { name: Like(`%${soloist}%`) },
-    relations: [
-      "soloist_performances",
-      "soloist_performances.performance",
-      "soloist_performances.performance.concert",
-    ],
+    relations: ["soloist_performances", "soloist_performances.performance", "soloist_performances.performance.concert"],
   });
   musicianConcerts = musicianResponse
     .map((x) => x.soloist_performances.map((x) => x.performance))
@@ -279,9 +263,7 @@ export const searchConcertsByNames = async (
     );
 
   const results = concertsResponse
-    .filter(
-      (concert) => filterComposers(concert) && filterConductors(concert) && filterSoloists(concert)
-    )
+    .filter((concert) => filterComposers(concert) && filterConductors(concert) && filterSoloists(concert))
     .flat(1);
 
   const mapped: Partial<Concert>[] = results.map((x) => ({

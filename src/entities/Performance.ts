@@ -1,12 +1,4 @@
-import {
-  BaseEntity,
-  ManyToMany,
-  Entity,
-  Column,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-  JoinTable,
-} from "typeorm";
+import { BaseEntity, ManyToMany, Entity, Column, ManyToOne, PrimaryGeneratedColumn, JoinTable } from "typeorm";
 
 import Concert from "./Concert";
 import Symphony from "./Symphony";
@@ -21,12 +13,6 @@ export default class Performance extends BaseEntity {
 
   @Column()
   order: number;
-
-  @Column({ nullable: true })
-  footnote: string;
-
-  @Column()
-  archive_info: string;
 
   @ManyToOne(() => Concert, { onDelete: "CASCADE" })
   concert: Concert;
