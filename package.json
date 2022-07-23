@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "cross-env NODE_ENV=production node ./dist/index.js",
+    "start:heroku": "cross-env NODE_ENV=production node index.js",
     "dev": "cross-env NODE_ENV=development nodemon ./dist/index.js",
     "watch": "tsc -w",
     "build:ui": "cd ./src/client-hpo && npm run build && Xcopy /y /s .\\build ..\\..\\dist\\build\\",
