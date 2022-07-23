@@ -12,6 +12,7 @@ import Composers from "./Composers";
 import ComposersByLetters from "./ComposersByLetters";
 import SymphoniesByComposer from "./SymphoniesByComposer";
 import ConcertsBySymphony from "./ConcertsBySymphony";
+import Concert from "./Concert";
 
 const App = () => {
   const [language, setLanguage] = useState("fi");
@@ -35,6 +36,7 @@ const App = () => {
               <Route path="/composers/startingletter/:letters" element={<ComposersByLetters />} />
               <Route path="/symphonies/composerid/:composerid" element={<SymphoniesByComposer />} />
               <Route path="/concerts/symphonyid/:symphonyid" element={<ConcertsBySymphony />} />
+              <Route path="/concert/concertid/:concertid" element={<Concert />} />
             </Routes>
           </HashRouter>
         </LanguageContext.Provider>
