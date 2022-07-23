@@ -11,7 +11,7 @@ const SymphoniesByComposer = () => {
   let composerId = useMemo(() => params.composerid ?? undefined, [params.composerid]);
 
   useEffect(() => {
-    const getComposers = async () => {
+    const getSymphonies = async () => {
       if (composerId) {
         const { result, error } = await fetchSymphoniesByComposerId(composerId);
         if (result) {
@@ -19,7 +19,7 @@ const SymphoniesByComposer = () => {
         }
       }
     };
-    getComposers();
+    getSymphonies();
   }, [composerId]);
 
   const navigate = useNavigate();
@@ -30,7 +30,7 @@ const SymphoniesByComposer = () => {
 
   return (
     <>
-      <GetBackButton path={"/composers"} />
+      <GetBackButton />
       <ul>
         {symphonies.map((x) => (
           <li key={x.id}>

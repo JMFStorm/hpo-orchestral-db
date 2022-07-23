@@ -11,6 +11,7 @@ import Admin from "./Admin";
 import Composers from "./Composers";
 import ComposersByLetters from "./ComposersByLetters";
 import SymphoniesByComposer from "./SymphoniesByComposer";
+import ConcertsBySymphony from "./ConcertsBySymphony";
 
 const App = () => {
   const [language, setLanguage] = useState("fi");

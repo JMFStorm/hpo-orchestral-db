@@ -1,11 +1,16 @@
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-const GetBackButton = ({ path }) => {
+const GetBackButton = (params) => {
+  const { path } = params;
   let navigate = useNavigate();
 
   const getBack = (pathName) => {
-    navigate(pathName);
+    if (pathName) {
+      navigate(pathName);
+    } else {
+      navigate(-1);
+    }
   };
 
   return <button onClick={() => getBack(path)}>Takaisin</button>;
