@@ -5,7 +5,7 @@ import { uploadCsvData } from "../api/request";
 
 import UploadErrors from "./UploadErrors";
 
-const App = () => {
+const Admin = () => {
   const [fileData, setFileData] = useState([]);
   const [uploadErrors, setUploadErrors] = useState([]);
 
@@ -46,4 +46,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default Admin;

@@ -1,5 +1,5 @@
 {
-  "hello_world": "Hello world",
+  "header1": "Hello world",
   "upload_error.value_missing": "Error: Row {row}, cell '{cell}' - Value missing.",
   "upload_error.invalid_format": "Error: Row {row}, cell '{cell}' - Invalid format for value: '{value}'.",
   "upload_error.value_not_number": "Error: Row {row}, cell '{cell}' - Value '{value}' has to be a number."

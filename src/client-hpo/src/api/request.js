@@ -83,8 +83,8 @@ export const fetchComposersByStartingLetters = async (lettersArray) => {
     urlPath = urlPath.concat(`char=${lettersArray[i][0]}`);
   }
 
-  const composers = await get(urlPath);
-  return composers;
+  const { result, error } = await get(urlPath);
+  return { result, error };
 };
 
 export const fetchSymphoniesByComposerId = async (composerId) => {

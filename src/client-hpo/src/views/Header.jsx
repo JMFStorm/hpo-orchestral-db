@@ -1,23 +1,19 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 import Language from "../lang/Language.jsx";
 
-const Header = ({ setLanguage }) => {
+const Header = () => {
   const { lng } = Language();
 
-  const switchLanguageHandle = (language) => {
-    setLanguage(language);
-  };
-
-  const text1 = lng("hello_world");
+  const text1 = lng("header1");
 
   return (
     <header>
       <h1>{text1}</h1>
-      <div>
-        <button onClick={() => switchLanguageHandle("en")}>English</button>
-        <button onClick={() => switchLanguageHandle("fi")}>Suomi</button>
-      </div>
+      <Link to="/home">Etusivu</Link>
+      <Link to="/composers">Säveltäjät</Link>
+      <Link to="/admin">Admin</Link>
     </header>
   );
 };

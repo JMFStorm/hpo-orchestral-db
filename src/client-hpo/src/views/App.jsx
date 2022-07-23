@@ -1,15 +1,19 @@
 import React, { useEffect, useReducer, useState } from "react";
+import { HashRouter, Routes, Route } from "react-router-dom";
 
 import "../styles/app.css";
 import { languageReducer } from "../lang/languageReducer";
 import LanguageContext from "../lang/languageContext";
 
 import Header from "./Header";
-import UploadCsv from "./UploadCsv";
-import SearchComposers from "./SearchComposers";
+import HomePage from "./HomePage";
+import Admin from "./Admin";
+import Composers from "./Composers";
+import ComposersByLetters from "./ComposersByLetters";
+import SymphoniesByComposer from "./SymphoniesByComposer";
 
 const App = () => {
-  const [language, setLanguage] = useState("en");
+  const [language, setLanguage] = useState("fi");
   const [appLanguage, dispatchLanguage] = useReducer(languageReducer, null);
 
   useEffect(() => {
@@ -21,9 +25,17 @@ const App = () => {
     <main>
       {appLanguage && (
         <LanguageContext.Provider value={appLanguage}>
-          <Header language={language} setLanguage={setLanguage} />
-          <UploadCsv />
-          <SearchComposers />
+          <HashRouter>
+            <Header />
+            <Routes>
+              <Route path="/home" element={<HomePage />} />
+              <Route path="/admin" element={<Admin />} />
+              <Route path="/composers" element={<Composers />} />
+              <Route path="/composers/startingletter/:letters" element={<ComposersByLetters />} />
+              <Route path="/symphonies/composerid/:composerid" element={<SymphoniesByComposer />} />
+              <Route path="/concerts/symphonyid/:symphonyid" element={<ConcertsBySymphony />} />
+            </Routes>
+          </HashRouter>
         </LanguageContext.Provider>
       )}
     </main>
