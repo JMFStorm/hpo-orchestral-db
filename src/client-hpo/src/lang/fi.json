@@ -1,5 +1,17 @@
 {
-  "header1": "Hei maailma",
+  "header_1": "Konserttitiedot",
+  "premiere_tag.premiere": "Ensiesitys maailmalla",
+  "premiere_tag.premiere_in_finland": "Ensiesitys Suomessa",
+  "premiere_tag.premiere_for_orchestra": "Orkesterin ensiesitys",
+  "premiere_tag.premiere_for_arranger_and_orchestra": "Orkesterin ensiesitys sovittajalla",
+  "premiere_tag.premiere_for_dance": "Tanssin ensiesitys",
+  "premiere_tag.premiere_in_concert": "Ensiesitys konsertissa",
+  "premiere_tag.premiere_in_europe": "Ensiesitys Euroopassa",
+  "premiere_tag.premiere_for_second_version": "Toisen version ensiesitys",
+  "premiere_tag.premiere_for_final_version": "Lopullisen version ensiesitys",
+  "premiere_tag.premiere_for_secondary_lyrics": "Ensiesitys toissijaisella sanoituksella",
+  "premiere_tag.encore": "Ylimääräinen",
+  "search_by_composer": "Hae säveltäjän mukaan",
   "upload_error.value_missing": "Virhe: Rivi {row}, solu '{cell}' - Arvo puuttuu.",
   "upload_error.invalid_format": "Virhe: Rivi {row}, solu '{cell}' - Väärä formatointi arvolla: '{value}'.",
   "upload_error.value_not_number": "Virhe: Rivi {row}, solu '{cell}' - Arvon '{value}' täytyy olla numero."

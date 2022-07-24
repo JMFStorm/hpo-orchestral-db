@@ -6,6 +6,7 @@ import {
   getAllPerformances,
   getPerformancesByConductorId,
   getPerformancesByComposerAndPremiereTag,
+  getAllPremieresByComposerId,
 } from "../managers/performance";
 
 const controller = Router();
@@ -54,9 +55,7 @@ controller.get("/composer/:composerid", async (req, res, next) => {
     } else {
       tagsArr = [];
     }
-
     const response = await getPerformancesByComposerAndPremiereTag(composerId, tagsArr);
-
     return res.send(response);
   } catch (err) {
     console.error("err", err);
@@ -69,7 +68,19 @@ controller.get("/composer/:composerid", async (req, res, next) => {
 controller.get("/premieretag", async (req, res, next) => {
   try {
     const response = await getAllPremiereTags();
+    return res.send(response);
+  } catch (err) {
+    console.error("err", err);
+    return next(httpError(err));
+  }
+});
 
+// Describe
+// Get all premieres by composer id
+controller.get("/premiere/composer/:composerid", async (req, res, next) => {
+  try {
+    const composerId = req.params.composerid;
+    const response = await getAllPremieresByComposerId(composerId);
     return res.send(response);
   } catch (err) {
     console.error("err", err);

@@ -6,6 +6,7 @@ import { fetchSymphoniesByComposerId } from "../api/request";
 
 const SymphoniesByComposer = () => {
   const params = useParams();
+  const navigate = useNavigate();
   const [symphonies, setSymphonies] = useState([]);
 
   let composerId = useMemo(() => params.composerid ?? undefined, [params.composerid]);
@@ -22,12 +23,6 @@ const SymphoniesByComposer = () => {
     getSymphonies();
   }, [composerId]);
 
-  const navigate = useNavigate();
-
-  const navigateConcertsBySymphony = async (symphonyId) => {
-    navigate(`/concerts/symphonyid/${symphonyId}`);
-  };
-
   return (
     <>
       <GetBackButton />
@@ -36,7 +31,7 @@ const SymphoniesByComposer = () => {
           <li key={x.id}>
             <span>{x.name} </span>
             <span>{x.concertsCount} konsertti</span>
-            <button onClick={() => navigateConcertsBySymphony(x.id)}>Hae konsertit</button>
+            <button onClick={() => navigate(`/concerts/symphonyid/${x.id}`)}>Hae konsertit</button>
           </li>
         ))}
       </ul>

@@ -1,5 +1,6 @@
 {
-  "header1": "Hello world",
+  "header_1": "Concerts",
+  "search_by_composer": "Search by composer",
   "upload_error.value_missing": "Error: Row {row}, cell '{cell}' - Value missing.",
   "upload_error.invalid_format": "Error: Row {row}, cell '{cell}' - Invalid format for value: '{value}'.",
   "upload_error.value_not_number": "Error: Row {row}, cell '{cell}' - Value '{value}' has to be a number."

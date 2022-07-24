@@ -152,3 +152,28 @@ export const getPerformancesByComposerAndPremiereTag = async (composerId: string
 
   return filtered;
 };
+
+// Describe
+// Get premieres by composer Id
+export const getAllPremieresByComposerId = async (composerId: string) => {
+  const performanceRelationsForList = [
+    "concert",
+    "concert.concert_tag",
+    "symphony",
+    "symphony.composers",
+    "premiere_tag",
+  ];
+  const tagRepo = getRepository(PremiereTag);
+  const performanceRepo = getRepository(Performance);
+
+  const tags: PremiereTag[] = await tagRepo.find({});
+  const tagsQuery = tags.map((tag) => ({
+    premiere_tag: { id: tag.id },
+  }));
+  const performances = await performanceRepo.find({
+    where: tagsQuery,
+    relations: performanceRelationsForList,
+  });
+  const filtered = performances.filter((perf) => perf.symphony.composers.find((comp) => comp.id == composerId));
+  return filtered;
+};

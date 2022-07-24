@@ -1,11 +1,12 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 import GetBackButton from "./GetBackButton";
 import { fetchComposersByStartingLetters } from "../api/request";
 
 const ComposersByLetters = () => {
   const params = useParams();
+  let navigate = useNavigate();
   const [composers, setComposers] = useState([]);
 
   let lettersArr = useMemo(() => params.letters ?? undefined, [params.letters]);
@@ -28,7 +29,9 @@ const ComposersByLetters = () => {
       <ul>
         {composers.map((x) => (
           <li key={x.id}>
-            <Link to={`/symphonies/composerid/${x.id}`}>{x.name}</Link>
+            <span to={`/symphonies/composerid/${x.id}`}>{x.name}</span>
+            <button onClick={() => navigate(`/symphonies/composerid/${x.id}`)}>Teokset</button>
+            <button onClick={() => navigate(`/premieres/composerid/${x.id}`)}>Ensiesitykset</button>
           </li>
         ))}
       </ul>

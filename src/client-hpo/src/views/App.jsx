@@ -11,6 +11,7 @@ import Admin from "./Admin";
 import Composers from "./Composers";
 import ComposersByLetters from "./ComposersByLetters";
 import SymphoniesByComposer from "./SymphoniesByComposer";
+import PremieresByComposer from "./PremieresByComposer";
 import ConcertsBySymphony from "./ConcertsBySymphony";
 import Concert from "./Concert";
 
@@ -35,6 +36,7 @@ const App = () => {
               <Route path="/composers" element={<Composers />} />
               <Route path="/composers/startingletter/:letters" element={<ComposersByLetters />} />
               <Route path="/symphonies/composerid/:composerid" element={<SymphoniesByComposer />} />
+              <Route path="/premieres/composerid/:composerid" element={<PremieresByComposer />} />
               <Route path="/concerts/symphonyid/:symphonyid" element={<ConcertsBySymphony />} />
               <Route path="/concert/concertid/:concertid" element={<Concert />} />
             </Routes>

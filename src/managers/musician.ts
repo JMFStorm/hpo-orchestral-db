@@ -99,9 +99,7 @@ export const searchComposersByStartingLetter = async (lettersArr: string[]) => {
 
   const response = await getAllComposers();
 
-  const filteredByStaringLetter = response.filter((comp) =>
-    regexArr.some((reg) => reg.test(comp.name))
-  );
+  const filteredByStaringLetter = response.filter((comp) => regexArr.some((reg) => reg.test(comp.name)));
   return filteredByStaringLetter.sort((a, b) => sortStringsFunction(a.name, b.name));
 };
 

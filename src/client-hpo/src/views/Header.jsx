@@ -6,13 +6,10 @@ import Language from "../lang/Language.jsx";
 const Header = () => {
   const { lng } = Language();
 
-  const text1 = lng("header1");
-
   return (
     <header>
-      <h1>{text1}</h1>
-      <Link to="/home">Etusivu</Link>
-      <Link to="/composers">Säveltäjät</Link>
+      <h1>{lng("header_1")}</h1>
+      <Link to="/home">Etusivu</Link> <Link to="/composers">{lng("search_by_composer")}</Link>{" "}
       <Link to="/admin">Admin</Link>
     </header>
   );

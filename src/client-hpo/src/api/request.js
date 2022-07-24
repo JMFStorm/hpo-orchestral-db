@@ -36,6 +36,11 @@ export const fetchAllComposers = async () => {
   return { result, error };
 };
 
+export const fetchAllPremiereTags = async () => {
+  const { result, error } = await get("api/performance/premieretag");
+  return { result, error };
+};
+
 export const fetchConcertsCombinationSearch = async (startDate, endDate, composer, soloist, conductor) => {
   const start = startDate ?? "1800-01-01";
   const end = endDate ?? "2023-01-01";
@@ -67,6 +72,12 @@ export const fetchPerformancesByComposerIdAndPremiereTag = async (composerId, pr
     urlPath = urlPath.concat(`premieretagid=${premiereTagIdsArray[i]}`);
   }
 
+  const composers = await get(urlPath);
+  return composers;
+};
+
+export const fetchPremieresByComposer = async (composerId) => {
+  const urlPath = `api/performance/premiere/composer/${composerId}`;
   const composers = await get(urlPath);
   return composers;
 };
