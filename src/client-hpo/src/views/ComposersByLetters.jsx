@@ -16,6 +16,7 @@ const ComposersByLetters = () => {
       if (lettersArr) {
         const { result, error } = await fetchComposersByStartingLetters(lettersArr);
         if (result) {
+          console.log("result", result);
           setComposers(result);
         }
       }
@@ -29,9 +30,15 @@ const ComposersByLetters = () => {
       <ul>
         {composers.map((x) => (
           <li key={x.id}>
-            <span to={`/symphonies/composerid/${x.id}`}>{x.name}</span>
-            <button onClick={() => navigate(`/symphonies/composerid/${x.id}`)}>Teokset</button>
-            <button onClick={() => navigate(`/premieres/composerid/${x.id}`)}>Ensiesitykset</button>
+            <span to={`/symphonies/composerid/${x.id}`}>{x.name} </span>
+            <button onClick={() => navigate(`/symphonies/composerid/${x.id}`)}>Katso teokset</button>
+            {x.premieresCount > 0 && (
+              <>
+                <span> - {x.premieresCount}</span>
+                <span> ensiesitystä</span>
+                <button onClick={() => navigate(`/premieres/composerid/${x.id}`)}>Katso ensiesitykset</button>
+              </>
+            )}
           </li>
         ))}
       </ul>

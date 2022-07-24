@@ -16,6 +16,7 @@ const SymphoniesByComposer = () => {
       if (composerId) {
         const { result, error } = await fetchSymphoniesByComposerId(composerId);
         if (result) {
+          console.log("result", result);
           setSymphonies(result);
         }
       }
@@ -29,8 +30,8 @@ const SymphoniesByComposer = () => {
       <ul>
         {symphonies.map((x) => (
           <li key={x.id}>
-            <span>{x.name} </span>
-            <span>{x.concertsCount} konsertti</span>
+            <span>{x.name}, </span>
+            <span>{x.concertsCount} konserttia, </span>
             <button onClick={() => navigate(`/concerts/symphonyid/${x.id}`)}>Hae konsertit</button>
           </li>
         ))}
