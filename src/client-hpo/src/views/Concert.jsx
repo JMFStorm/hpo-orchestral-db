@@ -64,7 +64,7 @@ const Concert = () => {
                     {perf.symphony.composers?.map((comp, index) => {
                       let textValue = "";
                       if (index !== 0) {
-                        textValue.concat(" / ");
+                        textValue = textValue.concat(" / ");
                       }
                       textValue = textValue.concat(comp.name);
                       return <span>{textValue}</span>;
@@ -78,6 +78,16 @@ const Concert = () => {
                     {perf.premiere_tag && (
                       <span key={perf.premiere_tag.id}>({lng("premiere_tag." + perf.premiere_tag.name)})</span>
                     )}
+                  </div>
+                  <div>
+                    {perf.soloist_performances?.map((soloPerf, index) => {
+                      let textValue = index === 0 ? "Solistit: " : "";
+                      if (index !== 0) {
+                        textValue = textValue.concat(", ");
+                      }
+                      textValue = textValue.concat(`${soloPerf.soloist.name} (${soloPerf.instrument.name})`);
+                      return <span>{textValue}</span>;
+                    })}
                   </div>
                   <br />
                 </>
