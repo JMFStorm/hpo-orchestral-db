@@ -7,7 +7,8 @@ import { fetchComposersByStartingLetters } from "../api/request";
 const ComposersByLetters = () => {
   const params = useParams();
   let navigate = useNavigate();
-  const [composers, setComposers] = useState([]);
+  const [composersResponse, setComposersResponse] = useState([]);
+  const [nameInput, setNameInput] = useState("");
 
   let lettersArr = useMemo(() => params.letters ?? undefined, [params.letters]);
 
@@ -17,30 +18,40 @@ const ComposersByLetters = () => {
         const { result, error } = await fetchComposersByStartingLetters(lettersArr);
         if (result) {
           console.log("result", result);
-          setComposers(result);
+          setComposersResponse(result);
         }
       }
     };
     getComposers();
   }, [lettersArr]);
 
+  const changeNameHandle = (event) => {
+    setNameInput(() => event.target.value);
+  };
+
   return (
     <>
       <GetBackButton path={"/composers"} />
+      <div>
+        <label htmlFor="name">Hae nimeä</label>
+        <input name="name" type="text" value={nameInput} onChange={(event) => changeNameHandle(event)} />
+      </div>
       <ul>
-        {composers.map((x) => (
-          <li key={x.id}>
-            <span to={`/symphonies/composerid/${x.id}`}>{x.name} </span>
-            <button onClick={() => navigate(`/symphonies/composerid/${x.id}`)}>
-              Hae teokset ({x.symphoniesCount})
-            </button>
-            {x.premieresCount > 0 && (
-              <button onClick={() => navigate(`/premieres/composerid/${x.id}`)}>
-                Hae ensiesitykset ({x.premieresCount})
+        {composersResponse
+          .filter((comp) => comp.name.toLowerCase().includes(nameInput.toLowerCase()))
+          .map((x) => (
+            <li key={x.id}>
+              <span to={`/symphonies/composerid/${x.id}`}>{x.name} </span>
+              <button onClick={() => navigate(`/symphonies/composerid/${x.id}`)}>
+                Hae teokset ({x.symphoniesCount})
               </button>
-            )}
-          </li>
-        ))}
+              {x.premieresCount > 0 && (
+                <button onClick={() => navigate(`/premieres/composerid/${x.id}`)}>
+                  Hae ensiesitykset ({x.premieresCount})
+                </button>
+              )}
+            </li>
+          ))}
       </ul>
     </>
   );

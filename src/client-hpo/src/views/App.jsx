@@ -8,6 +8,7 @@ import LanguageContext from "../lang/languageContext";
 import Header from "./Header";
 import HomePage from "./HomePage";
 import Admin from "./Admin";
+import Concerts from "./Concerts";
 import Composers from "./Composers";
 import ComposersByLetters from "./ComposersByLetters";
 import SymphoniesByComposer from "./SymphoniesByComposer";
@@ -39,6 +40,7 @@ const App = () => {
               <Route path="/premieres/composerid/:composerid" element={<PremieresByComposer />} />
               <Route path="/concerts/symphonyid/:symphonyid" element={<ConcertsBySymphony />} />
               <Route path="/concert/concertid/:concertid" element={<Concert />} />
+              <Route path="/concerts" element={<Concerts />} />
             </Routes>
           </HashRouter>
         </LanguageContext.Provider>

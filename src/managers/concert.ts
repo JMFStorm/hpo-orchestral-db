@@ -251,6 +251,7 @@ export const searchConcertsByNames = async (
     conductors: x.conductors,
     id: x.id,
     starting_time: x.starting_time,
+    date: x.date,
   }));
   return mapped;
 };
