@@ -1,11 +1,12 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 import GetBackButton from "./GetBackButton";
 import { fetchConcertsBySymphonyId } from "../api/request";
 
 const ConcertsBySymphony = () => {
   const params = useParams();
+  const navigate = useNavigate();
   const [concerts, setConcerts] = useState([]);
 
   let symphonyId = useMemo(() => params.symphonyid ?? undefined, [params.symphonyid]);
@@ -28,22 +29,21 @@ const ConcertsBySymphony = () => {
       <GetBackButton />
       <ul>
         {concerts.map((x) => {
-          let textContent = x.date;
-          if (x.concert_tag) {
-            textContent = textContent.concat(` ${x.concert_tag.name}`);
-          }
+          let conductorsText = "";
           if (x.conductors) {
-            textContent = textContent.concat(", ");
             x.conductors.forEach((x, index) => {
               if (index !== 0) {
-                textContent = textContent.concat(" / ");
+                conductorsText = conductorsText.concat(" / ");
               }
-              textContent = textContent.concat(`${x.name}`);
+              conductorsText = conductorsText.concat(`${x.name}`);
             });
           }
           return (
             <li key={x.id}>
-              <Link to={`/concert/concertid/${x.id}`}>{textContent}</Link>
+              <span>{x.date} </span>
+              <span>{x.concert_tag?.name} </span>
+              <span>{conductorsText} </span>
+              <button onClick={() => navigate(`/concert/concertid/${x.id}`)}>Avaa</button>
             </li>
           );
         })}

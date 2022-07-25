@@ -7,6 +7,7 @@ import Musician from "../entities/Musician";
 import { filterUniquesById, sortStringsFunction } from "../utils/functions";
 import Concert from "../entities/Concert";
 import Conductor from "../entities/Conductor";
+import Symphony from "../entities/Symphony";
 
 // Describe
 // Adds musicians to table from an array of names,
@@ -94,13 +95,15 @@ export const searchComposersByStartingLetter = async (lettersArr: string[]) => {
   const regexString = (str: string) => `^${str}`;
   const regexArr = lettersArr.map((x) => new RegExp(regexString(x), "i"));
 
+  const symphoniesRepo = getRepository(Symphony);
   const performancesRepo = getRepository(Performance);
-  const repo = getRepository(Composer);
+  const composersRepo = getRepository(Composer);
 
   let composers: Composer[] = [];
   let premieres: Performance[] = [];
+  let symphonies: Symphony[] = [];
 
-  const getComposers = async () => await repo.find({ order: { name: "ASC" } });
+  const getComposers = async () => await composersRepo.find({ order: { name: "ASC" } });
   const getPremieres = async () =>
     await performancesRepo.find({
       where: {
@@ -108,10 +111,17 @@ export const searchComposersByStartingLetter = async (lettersArr: string[]) => {
       },
       relations: ["symphony", "symphony.composers", "premiere_tag"],
     });
+  const getSymphonies = async () =>
+    await symphoniesRepo.find({
+      relations: ["composers"],
+    });
+
   await Promise.all([
     await getComposers().then((res) => (composers = res)),
     await getPremieres().then((res) => (premieres = res)),
+    await getSymphonies().then((res) => (symphonies = res)),
   ]);
+
   const filteredByStaringLetter = composers.filter((comp) => regexArr.some((reg) => reg.test(comp.name)));
   const sorted = filteredByStaringLetter.sort((a, b) => sortStringsFunction(a.name, b.name));
 
@@ -120,15 +130,18 @@ export const searchComposersByStartingLetter = async (lettersArr: string[]) => {
     .map((x) => x.composers)
     .flat()
     .map((x) => x.id);
-  const withPremieres = sorted.map((x) => {
-    let prems = 0;
+
+  const withPremieres = sorted.map((comp) => {
+    let premsCount = 0;
     composerIds.forEach((val) => {
-      if (val === x.id) {
-        prems++;
+      if (val === comp.id) {
+        premsCount++;
       }
     });
-    return { ...x, premieresCount: prems };
+    const symphsCount = symphonies.filter((x) => x.composers.find((x) => x.id === comp.id)).length;
+    return { ...comp, premieresCount: premsCount, symphoniesCount: symphsCount };
   });
+
   return withPremieres;
 };
 

@@ -31,13 +31,13 @@ const ComposersByLetters = () => {
         {composers.map((x) => (
           <li key={x.id}>
             <span to={`/symphonies/composerid/${x.id}`}>{x.name} </span>
-            <button onClick={() => navigate(`/symphonies/composerid/${x.id}`)}>Katso teokset</button>
+            <button onClick={() => navigate(`/symphonies/composerid/${x.id}`)}>
+              Hae teokset ({x.symphoniesCount})
+            </button>
             {x.premieresCount > 0 && (
-              <>
-                <span> - {x.premieresCount}</span>
-                <span> ensiesitystä</span>
-                <button onClick={() => navigate(`/premieres/composerid/${x.id}`)}>Katso ensiesitykset</button>
-              </>
+              <button onClick={() => navigate(`/premieres/composerid/${x.id}`)}>
+                Hae ensiesitykset ({x.premieresCount})
+              </button>
             )}
           </li>
         ))}

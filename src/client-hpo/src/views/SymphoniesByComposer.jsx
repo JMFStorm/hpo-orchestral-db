@@ -31,8 +31,7 @@ const SymphoniesByComposer = () => {
         {symphonies.map((x) => (
           <li key={x.id}>
             <span>{x.name}, </span>
-            <span>{x.concertsCount} konserttia, </span>
-            <button onClick={() => navigate(`/concerts/symphonyid/${x.id}`)}>Hae konsertit</button>
+            <button onClick={() => navigate(`/concerts/symphonyid/${x.id}`)}>Hae konsertit ({x.concertsCount})</button>
           </li>
         ))}
       </ul>

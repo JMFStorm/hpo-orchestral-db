@@ -36,7 +36,7 @@ const PremieresByComposer = () => {
             <span>{x.concert.concert_tag?.name}, </span>
             <span>{x.symphony.name} </span>
             <span>{"(" + lng("premiere_tag." + x.premiere_tag.name) + ")"} </span>
-            <button onClick={() => navigate(`/concert/concertid/${x.concert.id}`)}>Katso konserttia</button>
+            <button onClick={() => navigate(`/concert/concertid/${x.concert.id}`)}>Avaa</button>
           </li>
         ))}
       </ul>
