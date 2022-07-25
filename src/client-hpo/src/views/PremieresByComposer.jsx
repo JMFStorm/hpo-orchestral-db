@@ -9,8 +9,8 @@ const PremieresByComposer = () => {
   const params = useParams();
   const navigate = useNavigate();
   const { lng } = Language();
-  const [performances, setPerformances] = useState([]);
 
+  const [performances, setPerformances] = useState([]);
   let composerId = useMemo(() => params.composerid ?? undefined, [params.composerid]);
 
   useEffect(() => {

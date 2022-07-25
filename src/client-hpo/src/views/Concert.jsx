@@ -1,11 +1,13 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
 
+import Language from "../lang/Language";
 import GetBackButton from "./GetBackButton";
 import { fetchConcertById } from "../api/request";
 
 const Concert = () => {
   const params = useParams();
+  const { lng } = Language();
   const [concert, setConcert] = useState(undefined);
 
   let concertId = useMemo(() => params.concertid ?? undefined, [params.concertid]);
@@ -15,6 +17,7 @@ const Concert = () => {
       if (concertId) {
         const { result, error } = await fetchConcertById(concertId);
         if (result) {
+          console.log("result", result);
           setConcert(result);
         }
       }
@@ -54,20 +57,28 @@ const Concert = () => {
           </div>
           <br />
           <div>
-            {concert.performances.map((x) => {
+            {concert.performances.map((perf) => {
               return (
                 <>
                   <div>
-                    {x.symphony.composers?.map((x, index) => {
+                    {perf.symphony.composers?.map((comp, index) => {
                       let textValue = "";
                       if (index !== 0) {
                         textValue.concat(" / ");
                       }
-                      textValue = textValue.concat(x.name);
+                      textValue = textValue.concat(comp.name);
                       return <span>{textValue}</span>;
                     })}
                   </div>
-                  <div>{x.symphony.name}</div>
+                  <div>
+                    {perf.symphony.name}{" "}
+                    {perf.symphony.arrangers && (
+                      <span key={perf.symphony.arrangers.id}>({perf.symphony.arrangers.names})</span>
+                    )}
+                    {perf.premiere_tag && (
+                      <span key={perf.premiere_tag.id}>({lng("premiere_tag." + perf.premiere_tag.name)})</span>
+                    )}
+                  </div>
                   <br />
                 </>
               );

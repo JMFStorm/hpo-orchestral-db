@@ -7,8 +7,8 @@ import { fetchConcertsBySymphonyId } from "../api/request";
 const ConcertsBySymphony = () => {
   const params = useParams();
   const navigate = useNavigate();
-  const [concerts, setConcerts] = useState([]);
 
+  const [concerts, setConcerts] = useState([]);
   let symphonyId = useMemo(() => params.symphonyid ?? undefined, [params.symphonyid]);
 
   useEffect(() => {
