@@ -7,11 +7,9 @@ import Instrument from "../entities/Instrument";
 import Musician from "../entities/Musician";
 import Concert from "../entities/Concert";
 import Symphony from "../entities/Symphony";
-import Arranger from "../entities/Arranger";
 import PerformanceObject from "src/interfaces/PerformanceObject";
 import SoloistPerformanceObject from "src/interfaces/SoloistPerformanceObject";
 
-// To get all relational tables from performances
 const allPerformanceRelations = [
   "concert",
   "concert.location",
@@ -20,18 +18,24 @@ const allPerformanceRelations = [
   "concert.conductors",
   "symphony",
   "symphony.composers",
-  "arrangers",
   "premiere_tag",
   "soloist_performances",
   "soloist_performances.soloist",
   "soloist_performances.instrument",
 ];
 
+const performanceRelationsForList = [
+  "concert",
+  "concert.concert_tag",
+  "symphony",
+  "symphony.composers",
+  "premiere_tag",
+];
+
 // Describe
 // Adds concert & soloist performances to table,
 // returns saved count
 export const addPerformances = async (performances: PerformanceObject[]) => {
-  const arrangerRepo = getRepository(Arranger);
   const concertRepo = getRepository(Concert);
   const symphonyRepo = getRepository(Symphony);
   const instrumentRepo = getRepository(Instrument);
@@ -43,55 +47,43 @@ export const addPerformances = async (performances: PerformanceObject[]) => {
   let addedCount = 0;
   const performancesCount = performances.length;
   const numeralPart = Math.floor(performancesCount / 40);
-
   for (const performance of performances) {
     if (addedCount % numeralPart == 0) {
       console.log(`Saving performance: (${addedCount}/${performancesCount})`);
     }
-
     // Soloists
     const saveSoloistPerformances = async (performances: SoloistPerformanceObject[]) => {
       let soloistObjectsArray = [];
-
       for (const performance of performances) {
         const soloistObj = await musicianRepo.findOne({ name: performance.soloistName });
         const instrumentObj = await instrumentRepo.findOne({ name: performance.instrumentName });
-
         const soloistPerfObject = {
           soloist: soloistObj,
           instrument: instrumentObj,
         };
-
         const savedSoloistPerf = await soloistPerfRepo.save(soloistPerfObject);
         soloistObjectsArray.push(savedSoloistPerf);
       }
-
       return soloistObjectsArray as SoloistPerformance[];
     };
-
     const symphony = await symphonyRepo.findOne({ symphony_id: performance.symphonyId });
-
     // Init performance object
     let concertPerfObj: Partial<Performance> = {
       order: Number(performance.order),
       symphony: symphony,
     };
-
     // Get all existing fields from tables
     await Promise.all([
       await concertRepo.findOne({ concert_id: performance.concertId }).then((x) => (concertPerfObj.concert = x)),
-      await arrangerRepo.findOne({ names: performance.arrangers }).then((x) => (concertPerfObj.arrangers = x)),
       await premiereTagRepo.findOne({ name: performance.premiere_tag }).then((x) => (concertPerfObj.premiere_tag = x)),
       await saveSoloistPerformances(performance.soloist_performances).then(
         (x) => (concertPerfObj.soloist_performances = x)
       ),
     ]);
-
     // Save
     await concertPerfRepo.save(concertPerfObj);
     addedCount++;
   }
-
   return addedCount;
 };
 
@@ -107,65 +99,41 @@ export const getAllPerformances = async () => {
 // Get performances by conductor id
 export const getPerformancesByConductorId = async (conductorId: string) => {
   const repo = getRepository(Performance);
-
   const result = await repo.find({
     where: { conductor: { id: conductorId } },
     relations: allPerformanceRelations,
   });
-
   return result;
 };
 
 // Describe
 // Get performances by premiere tag composer Id
 export const getPerformancesByComposerAndPremiereTag = async (composerId: string, premiereTagIds: string[]) => {
-  const performanceRelationsForList = [
-    "concert",
-    "concert.concert_tag",
-    "symphony",
-    "symphony.composers",
-    "premiere_tag",
-  ];
-
   const tagRepo = getRepository(PremiereTag);
   const performanceRepo = getRepository(Performance);
-
   let tags: PremiereTag[] = [];
-
   for (const tagId of premiereTagIds) {
     const res = await tagRepo.findOne({ id: tagId });
     if (res) {
       tags.push(res);
     }
   }
-
   const tagsQuery = tags.map((tag) => ({
     premiere_tag: { id: tag.id },
   }));
-
   const performances = await performanceRepo.find({
     where: tagsQuery,
     relations: performanceRelationsForList,
   });
-
   const filtered = performances.filter((perf) => perf.symphony.composers.find((comp) => comp.id == composerId));
-
   return filtered;
 };
 
 // Describe
 // Get premieres by composer Id
 export const getAllPremieresByComposerId = async (composerId: string) => {
-  const performanceRelationsForList = [
-    "concert",
-    "concert.concert_tag",
-    "symphony",
-    "symphony.composers",
-    "premiere_tag",
-  ];
   const tagRepo = getRepository(PremiereTag);
   const performanceRepo = getRepository(Performance);
-
   const tags: PremiereTag[] = await tagRepo.find({});
   const tagsQuery = tags.map((tag) => ({
     premiere_tag: { id: tag.id },

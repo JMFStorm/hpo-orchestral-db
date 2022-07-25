@@ -5,12 +5,13 @@ import SymphonyObject from "../interfaces/SymphonyObject";
 import { filterUniquesById, sortStringsFunction } from "../utils/functions";
 import Symphony from "../entities/Symphony";
 import Performance from "../entities/Performance";
+import Arranger from "../entities/Arranger";
 
 // Describe
 // Get all symphonies
 export const getAllSymphonies = async () => {
   const repo = getRepository(Symphony);
-  const result = await repo.find({ relations: ["composers"] });
+  const result = await repo.find({ relations: ["composers", "arrangers"] });
   return result;
 };
 
@@ -24,17 +25,15 @@ export const addSymphoniesAndRelatedComposers = async (symphonies: SymphonyObjec
 
   const SymphonyRepo = getRepository(Symphony);
   const composerRepo = getRepository(Composer);
+  const arrangerRepo = getRepository(Arranger);
 
   for (const symphony of symphonies) {
     if (addedCount % numeralPart == 0) {
       console.log(`Saving symphony: (${addedCount}/${symphoniesCount})`);
     }
-
     let composerObjects: Composer[] = [];
-
     for (const composerName of symphony.composerNames) {
       let existingComp = await composerRepo.findOne({ name: composerName });
-
       if (!existingComp) {
         const newComp: Partial<Composer> = { name: composerName };
         existingComp = await composerRepo.save(newComp);
@@ -43,11 +42,12 @@ export const addSymphoniesAndRelatedComposers = async (symphonies: SymphonyObjec
         composerObjects.push(existingComp);
       }
     }
-
+    const arrangersObject = await arrangerRepo.findOne({ names: symphony.arrangers });
     const newSymphony: Partial<Symphony> = {
       name: symphony.name,
       symphony_id: symphony.symphony_id,
       composers: composerObjects,
+      arrangers: arrangersObject,
     };
     try {
       await SymphonyRepo.save(newSymphony);
@@ -58,7 +58,6 @@ export const addSymphoniesAndRelatedComposers = async (symphonies: SymphonyObjec
     }
     addedCount++;
   }
-
   return addedCount;
 };
 
@@ -66,35 +65,27 @@ export const addSymphoniesAndRelatedComposers = async (symphonies: SymphonyObjec
 // Get symphony by composerId
 export const getSymphoniesByComposerId = async (composerId: string) => {
   const repo = getRepository(Composer);
-
   const response = await repo.find({
     where: { id: composerId },
-    relations: ["symphonies"],
+    relations: ["symphonies", "symphonies.arrangers"],
     take: 1,
   });
-
   const symphonies: Symphony[] = response?.length > 0 ? response[0].symphonies : [];
-
   if (!symphonies) {
     return [];
   }
-
   const performanceRepo = getRepository(Performance);
-
   const results = await Promise.all(
     symphonies.map(async (symphony) => {
       const res = await performanceRepo.find({
         where: { symphony: { id: symphony.id } },
-        relations: ["concert", "symphony"],
+        relations: ["concert", "symphony", "symphony.arrangers"],
       });
-
       const concerts = res.map((x) => x.concert);
       const count = filterUniquesById(concerts).length;
-
       return { ...symphony, concertsCount: count };
     })
   );
-
   return results.sort((a, b) => sortStringsFunction(a.name, b.name));
 };
 

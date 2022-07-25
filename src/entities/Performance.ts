@@ -2,7 +2,6 @@ import { BaseEntity, ManyToMany, Entity, Column, ManyToOne, PrimaryGeneratedColu
 
 import Concert from "./Concert";
 import Symphony from "./Symphony";
-import Arranger from "./Arranger";
 import SoloistPerformance from "./SoloistPerformance";
 import PremiereTag from "./PremiereTag";
 
@@ -19,9 +18,6 @@ export default class Performance extends BaseEntity {
 
   @ManyToOne(() => Symphony, { onDelete: "CASCADE" })
   symphony: Symphony;
-
-  @ManyToOne(() => Arranger, { onDelete: "CASCADE" })
-  arrangers: Arranger;
 
   @ManyToMany(() => SoloistPerformance, (soloistPerf) => soloistPerf.performance, {
     onDelete: "CASCADE",

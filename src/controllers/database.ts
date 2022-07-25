@@ -32,7 +32,6 @@ controller.post("/seed", async (req, res, next) => {
     // Read CSV file
     const csvTestFileName = req.body.csvTestFileName;
     console.log("csvTestFileName", csvTestFileName);
-
     if (csvTestFileName) {
       // Read test csv from filepath
       const csvPath = csvDirectoryPath + csvTestFileName;
@@ -43,7 +42,6 @@ controller.post("/seed", async (req, res, next) => {
       rowObjects = req.body.csvRows;
       console.log(`Using data from req.body.csvRows to seed`);
     }
-
     if (rowObjects?.length <= 0) {
       return res.send({ savedPerformances: 0 });
     }
@@ -51,11 +49,9 @@ controller.post("/seed", async (req, res, next) => {
     // Validate all rows
     console.log("Validating rows");
     const errors = validateCsvData(rowObjects);
-
     if (0 < errors.length) {
       return next(httpError(errors, "validation_error", 400));
     }
-
     console.log("Rows validated");
     console.log("Deleting existing tables");
 
@@ -75,25 +71,34 @@ controller.post("/seed", async (req, res, next) => {
       await deleteAllFromRepo("soloist_performance"),
       await deleteAllFromRepo("symphony"),
     ]);
-
     console.log("Deleted existing tables.");
 
-    // Create premiere tag tables
+    // Add premiere tags
     const premsRes = await addPremiereTags(premiereTags);
-
     console.log(`Added ${premsRes} premiere tags`);
+
+    // Add arrangers
+    let arrangers: string[] = [];
+    rowObjects
+      .filter((x) => x.Sovittaja.trim().length !== 0)
+      .map((x) => {
+        const current = x.Sovittaja;
+        const arranger = current;
+
+        if (!arrangers.includes(arranger)) {
+          arrangers.push(arranger);
+        }
+      });
+    const arrangersRes = await addArrangers(arrangers);
+    console.log(`Added ${arrangersRes} arrangers`);
 
     // Add symphonies
     let symphoniesWithComposers: SymphonyObject[] = [];
-
-    rowObjects.forEach((row, index) => {
-      // Read composer
+    rowObjects.forEach((row) => {
       let composersArr: string[] = [];
-
       const composerCell = row.Saveltaja.trim();
       const regexEmpty = new RegExp("\\*");
       const regexMultiple = new RegExp("/");
-
       if (regexEmpty.test(composerCell) || composerCell === "") {
         composersArr = [];
       } else if (regexMultiple.test(composerCell)) {
@@ -105,33 +110,28 @@ controller.post("/seed", async (req, res, next) => {
         composersArr.push(composerCell.trim());
       }
 
-      // Read symphony
       const symphonyIdCell = row.TeoksenId;
       const symphonyNameCell = row.TeoksenNimi;
-
-      // Determine symphony name
+      const arrangerCell = row.Sovittaja.trim();
       let symphonyName = symphonyNameCell;
 
       // Premiere tag names
       const premieresRegexList = premiereTags.map((x) => x.regex);
-
       if (premieresRegexList.some((rx) => rx.test(symphonyNameCell))) {
         const indexStart = symphonyNameCell.lastIndexOf("(");
         const indexEnd = symphonyNameCell.lastIndexOf(")");
-
         if (indexStart < indexEnd) {
           symphonyName = symphonyNameCell.substring(0, indexStart).trim();
         } else {
-          console.log("Something not right with brackets: ", indexStart, indexEnd, symphonyNameCell);
+          console.log("Something not right with premiere tag brackets: ", indexStart, indexEnd, symphonyNameCell);
         }
       }
-
       const symphonyObj: SymphonyObject = {
         symphony_id: symphonyIdCell,
         name: symphonyName,
         composerNames: composersArr,
+        arrangers: arrangerCell,
       };
-
       if (
         !symphoniesWithComposers.some((x) => x.symphony_id === symphonyObj.symphony_id && x.name === symphonyObj.name)
       ) {
@@ -145,18 +145,14 @@ controller.post("/seed", async (req, res, next) => {
 
     // Collect conductors
     let conductors: string[] = [];
-
     rowObjects.forEach((x) => {
       const conductor = x.Kapellimestari.trim();
-
       // Check for multiple in one cell
       const regex21 = new RegExp("/");
-
       if (regex21.test(conductor)) {
         const condsArr = conductor.split("/").map((x) => x.trim());
         condsArr.forEach((x) => {
           const cond = x.trim();
-
           if (!conductors.includes(cond)) {
             conductors.push(cond);
             return;
@@ -167,49 +163,29 @@ controller.post("/seed", async (req, res, next) => {
       }
     });
 
-    let arrangers: string[] = [];
-
-    // Collect arrangers
-    rowObjects
-      .filter((x) => x.Sovittaja.trim().length !== 0)
-      .map((x) => {
-        const current = x.Sovittaja;
-        const arranger = current;
-
-        if (!arrangers.includes(arranger)) {
-          arrangers.push(arranger);
-        }
-      });
-
     // Collect instruments from soloists
     let instruments: string[] = [];
     let musicians: string[] = [];
-
     // And collect musicians from soloist
     rowObjects
       .filter((x) => x.Solisti.trim().length !== 0)
       .map((x) => {
-        const cell = x.Solisti;
-
         // Check for multiple in one cell
+        const cell = x.Solisti;
         const soloistArr = cell.split(",");
         soloistArr.map((x) => {
-          const current = x.trim();
-
           // Get musicians
+          const current = x.trim();
           const soloist = current.substring(0, current.indexOf("(")).trim();
           if (soloist.length > 0 && !musicians.includes(soloist)) {
             musicians.push(soloist);
           }
-
           // Get instrument
           const regexInstrument = new RegExp("(w*)");
-
           if (regexInstrument.test(current)) {
             const start = current.indexOf("(") + 1;
             const end = current.indexOf(")");
             const instrument = current.substring(start, end).trim();
-
             if (instrument !== "" && !instruments.includes(instrument)) {
               instruments.push(instrument);
             }
@@ -219,7 +195,6 @@ controller.post("/seed", async (req, res, next) => {
 
     // Collect orchestries
     let orchestraNames: string[] = [];
-
     rowObjects.map((row) => {
       const orchestra = row.Orkesteri;
       if (!orchestraNames.some((x) => x === orchestra) && orchestra.trim() !== "") {
@@ -229,7 +204,6 @@ controller.post("/seed", async (req, res, next) => {
 
     // Collect locations
     let locationNames: string[] = [];
-
     rowObjects.map((row) => {
       const location = row.Konserttipaikka;
       if (!locationNames.some((x) => x === location) && location.trim() !== "") {
@@ -239,7 +213,6 @@ controller.post("/seed", async (req, res, next) => {
 
     // Collect concert tags
     let concertTagNames: string[] = [];
-
     rowObjects.map((row) => {
       const tag = row.KonsertinNimike.trim();
       if (!concertTagNames.includes(tag) && tag !== "") {
@@ -249,7 +222,6 @@ controller.post("/seed", async (req, res, next) => {
 
     // Collect concerts
     let concerts: ConcertObject[] = [];
-
     rowObjects.forEach((row) => {
       const concertId = row.KonserttiId.trim();
       const date = row.Paivamaara.trim();
@@ -269,7 +241,6 @@ controller.post("/seed", async (req, res, next) => {
         const conductor = x.trim();
         conductorsArr.push(conductor);
       });
-
       if (!concerts.some((x) => x.concert_id === concertId) && concertId !== "") {
         const concertObject: ConcertObject = {
           concert_id: concertId,
@@ -289,31 +260,23 @@ controller.post("/seed", async (req, res, next) => {
     // Collect both soloist and concert performances
     // and connect premiere tags
     let performances: PerformanceObject[] = [];
-
     const premiereTagObjects = await getAllPremiereTags();
-
     rowObjects.forEach((row) => {
       const soloistPerformances: SoloistPerformanceObject[] = [];
       const soloistsCell = row.Solisti;
-
       // Check for multiple soloists in one cell
       const soloistArr = soloistsCell.split(",");
       soloistArr.forEach((x) => {
         const current = x.trim();
-
         let soloistTemp;
         let instrumentTemp;
-
         // Get musicians
         const soloist = current.substring(0, current.indexOf("(")).trim();
-
         if (soloist.length > 0) {
           soloistTemp = soloist;
         }
-
         // Get instrument
         const regexInstrument = new RegExp("(w*)");
-
         if (regexInstrument.test(current)) {
           const start = current.indexOf("(") + 1;
           const end = current.indexOf(")");
@@ -323,7 +286,6 @@ controller.post("/seed", async (req, res, next) => {
             instrumentTemp = instrument;
           }
         }
-
         // Add new soloist performance for current concert performance
         if (soloistTemp && instrumentTemp) {
           soloistPerformances.push({
@@ -332,7 +294,6 @@ controller.post("/seed", async (req, res, next) => {
           });
         }
       });
-
       const composerCell = row.Saveltaja.trim();
       let composersArr: string[] = [];
 
@@ -346,7 +307,6 @@ controller.post("/seed", async (req, res, next) => {
       // Initialize defaults
       let premiereTag = "";
       const symphonyNameCell = row.TeoksenNimi.trim();
-
       // Check for premeiere tag in name cell
       premiereTags.forEach(async (tag) => {
         if (symphonyNameCell.match(tag.regex)) {
@@ -362,7 +322,6 @@ controller.post("/seed", async (req, res, next) => {
       const concertId = row.KonserttiId.trim();
       const order = row.Esitysjarjestys.trim();
       const symphonyId = row.TeoksenId.trim();
-      const arranger = row.Sovittaja.trim();
 
       const newPerformance: PerformanceObject = {
         premiere_tag: premiereTag,
@@ -370,10 +329,8 @@ controller.post("/seed", async (req, res, next) => {
         concertId: concertId,
         symphonyId: symphonyId,
         composers: composersArr,
-        arrangers: arranger,
         soloist_performances: soloistPerformances,
       };
-
       if (!performances.some((x) => x === newPerformance)) {
         performances.push(newPerformance);
       }
@@ -388,7 +345,6 @@ controller.post("/seed", async (req, res, next) => {
       await addOrchestries(orchestraNames).then(() => console.log("Saved orchestraNames")),
       await addLocations(locationNames).then(() => console.log("Saved locationNames")),
       await addConcertTags(concertTagNames).then(() => console.log("Saved concertTagNames")),
-      await addArrangers(arrangers).then(() => console.log("Saved arrangers")),
     ]);
 
     // Save concerts
@@ -397,7 +353,6 @@ controller.post("/seed", async (req, res, next) => {
 
     // Save soloist and concert performances
     const savedCount = await addPerformances(performances);
-
     console.log({ savedPerformances: savedCount });
     return res.send({ savedPerformances: savedCount });
   } catch (err) {
