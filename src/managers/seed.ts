@@ -7,11 +7,11 @@ import PerformanceObject from "../interfaces/PerformanceObject";
 import SoloistPerformanceObject from "../interfaces/SoloistPerformanceObject";
 import { getAllPremiereTags } from "./premiereTag";
 
-type RowErrorType = "value_missing" | "invalid_format" | "value_not_number";
+type CsvErrorType = "value_missing" | "invalid_format" | "value_not_number" | "column_missing";
 
-interface CsvRowError {
-  rowNumber: number;
-  errorType: RowErrorType;
+interface CsvError {
+  rowNumber: number | undefined;
+  errorType: CsvErrorType;
   cellName: string;
   cellValue: string;
 }
@@ -31,7 +31,40 @@ const formattedFields = [
 ];
 
 export const validateCsvData = (rows: CsvRowObject[]) => {
-  let errors: CsvRowError[] = [];
+  let errors: CsvError[] = [];
+
+  // Validate all fields are included,
+  // testing one row is enough
+  const fieldsAsString = [
+    "KonserttiId",
+    "Aloitusaika",
+    "Esitysjarjestys",
+    "Paivamaara",
+    "Kapellimestari",
+    "Saveltaja",
+    "TeoksenNimi",
+    "TeoksenId",
+    "Sovittaja",
+    "Orkesteri",
+    "Solisti",
+    "KonsertinNimike",
+    "Konserttipaikka",
+    "TietoaKonsertista",
+    "LisatietoaKonsertista",
+  ];
+  const keys = Object.keys(rows[0]);
+  fieldsAsString.forEach((field) => {
+    if (!keys.includes(field)) {
+      const err: CsvError = { rowNumber: undefined, errorType: "column_missing", cellName: "", cellValue: field };
+      errors.push(err);
+    }
+  });
+
+  if (0 < errors.length) {
+    console.log(errors.length + " validation errors found");
+    return errors;
+  }
+
   rows.forEach((row, index) => {
     const csvRow = index + 2;
     // Validate not nulls
@@ -39,7 +72,7 @@ export const validateCsvData = (rows: CsvRowObject[]) => {
     notNullFileds.forEach((field) => {
       const value = notNullsIndexed[field];
       if (!value) {
-        const err: CsvRowError = { rowNumber: csvRow, errorType: "value_missing", cellName: field, cellValue: "" };
+        const err: CsvError = { rowNumber: csvRow, errorType: "value_missing", cellName: field, cellValue: "" };
         errors.push(err);
       }
     });
@@ -53,7 +86,7 @@ export const validateCsvData = (rows: CsvRowObject[]) => {
       if (value) {
         const valid = field.regEx.test(value);
         if (!valid) {
-          const err: CsvRowError = {
+          const err: CsvError = {
             rowNumber: csvRow,
             errorType: "invalid_format",
             cellName: field.name,
@@ -70,7 +103,7 @@ export const validateCsvData = (rows: CsvRowObject[]) => {
       const value = numbersIndexed[field];
       const asNum = Number(value);
       if (Number.isNaN(asNum)) {
-        const err: CsvRowError = {
+        const err: CsvError = {
           rowNumber: csvRow,
           errorType: "value_not_number",
           cellName: field,

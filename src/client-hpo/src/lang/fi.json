@@ -13,6 +13,7 @@
   "premiere_tag.encore": "Ylimääräinen",
   "search_by_composer": "Hae säveltäjän mukaan",
   "search_concerts": "Hae konsertteja",
+  "upload_error.column_missing": "Virhe: '{value}' - Sarake puuttuu.",
   "upload_error.value_missing": "Virhe: Rivi {row}, solu '{cell}' - Arvo puuttuu.",
   "upload_error.invalid_format": "Virhe: Rivi {row}, solu '{cell}' - Väärä formatointi arvolla: '{value}'.",
   "upload_error.value_not_number": "Virhe: Rivi {row}, solu '{cell}' - Arvon '{value}' täytyy olla numero."

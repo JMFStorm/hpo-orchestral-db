@@ -16,6 +16,8 @@ const App = ({ uploadErrors }) => {
         return lng("upload_error.invalid_format", { cell: x.cellName, row: x.rowNumber, value: x.cellValue });
       case "value_not_number":
         return lng("upload_error.value_not_number", { cell: x.cellName, row: x.rowNumber, value: x.cellValue });
+      case "column_missing":
+        return lng("upload_error.column_missing", { value: x.cellValue });
       default:
         return "";
     }

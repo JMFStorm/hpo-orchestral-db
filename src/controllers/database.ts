@@ -7,15 +7,12 @@ import { addSymphonies } from "../managers/symphony";
 import { addOrchestries } from "../managers/orchestra";
 import { addLocations } from "../managers/location";
 import { addConcerts, addConcertTags } from "../managers/concert";
-import { addPremiereTags, getAllPremiereTags } from "../managers/premiereTag";
+import { addPremiereTags } from "../managers/premiereTag";
 import { addPerformances } from "../managers/performance";
 import { addArrangers } from "../managers/arrangers";
-import { csvDirectoryPath, encoreRegex, premiereTags } from "../utils/config";
+import { csvDirectoryPath, premiereTags } from "../utils/config";
 import { csvRowsToObjects } from "../utils/csvRead";
 import CsvRowObject from "../interfaces/CsvRowObject";
-import ConcertObject from "src/interfaces/ConcertObject";
-import PerformanceObject from "src/interfaces/PerformanceObject";
-import SoloistPerformanceObject from "src/interfaces/SoloistPerformanceObject";
 import { deleteAllFromRepo } from "../managers/database";
 import {
   parseConcertsFromRows,
@@ -62,7 +59,6 @@ controller.post("/seed", async (req, res, next) => {
     if (0 < errors.length) {
       return next(httpError(errors, "validation_error", 400));
     }
-
     console.log("Rows validated");
 
     // Delete existing data
