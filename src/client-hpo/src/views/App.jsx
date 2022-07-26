@@ -17,7 +17,7 @@ import ConcertsBySymphony from "./ConcertsBySymphony";
 import Concert from "./Concert";
 
 const App = () => {
-  const [language, setLanguage] = useState("fi");
+  const [language] = useState("fi");
   const [appLanguage, dispatchLanguage] = useReducer(languageReducer, null);
 
   useEffect(() => {

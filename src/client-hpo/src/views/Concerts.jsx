@@ -42,9 +42,7 @@ const Concerts = () => {
   const fetchConcertsRequest = async (conductor, composer, soloist, startYear, endYear) => {
     const start = `${startYear}-01-01`;
     const endDatetime = new Date(endYear, 11, 31);
-
     const end = `${endDatetime.getFullYear()}-${endDatetime.getMonth() + 1}-${endDatetime.getDate()}`;
-    console.log("end", end);
 
     const { result, error } = await fetchConcertsCombinationSearch(conductor, composer, soloist, start, end);
     if (result) {
@@ -81,7 +79,7 @@ const Concerts = () => {
         soloist: solo,
       });
       if (comp || cond || solo) {
-        await fetchConcertsRequest(cond, comp, solo);
+        await fetchConcertsRequest(cond, comp, solo, currentYearRange.start, currentYearRange.end);
       }
     };
     searchAtStart();

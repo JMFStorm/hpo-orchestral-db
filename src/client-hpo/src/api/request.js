@@ -43,12 +43,6 @@ export const fetchAllPremiereTags = async () => {
 
 export const fetchConcertsCombinationSearch = async (conductor, composer, soloist, startDateString, endDateString) => {
   let urlPath = `api/concert/combination/search?start=${startDateString}&end=${endDateString}`;
-  console.log(
-    "{ conductor, composer, soloist }, startDateString, endDateString",
-    { conductor, composer, soloist },
-    startDateString,
-    endDateString
-  );
 
   if (composer) {
     urlPath = urlPath.concat(`&composer=${composer}`);
@@ -61,7 +55,6 @@ export const fetchConcertsCombinationSearch = async (conductor, composer, solois
   }
 
   const concerts = await get(urlPath);
-  console.log("Request result", concerts);
   return concerts;
 };
 
