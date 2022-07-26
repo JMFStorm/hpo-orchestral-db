@@ -7,4 +7,5 @@ export default interface PerformanceObject {
   composers: string[];
   soloist_performances: SoloistPerformanceObject[];
   premiere_tag: string;
+  is_encore: boolean;
 }

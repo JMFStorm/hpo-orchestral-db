@@ -13,6 +13,9 @@ export default class Performance extends BaseEntity {
   @Column()
   order: number;
 
+  @Column()
+  is_encore: boolean;
+
   @ManyToOne(() => Concert, { onDelete: "CASCADE" })
   concert: Concert;
 

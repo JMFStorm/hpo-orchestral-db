@@ -18,7 +18,7 @@ export const getAllSymphonies = async () => {
 // Describe
 // Adds symphonies with related composers
 // return added count
-export const addSymphoniesAndRelatedComposers = async (symphonies: SymphonyObject[]) => {
+export const addSymphonies = async (symphonies: SymphonyObject[]) => {
   let addedCount = 0;
   const symphoniesCount = symphonies.length;
   const numeralPart = Math.floor(symphoniesCount / 20);

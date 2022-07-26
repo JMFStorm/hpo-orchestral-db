@@ -72,11 +72,9 @@ export const premiereTags: PremiereTagConfig[] = [
     regex: /\(ke. 2.sanat\)/,
     sqlName: "premiere_for_secondary_lyrics",
   },
-  {
-    regex: /\(ylimääräinen\)/,
-    sqlName: "encore",
-  },
 ];
+
+export const encoreRegex = /\(ylimääräinen\)/;
 
 const nodeEnvironment = process.env.NODE_ENV;
 

@@ -71,6 +71,7 @@ export const addPerformances = async (performances: PerformanceObject[]) => {
     let concertPerfObj: Partial<Performance> = {
       order: Number(performance.order),
       symphony: symphony,
+      is_encore: performance.is_encore ?? false,
     };
     // Get all existing fields from tables
     await Promise.all([
