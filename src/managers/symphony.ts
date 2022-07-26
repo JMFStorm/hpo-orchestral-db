@@ -50,7 +50,10 @@ export const addSymphonies = async (symphonies: SymphonyObject[]) => {
       arrangers: arrangersObject,
     };
     try {
-      await SymphonyRepo.save(newSymphony);
+      const found = await SymphonyRepo.findOne({ id: newSymphony.id });
+      if (!found) {
+        await SymphonyRepo.save(newSymphony);
+      }
     } catch (err) {
       console.log("Error with", newSymphony);
       console.error(err);

@@ -71,7 +71,8 @@ const Concert = () => {
                     })}
                   </div>
                   <div>
-                    {perf.symphony.name}{" "}
+                    <span>{perf.symphony.name} </span>
+                    {perf.is_encore && <span> ({lng("encore")})</span>}
                     {perf.symphony.arrangers && (
                       <span key={perf.symphony.arrangers.id}>({perf.symphony.arrangers.names})</span>
                     )}

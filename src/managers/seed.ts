@@ -154,8 +154,9 @@ export const parseSymphoniesFromRows = (rows: CsvRowObject[], premiereTags: Prem
         symphonyName = cell.substring(0, indexStart).trim();
       } else {
         console.error("Something not right with premiere tag brackets: ", indexStart, indexEnd, cell);
+        return cell;
       }
-      return cell;
+      return symphonyName;
     };
 
     // Parse premieres tag

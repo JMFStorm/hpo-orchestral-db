@@ -75,7 +75,7 @@ const Concerts = () => {
       </div>
       <button onClick={() => setNamesInput({ composer: "", soloist: "", conductor: "" })}>Tyhjennä</button>
       <button onClick={searchConcerts}>Hae</button>
-      {concerts.length == 0 && <div>Rajaa hakua hakukentillä</div>}
+      {concerts.length === 0 && <div>Rajaa hakua hakukentillä</div>}
       {concerts.length > 0 && (
         <ul>
           {concerts.map((conc) => {
