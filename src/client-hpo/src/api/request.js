@@ -41,12 +41,14 @@ export const fetchAllPremiereTags = async () => {
   return { result, error };
 };
 
-export const fetchConcertsCombinationSearch = async (conductor, composer, soloist, startDate, endDate) => {
-  const start = startDate ?? "1800-01-01";
-  const end = endDate ?? "2023-01-01";
-  let urlPath = `api/concert/combination/search?start=${start}&end=${end}`;
-
-  console.log("{ conductor, composer, soloist }", { conductor, composer, soloist });
+export const fetchConcertsCombinationSearch = async (conductor, composer, soloist, startDateString, endDateString) => {
+  let urlPath = `api/concert/combination/search?start=${startDateString}&end=${endDateString}`;
+  console.log(
+    "{ conductor, composer, soloist }, startDateString, endDateString",
+    { conductor, composer, soloist },
+    startDateString,
+    endDateString
+  );
 
   if (composer) {
     urlPath = urlPath.concat(`&composer=${composer}`);
