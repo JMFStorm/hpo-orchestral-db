@@ -20,7 +20,6 @@ const Admin = () => {
       setLoginError(true);
     }
     if (result) {
-      console.log("result", result);
       setUserToken(result);
     }
   };
@@ -74,6 +73,7 @@ const Admin = () => {
 
   return (
     <>
+      <button onClick={() => setUserToken(undefined)}>Kirjaudu ulos</button>
       <div>
         <input type="file" onChange={(e) => onFileChange(e)} />
         <button onClick={onFileUpload}>Upload!</button>
