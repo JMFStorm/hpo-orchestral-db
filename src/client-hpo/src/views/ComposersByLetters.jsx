@@ -47,7 +47,7 @@ const ComposersByLetters = () => {
               </button>
               {x.premieresCount > 0 && (
                 <button onClick={() => navigate(`/premieres/composerid/${x.id}`)}>
-                  Hae ensiesitykset ({x.premieresCount})
+                  Hae kantaesitykset ({x.premieresCount})
                 </button>
               )}
             </li>

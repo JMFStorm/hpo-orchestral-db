@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 
 import { fetchConcertsCombinationSearch } from "../api/request";
 
-const startYear = 1880;
+const startYear = 1882;
 const endYear = 2030;
 
 const setYears = (start, end) => {

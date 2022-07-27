@@ -28,45 +28,9 @@ import { seedLog } from "../socket";
 
 const controller = Router();
 
-// Describe
-// Seed database from stratch with CSV data
-controller.post("/seed", validateToken, async (req, res, next) => {
-  const minutes_60 = 1000 * 60 * 60;
-  req.setTimeout(minutes_60);
-
+const seedDatabase = async (rowObjects: CsvRowObject[]) => {
   try {
     seedLog("Seed init...");
-
-    let rowObjects: CsvRowObject[] = [];
-
-    // Read CSV file
-    const csvTestFileName = req.body.csvTestFileName;
-    console.log("csvTestFileName", csvTestFileName);
-
-    if (csvTestFileName) {
-      // Read test csv from filepath
-      const csvPath = csvDirectoryPath + csvTestFileName;
-      console.log(`Using ${csvPath} as a test seed filepath`);
-      rowObjects = await csvRowsToObjects(csvPath);
-    } else if (req.body.csvRows) {
-      // Else get rowObjects from request body
-      rowObjects = req.body.csvRows;
-      console.log(`Using data from req.body.csvRows to seed`);
-    }
-
-    if (rowObjects?.length <= 0) {
-      return res.send({ savedPerformances: 0 });
-    }
-
-    // Validate all rows
-    console.log("Validating rows");
-    const errors = validateCsvData(rowObjects);
-
-    if (0 < errors.length) {
-      return next(httpError(errors, "validation_error", 400));
-    }
-    console.log("Rows validated");
-
     // Delete existing data
     seedLog("Deleting existing tables...");
     Promise.all([
@@ -147,11 +111,47 @@ controller.post("/seed", validateToken, async (req, res, next) => {
     seedLog("Database seed complete");
     seedLog(`Saved ${savedCount} performances in total!`, "result");
 
-    return res.send({ savedPerformances: savedCount });
+    return savedCount;
   } catch (err) {
     console.error("err", err);
-    return next(httpError(err));
+    return;
   }
+};
+
+// Describe
+// Seed database from stratch with CSV data
+controller.post("/seed", validateToken, async (req, res, next) => {
+  let rowObjects: CsvRowObject[] = [];
+
+  // Read CSV file
+  const csvTestFileName = req.body.csvTestFileName;
+  console.log("csvTestFileName", csvTestFileName);
+
+  if (csvTestFileName) {
+    // Read test csv from filepath
+    const csvPath = csvDirectoryPath + csvTestFileName;
+    console.log(`Using ${csvPath} as a test seed filepath`);
+    rowObjects = await csvRowsToObjects(csvPath);
+  } else if (req.body.csvRows) {
+    // Else get rowObjects from request body
+    rowObjects = req.body.csvRows;
+    console.log(`Using data from req.body.csvRows to seed`);
+  }
+
+  if (rowObjects?.length <= 0) {
+    return res.send({ savedPerformances: 0 });
+  }
+
+  console.log("Validating rows");
+  const errors = validateCsvData(rowObjects);
+
+  if (0 < errors.length) {
+    return next(httpError(errors, "validation_error", 400));
+  }
+  console.log("Rows validated");
+
+  seedDatabase(rowObjects);
+  return res.send();
 });
 
 export default controller;

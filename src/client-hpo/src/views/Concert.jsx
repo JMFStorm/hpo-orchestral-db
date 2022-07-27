@@ -97,7 +97,7 @@ const Concert = () => {
           </div>
           <br />
           <div>
-            <div>Lähdetieto:</div>
+            <div>Lähdetieto/lisätieto:</div>
             <div>{concert.archive_info}</div>
           </div>
         </>
