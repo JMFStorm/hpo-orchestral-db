@@ -7,6 +7,7 @@ import performanceController from "./controllers/performance";
 import musicianController from "./controllers/musician";
 import symphonyController from "./controllers/symphony";
 import concertController from "./controllers/concert";
+import loginController from "./controllers/login";
 import { errorHandler } from "./middleware/errorHandler";
 
 const app = express();
@@ -28,6 +29,7 @@ app.use("/api/performance", performanceController);
 app.use("/api/musician", musicianController);
 app.use("/api/symphony", symphonyController);
 app.use("/api/concert", concertController);
+app.use("/api/login", loginController);
 
 // Use error handler endpoint
 app.use(errorHandler);

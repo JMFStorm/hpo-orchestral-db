@@ -14,10 +14,10 @@ const get = async (urlPath) => {
   return { result, error };
 };
 
-const post = async (urlPath, data) => {
+const post = async (urlPath, data, configOverride) => {
   let result, error;
   try {
-    const config = {
+    const config = configOverride ?? {
       headers: {
         "Content-Type": "application/json",
       },
@@ -114,9 +114,19 @@ export const fetchConcertById = async (concertId) => {
   return { result, error };
 };
 
-export const uploadCsvData = async (csvData) => {
+export const uploadCsvData = async (csvData, token) => {
   const urlPath = `api/database/seed`;
   const body = { csvRows: csvData };
-  const result = await post(urlPath, body);
+  const config = {
+    headers: { Authorization: `bearer ${token}`, "Content-Type": "application/json" },
+  };
+  const result = await post(urlPath, body, config);
   return result;
+};
+
+export const loginUser = async (password) => {
+  const urlPath = "api/login";
+  const body = { password: password };
+  const { result, error } = await post(urlPath, body);
+  return { result, error };
 };

@@ -1,5 +1,6 @@
 import { Router } from "express";
 
+import { validateToken } from "../middleware/authorization";
 import { httpError } from "../utils/httpError";
 import { addConductors, addMusicians } from "../managers/musician";
 import { addInstruments } from "../managers/instrument";
@@ -28,7 +29,7 @@ const controller = Router();
 
 // Describe
 // Seed database from stratch with CSV data
-controller.post("/seed", async (req, res, next) => {
+controller.post("/seed", validateToken, async (req, res, next) => {
   try {
     console.log("Seed init");
     let rowObjects: CsvRowObject[] = [];

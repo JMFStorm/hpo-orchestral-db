@@ -2,6 +2,7 @@ require("dotenv").config();
 
 import PremiereTagConfig from "src/interfaces/PremiereTagConfig";
 
+const nodeEnvironment = process.env.NODE_ENV;
 export type Environment = string | undefined;
 
 const getServerPort = (env: Environment) => {
@@ -75,8 +76,7 @@ export const premiereTags: PremiereTagConfig[] = [
 ];
 
 export const encoreRegex = /\(ylimääräinen\)/;
-
-const nodeEnvironment = process.env.NODE_ENV;
-
 export const serverPort = getServerPort(nodeEnvironment);
 export const csvDirectoryPath = getCsvDirectoryPath(nodeEnvironment);
+export const secretKey = process.env.SECRET_KEY;
+export const adminKey = process.env.ADMIN_KEY;

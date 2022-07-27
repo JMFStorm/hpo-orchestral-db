@@ -1,13 +1,47 @@
 import React, { useState } from "react";
 
 import { parseCsv } from "../utils.js/csvParse";
-import { uploadCsvData } from "../api/request";
+import { uploadCsvData, loginUser } from "../api/request";
 
 import UploadErrors from "./UploadErrors";
 
 const Admin = () => {
   const [fileData, setFileData] = useState([]);
   const [uploadErrors, setUploadErrors] = useState([]);
+  const [loginPassword, setLoginPassword] = useState("");
+  const [userToken, setUserToken] = useState(undefined);
+  const [loginError, setLoginError] = useState(false);
+
+  const submitLogin = async () => {
+    setLoginError(false);
+    const { result, error } = await loginUser(loginPassword);
+    setLoginPassword("");
+    if (error) {
+      setLoginError(true);
+    }
+    if (result) {
+      console.log("result", result);
+      setUserToken(result);
+    }
+  };
+
+  if (!userToken) {
+    return (
+      <>
+        <div>
+          <label>Kirjaudu</label>
+          <input
+            name="password"
+            type="password"
+            value={loginPassword}
+            onChange={(event) => setLoginPassword(event.target.value)}
+          />
+        </div>
+        <button onClick={submitLogin}>Kirjaudu</button>
+        {loginError && <div>Kirjautuminen ei onnistunut</div>}
+      </>
+    );
+  }
 
   const parseCallback = (results) => {
     if (results.errors) {
@@ -24,17 +58,20 @@ const Admin = () => {
       setFileData(results.data);
     }
   };
+
   const onFileChange = (event) => {
     const inputFile = event.target.files[0];
     parseCsv(inputFile, parseCallback);
   };
+
   const onFileUpload = async () => {
     setUploadErrors([]);
-    const { error } = await uploadCsvData(fileData);
+    const { error } = await uploadCsvData(fileData, userToken);
     if (error) {
       setUploadErrors(error.errors);
     }
   };
+
   return (
     <>
       <div>

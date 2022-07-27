@@ -9,7 +9,7 @@ export const httpError = (
   message: string = "server_error",
   statusCode: number = 500
 ): HttpErrorType => ({
-  statusCode: statusCode,
   errorObjects: errorObjects,
   message: message,
+  statusCode: statusCode,
 });
