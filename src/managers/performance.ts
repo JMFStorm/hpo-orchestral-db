@@ -86,6 +86,7 @@ export const addPerformances = async (performances: PerformanceObject[]) => {
     await concertPerfRepo.save(concertPerfObj);
     addedCount++;
   }
+  seedLog(`Saved performances: (${addedCount}/${performancesCount})`, "performances");
   return addedCount;
 };
 

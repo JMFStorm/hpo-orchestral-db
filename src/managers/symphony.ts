@@ -30,7 +30,7 @@ export const addSymphonies = async (symphonies: SymphonyObject[]) => {
 
   for (const symphony of symphonies) {
     if (addedCount % numeralPart == 0) {
-      seedLog(`Saving symphony: (${addedCount}/${symphoniesCount})`, "symphonies");
+      seedLog(`Saving symphonies: (${addedCount}/${symphoniesCount})`, "symphonies");
     }
     let composerObjects: Composer[] = [];
     for (const composerName of symphony.composerNames) {
@@ -62,6 +62,7 @@ export const addSymphonies = async (symphonies: SymphonyObject[]) => {
     }
     addedCount++;
   }
+  seedLog(`Saved symphonies: (${addedCount}/${symphoniesCount})`, "symphonies");
   return addedCount;
 };
 

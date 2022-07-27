@@ -31,6 +31,9 @@ const controller = Router();
 // Describe
 // Seed database from stratch with CSV data
 controller.post("/seed", validateToken, async (req, res, next) => {
+  const minutes_60 = 1000 * 60 * 60;
+  req.setTimeout(minutes_60);
+
   try {
     seedLog("Seed init...");
 

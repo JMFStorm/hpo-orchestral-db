@@ -117,8 +117,9 @@ export const fetchConcertById = async (concertId) => {
 export const uploadCsvData = async (csvData, token) => {
   const urlPath = `api/database/seed`;
   const body = { csvRows: csvData };
+  const minutes_60 = 1000 * 60 * 60;
   const config = {
-    headers: { Authorization: `bearer ${token}`, "Content-Type": "application/json" },
+    headers: { Authorization: `bearer ${token}`, "Content-Type": "application/json", timeout: minutes_60 },
   };
   const result = await post(urlPath, body, config);
   return result;
