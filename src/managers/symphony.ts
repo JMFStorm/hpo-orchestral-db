@@ -6,7 +6,7 @@ import { filterUniquesById, sortStringsFunction } from "../utils/functions";
 import Symphony from "../entities/Symphony";
 import Performance from "../entities/Performance";
 import Arranger from "../entities/Arranger";
-import { seedLog } from "../socketServer";
+import { seedLog } from "../socket";
 
 // Describe
 // Get all symphonies

@@ -1,11 +1,11 @@
 import axios from "axios";
 
-import { baseUrl } from "../config";
+import { serverUrl } from "../config";
 
 const get = async (urlPath) => {
   let result, error;
   try {
-    const response = await axios.get(`${baseUrl}${urlPath}`);
+    const response = await axios.get(`${serverUrl}${urlPath}`);
     result = response.data;
   } catch (err) {
     console.error(err.response.data);
@@ -22,7 +22,7 @@ const post = async (urlPath, data, configOverride) => {
         "Content-Type": "application/json",
       },
     };
-    const response = await axios.post(`${baseUrl}${urlPath}`, data ?? {}, config);
+    const response = await axios.post(`${serverUrl}${urlPath}`, data ?? {}, config);
     result = response.data;
   } catch (err) {
     console.error(err.response.data);

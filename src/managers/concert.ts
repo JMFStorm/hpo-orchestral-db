@@ -10,7 +10,7 @@ import Musician from "../entities/Musician";
 import { filterUniquesById, findStringArrayMatch, parseStringToDate } from "../utils/functions";
 import Composer from "../entities/Composer";
 import Conductor from "../entities/Conductor";
-import { seedLog } from "../socketServer";
+import { seedLog } from "../socket";
 
 // Describe
 // Add concerts to table

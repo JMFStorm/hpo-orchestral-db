@@ -3,7 +3,7 @@ import { io } from "socket.io-client";
 
 import { parseCsv } from "../utils.js/csvParse";
 import { uploadCsvData, loginUser } from "../api/request";
-import { socketServerUrl } from "../config";
+import { serverUrl } from "../config";
 import UploadErrors from "./UploadErrors";
 
 const Admin = () => {
@@ -11,7 +11,6 @@ const Admin = () => {
   const [uploadErrors, setUploadErrors] = useState([]);
   const [loginPassword, setLoginPassword] = useState("");
   const [userToken, setUserToken] = useState(undefined);
-  const [socketPort, setSocketPort] = useState(undefined);
   const [loginError, setLoginError] = useState(false);
   const [seedMessages, setSeedMessages] = useState({
     default: "",
@@ -23,10 +22,8 @@ const Admin = () => {
 
   // Sockets
   useEffect(() => {
-    if (userToken && socketPort) {
-      const socketUrl = `${socketServerUrl}:${socketPort}`;
-      console.log("socketUrl", socketUrl);
-      const socket = io(socketUrl);
+    if (userToken) {
+      const socket = io(serverUrl);
       socket.on("connect_message", (message) => {
         console.log(message);
       });
@@ -34,7 +31,7 @@ const Admin = () => {
         setSeedMessages((prev) => ({ ...prev, [data.type]: data.message }));
       });
     }
-  }, [userToken, socketPort]);
+  }, [userToken]);
 
   const submitLogin = async () => {
     setLoginError(false);
@@ -45,7 +42,6 @@ const Admin = () => {
     }
     if (result) {
       setUserToken(result.token);
-      setSocketPort(result.socketPort);
     }
   };
 

@@ -1,6 +1,6 @@
 import { getRepository } from "typeorm";
 
-import { seedLog } from "../socketServer";
+import { seedLog } from "../socket";
 import PremiereTag from "../entities/PremiereTag";
 import Performance from "../entities/Performance";
 import SoloistPerformance from "../entities/SoloistPerformance";
@@ -50,7 +50,7 @@ export const addPerformances = async (performances: PerformanceObject[]) => {
   const numeralPart = Math.floor(performancesCount / 40);
   for (const performance of performances) {
     if (addedCount % numeralPart == 0) {
-      seedLog(`Saving performance: (${addedCount}/${performancesCount})`, "performances");
+      seedLog(`Saving performances: (${addedCount}/${performancesCount})`, "performances");
     }
     // Soloists
     const saveSoloistPerformances = async (performances: SoloistPerformanceObject[]) => {

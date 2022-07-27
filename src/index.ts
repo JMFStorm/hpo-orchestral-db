@@ -1,7 +1,8 @@
 import dbConnection from "./db/dbConnection";
 import expressApp from "./expressApp";
-import socketServer from "./socketServer";
-import { serverPort, socketServerPort } from "./utils/config";
+import { createServer } from "http";
+import { Server } from "socket.io";
+import { serverPort, clientUrl } from "./utils/config";
 
 // Connect database
 dbConnection
@@ -12,10 +13,20 @@ dbConnection
     console.log("Error:", error);
   });
 
-socketServer.listen(socketServerPort, () => {
-  console.log(`HPO Orchestral DB - socket server initialized on port: ${socketServerPort}`);
+const socketServer = createServer(expressApp);
+export const io = new Server(socketServer, { cors: { origin: clientUrl } });
+
+io.on("connection", (socket) => {
+  console.log("New socket connection:", socket.id);
+  io.emit("connect_message", `Connection successfull. Hello from server, user '${socket.id}!'`);
 });
 
-expressApp.listen(serverPort, () => {
+export const seedLog = (message: string, type: string = "default") => {
+  console.log(message);
+  const data = { type: type ?? "default", message: message };
+  io.emit("db_seed", data);
+};
+
+socketServer.listen(serverPort, () => {
   console.log(`HPO Orchestral DB - express server initialized on port: ${serverPort}`);
 });

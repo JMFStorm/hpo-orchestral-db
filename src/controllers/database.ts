@@ -24,7 +24,7 @@ import {
   parseSymphoniesFromRows,
   validateCsvData,
 } from "../managers/seed";
-import { seedLog } from "../socketServer";
+import { seedLog } from "../socket";
 
 const controller = Router();
 
