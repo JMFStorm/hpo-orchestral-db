@@ -6,6 +6,7 @@ import { filterUniquesById, sortStringsFunction } from "../utils/functions";
 import Symphony from "../entities/Symphony";
 import Performance from "../entities/Performance";
 import Arranger from "../entities/Arranger";
+import { seedLog } from "../socketServer";
 
 // Describe
 // Get all symphonies
@@ -29,7 +30,7 @@ export const addSymphonies = async (symphonies: SymphonyObject[]) => {
 
   for (const symphony of symphonies) {
     if (addedCount % numeralPart == 0) {
-      console.log(`Saving symphony: (${addedCount}/${symphoniesCount})`);
+      seedLog(`Saving symphony: (${addedCount}/${symphoniesCount})`, "symphonies");
     }
     let composerObjects: Composer[] = [];
     for (const composerName of symphony.composerNames) {

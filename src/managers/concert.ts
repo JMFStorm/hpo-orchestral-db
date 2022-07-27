@@ -10,6 +10,7 @@ import Musician from "../entities/Musician";
 import { filterUniquesById, findStringArrayMatch, parseStringToDate } from "../utils/functions";
 import Composer from "../entities/Composer";
 import Conductor from "../entities/Conductor";
+import { seedLog } from "../socketServer";
 
 // Describe
 // Add concerts to table
@@ -22,7 +23,7 @@ export const addConcerts = async (concerts: ConcertObject[]) => {
 
   for (const concert of concerts) {
     if (addedCount % numeralPart == 0) {
-      console.log(`Saving concerts: (${addedCount}/${concertCount})`);
+      seedLog(`Saving concerts: (${addedCount}/${concertCount})`, "concerts");
     }
     const conductorRepo = getRepository(Conductor);
     const concertRepo = getRepository(Concert);

@@ -24,6 +24,7 @@ import {
   parseSymphoniesFromRows,
   validateCsvData,
 } from "../managers/seed";
+import { seedLog } from "../socketServer";
 
 const controller = Router();
 
@@ -31,7 +32,8 @@ const controller = Router();
 // Seed database from stratch with CSV data
 controller.post("/seed", validateToken, async (req, res, next) => {
   try {
-    console.log("Seed init");
+    seedLog("Seed init...");
+
     let rowObjects: CsvRowObject[] = [];
 
     // Read CSV file
@@ -63,7 +65,7 @@ controller.post("/seed", validateToken, async (req, res, next) => {
     console.log("Rows validated");
 
     // Delete existing data
-    console.log("Deleting existing tables");
+    seedLog("Deleting existing tables...");
     Promise.all([
       await deleteAllFromRepo("arranger"),
       await deleteAllFromRepo("composer"),
@@ -120,7 +122,7 @@ controller.post("/seed", validateToken, async (req, res, next) => {
     const performances = await parsePerformancesFromRows(rowObjects, premiereTags);
 
     // Save all 'loosely' collected
-    console.log("Saving 'loose' tables...");
+    seedLog("Pregenerating tables...");
     Promise.all([
       await addConductors(conductors).then(() => console.log("Saved conductors")),
       await addMusicians(musicians).then(() => console.log("Saved musicians")),
@@ -131,12 +133,16 @@ controller.post("/seed", validateToken, async (req, res, next) => {
     ]);
 
     // Save concerts
-    console.log("Saving concerts...");
+    seedLog("Saving concerts...");
     await addConcerts(concerts);
 
     // Save soloist and concert performances
+    seedLog("Saving performances...");
     const savedCount = await addPerformances(performances);
+
     console.log({ savedPerformances: savedCount });
+    seedLog(`Saved ${savedCount} performances in total!`, "result");
+
     return res.send({ savedPerformances: savedCount });
   } catch (err) {
     console.error("err", err);

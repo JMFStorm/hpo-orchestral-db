@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { io } from "socket.io-client";
 
 import { parseCsv } from "../utils.js/csvParse";
 import { uploadCsvData, loginUser } from "../api/request";
@@ -11,6 +12,26 @@ const Admin = () => {
   const [loginPassword, setLoginPassword] = useState("");
   const [userToken, setUserToken] = useState(undefined);
   const [loginError, setLoginError] = useState(false);
+  const [seedMessages, setSeedMessages] = useState({
+    default: "",
+    symphonies: "",
+    concerts: "",
+    performances: "",
+    result: "",
+  });
+
+  // Sockets
+  useEffect(() => {
+    if (userToken) {
+      const socket = io("ws://localhost:4001");
+      socket.on("connect_message", (message) => {
+        console.log(message);
+      });
+      socket.on("db_seed", (data) => {
+        setSeedMessages((prev) => ({ ...prev, [data.type]: data.message }));
+      });
+    }
+  }, [userToken]);
 
   const submitLogin = async () => {
     setLoginError(false);
@@ -77,6 +98,13 @@ const Admin = () => {
       <div>
         <input type="file" onChange={(e) => onFileChange(e)} />
         <button onClick={onFileUpload}>Upload!</button>
+      </div>
+      <div>
+        <div>{seedMessages.default}</div>
+        <div>{seedMessages.symphonies}</div>
+        <div>{seedMessages.concerts}</div>
+        <div>{seedMessages.performances}</div>
+        <div>{seedMessages.result}</div>
       </div>
       <UploadErrors uploadErrors={uploadErrors} />
     </>
