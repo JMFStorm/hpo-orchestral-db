@@ -11,6 +11,7 @@ const Admin = () => {
   const [uploadErrors, setUploadErrors] = useState([]);
   const [loginPassword, setLoginPassword] = useState("");
   const [userToken, setUserToken] = useState(undefined);
+  const [socketPort, setSocketPort] = useState(undefined);
   const [loginError, setLoginError] = useState(false);
   const [seedMessages, setSeedMessages] = useState({
     default: "",
@@ -22,8 +23,10 @@ const Admin = () => {
 
   // Sockets
   useEffect(() => {
-    if (userToken) {
-      const socket = io(socketServerUrl);
+    if (userToken && socketPort) {
+      const socketUrl = `${socketServerUrl}:${socketPort}`;
+      console.log("socketUrl", socketUrl);
+      const socket = io(socketUrl);
       socket.on("connect_message", (message) => {
         console.log(message);
       });
@@ -31,7 +34,7 @@ const Admin = () => {
         setSeedMessages((prev) => ({ ...prev, [data.type]: data.message }));
       });
     }
-  }, [userToken]);
+  }, [userToken, socketPort]);
 
   const submitLogin = async () => {
     setLoginError(false);
@@ -41,7 +44,8 @@ const Admin = () => {
       setLoginError(true);
     }
     if (result) {
-      setUserToken(result);
+      setUserToken(result.token);
+      setSocketPort(result.socketPort);
     }
   };
 

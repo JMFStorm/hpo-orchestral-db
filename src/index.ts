@@ -1,7 +1,7 @@
 import dbConnection from "./db/dbConnection";
 import expressApp from "./expressApp";
 import socketServer from "./socketServer";
-import { serverPort } from "./utils/config";
+import { serverPort, socketServerPort } from "./utils/config";
 
 // Connect database
 dbConnection
@@ -11,8 +11,6 @@ dbConnection
   .catch((error: any) => {
     console.log("Error:", error);
   });
-
-const socketServerPort = Number(serverPort) + 1;
 
 socketServer.listen(socketServerPort, () => {
   console.log(`HPO Orchestral DB - socket server initialized on port: ${socketServerPort}`);

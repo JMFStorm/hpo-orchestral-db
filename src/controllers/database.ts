@@ -82,7 +82,7 @@ controller.post("/seed", validateToken, async (req, res, next) => {
       await deleteAllFromRepo("symphony"),
     ]);
 
-    console.log("Deleted existing tables.");
+    seedLog("Deleted existing tables.");
 
     const premsRes = await addPremiereTags(premiereTags);
     console.log(`Added ${premsRes} premiere tags`);

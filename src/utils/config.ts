@@ -77,6 +77,7 @@ export const premiereTags: PremiereTagConfig[] = [
 
 export const encoreRegex = /\(ylimääräinen\)/;
 export const serverPort = getServerPort(nodeEnvironment);
+export const socketServerPort = Number(serverPort) + 1;
 export const csvDirectoryPath = getCsvDirectoryPath(nodeEnvironment);
 export const secretKey = process.env.SECRET_KEY;
 export const adminKey = process.env.ADMIN_KEY;
