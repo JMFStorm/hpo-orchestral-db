@@ -3,7 +3,7 @@ import { io } from "socket.io-client";
 
 import { parseCsv } from "../utils.js/csvParse";
 import { uploadCsvData, loginUser } from "../api/request";
-
+import { socketServerUrl } from "../config";
 import UploadErrors from "./UploadErrors";
 
 const Admin = () => {
@@ -23,7 +23,7 @@ const Admin = () => {
   // Sockets
   useEffect(() => {
     if (userToken) {
-      const socket = io("ws://localhost:4001");
+      const socket = io(socketServerUrl);
       socket.on("connect_message", (message) => {
         console.log(message);
       });
