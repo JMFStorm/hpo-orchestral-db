@@ -9,11 +9,14 @@ import symphonyController from "./controllers/symphony";
 import concertController from "./controllers/concert";
 import loginController from "./controllers/login";
 import { errorHandler } from "./middleware/errorHandler";
+import { clientUrl } from "./utils/config";
+
+console.log("Using client url:", clientUrl);
 
 const app = express();
 
 // Use cors
-app.use(cors());
+app.use(cors({ origin: clientUrl, methods: ["GET", "POST"] }));
 
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true }));

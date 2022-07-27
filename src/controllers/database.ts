@@ -141,6 +141,7 @@ controller.post("/seed", validateToken, async (req, res, next) => {
     const savedCount = await addPerformances(performances);
 
     console.log({ savedPerformances: savedCount });
+    seedLog("Database seed complete");
     seedLog(`Saved ${savedCount} performances in total!`, "result");
 
     return res.send({ savedPerformances: savedCount });

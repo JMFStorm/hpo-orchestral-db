@@ -80,3 +80,4 @@ export const serverPort = getServerPort(nodeEnvironment);
 export const csvDirectoryPath = getCsvDirectoryPath(nodeEnvironment);
 export const secretKey = process.env.SECRET_KEY;
 export const adminKey = process.env.ADMIN_KEY;
+export const clientUrl = nodeEnvironment === "production" ? process.env.CLIENT_URL_PROD : "http://localhost:3000";

@@ -32,6 +32,7 @@ const App = () => {
           <HashRouter>
             <Header />
             <Routes>
+              <Route path="/" element={<HomePage />} />
               <Route path="/home" element={<HomePage />} />
               <Route path="/admin" element={<Admin />} />
               <Route path="/composers" element={<Composers />} />

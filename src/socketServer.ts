@@ -2,11 +2,12 @@ import { createServer } from "http";
 import { Server } from "socket.io";
 
 import expressApp from "./expressApp";
+import { clientUrl } from "./utils/config";
 
 const socketServer = createServer(expressApp);
 
 const io = new Server(socketServer, {
-  cors: { origin: "*" },
+  cors: { origin: clientUrl },
 });
 
 io.on("connection", (socket) => {
