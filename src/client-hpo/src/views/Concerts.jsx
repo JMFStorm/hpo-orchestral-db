@@ -5,6 +5,7 @@ import { fetchConcertsCombinationSearch } from "../api/request";
 
 const startYear = 1882;
 const endYear = 2030;
+const currentYear = new Date().getFullYear();
 
 const setYears = (start, end) => {
   const newYearsArray = [];
@@ -56,6 +57,8 @@ const Concerts = () => {
       conductor: namesInput.conductor.trim(),
       composer: namesInput.composer.trim(),
       soloist: namesInput.soloist.trim(),
+      start: currentYearRange.start,
+      end: currentYearRange.end,
     };
     setSearchParamsQuery(searchParams);
     await fetchConcertsRequest(
@@ -72,12 +75,16 @@ const Concerts = () => {
       const comp = searchParamsQuery.get("composer") ?? "";
       const cond = searchParamsQuery.get("conductor") ?? "";
       const solo = searchParamsQuery.get("soloist") ?? "";
+      const start = searchParamsQuery.get("start") ?? startYear;
+      const end = searchParamsQuery.get("end") ?? currentYear;
 
       setNamesInput({
         composer: comp,
         conductor: cond,
         soloist: solo,
       });
+      setCurrentYearRange({ start: start, end: end });
+
       if (comp || cond || solo) {
         await fetchConcertsRequest(cond, comp, solo, currentYearRange.start, currentYearRange.end);
       }
@@ -93,7 +100,6 @@ const Concerts = () => {
         ...currentYearRange,
         [name]: value,
       };
-      console.log("newRange", newRange);
       setCurrentYearRange(newRange);
     }
   };
@@ -120,7 +126,7 @@ const Concerts = () => {
       </div>
       <div>
         <label htmlFor="start">Alku</label>
-        <select name="start" onChange={changeYearsHandle}>
+        <select value={currentYearRange.start} name="start" onChange={changeYearsHandle}>
           {yearsArray.map((year) => (
             <option key={year} value={year}>
               {year}
@@ -128,7 +134,7 @@ const Concerts = () => {
           ))}
         </select>
         <label htmlFor="end">Loppu</label>
-        <select defaultValue={yearsArray[yearsArray.length - 1]} name="end" onChange={changeYearsHandle}>
+        <select value={currentYearRange.end} name="end" onChange={changeYearsHandle}>
           {yearsArray.map((year) => (
             <option className="option" key={year} value={year}>
               {year}

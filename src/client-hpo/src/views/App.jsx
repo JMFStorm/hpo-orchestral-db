@@ -17,7 +17,7 @@ import ConcertsBySymphony from "./ConcertsBySymphony";
 import Concert from "./Concert";
 
 const App = () => {
-  const [language] = useState("fi");
+  const [language, setLanguage] = useState("fi");
   const [appLanguage, dispatchLanguage] = useReducer(languageReducer, null);
 
   useEffect(() => {
@@ -30,7 +30,7 @@ const App = () => {
       {appLanguage && (
         <LanguageContext.Provider value={appLanguage}>
           <HashRouter>
-            <Header />
+            <Header setLanguage={setLanguage} />
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/home" element={<HomePage />} />
