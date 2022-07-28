@@ -64,10 +64,12 @@ controller.get("/combination/search", async (req, res, next) => {
     const startDate = req.query.start as string;
     const endDate = req.query.end as string;
 
+    const chunkIndex = req.query.chunkindex as string;
+
     const start = startDate ? new Date(startDate) : new Date(1700, 1, 1);
     const end = endDate ? new Date(endDate) : new Date(4000, 1, 1);
 
-    const response = await searchConcertsByNames(start, end, composer, conductor, soloist);
+    const response = await searchConcertsByNames(start, end, composer, conductor, soloist, Number(chunkIndex));
     return res.send(response);
   } catch (err) {
     console.error("err", err);

@@ -41,7 +41,14 @@ export const fetchAllPremiereTags = async () => {
   return { result, error };
 };
 
-export const fetchConcertsCombinationSearch = async (conductor, composer, soloist, startDateString, endDateString) => {
+export const fetchConcertsCombinationSearch = async (
+  conductor,
+  composer,
+  soloist,
+  startDateString,
+  endDateString,
+  chunkIndex
+) => {
   let urlPath = `api/concert/combination/search?start=${startDateString}&end=${endDateString}`;
 
   if (composer) {
@@ -52,6 +59,9 @@ export const fetchConcertsCombinationSearch = async (conductor, composer, solois
   }
   if (conductor) {
     urlPath = urlPath.concat(`&conductor=${conductor}`);
+  }
+  if (chunkIndex) {
+    urlPath = urlPath.concat(`&chunkindex=${chunkIndex}`);
   }
 
   const concerts = await get(urlPath);

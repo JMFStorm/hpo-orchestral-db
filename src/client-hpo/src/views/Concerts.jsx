@@ -16,7 +16,7 @@ const setYears = (start, end) => {
 };
 const yearsArray = setYears(startYear, endYear);
 
-const sortConcertsByDate = (a, b, isDescending = true) => {
+const sortConcertsByDate = (a, b, isDescending = false) => {
   const aDate = Date.parse(a.date);
   const bDate = Date.parse(b.date);
   if (aDate === bDate) {
@@ -45,7 +45,15 @@ const Concerts = () => {
     const endDatetime = new Date(endYear, 11, 31);
     const end = `${endDatetime.getFullYear()}-${endDatetime.getMonth() + 1}-${endDatetime.getDate()}`;
 
-    const { result, error } = await fetchConcertsCombinationSearch(conductor, composer, soloist, start, end);
+    const chunkIndex = 0;
+    const { result, error } = await fetchConcertsCombinationSearch(
+      conductor,
+      composer,
+      soloist,
+      start,
+      end,
+      chunkIndex
+    );
     if (result) {
       setConcerts(result);
       console.log("result", result);

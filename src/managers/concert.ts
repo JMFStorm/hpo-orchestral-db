@@ -163,12 +163,9 @@ export const searchConcertsByNames = async (
   endDate: Date,
   composer?: string,
   conductor?: string,
-  soloist?: string
+  soloist?: string,
+  chunkIndex: number = 0
 ) => {
-  if (!composer && !conductor && !soloist) {
-    return [];
-  }
-
   let composerConcerts: Concert[] = [];
   let musicianConcerts: Concert[] = [];
   let conductorConcerts: Concert[] = [];
@@ -176,35 +173,49 @@ export const searchConcertsByNames = async (
   const start = startDate.toISOString();
   const end = endDate.toISOString();
 
-  const composerRepo = getRepository(Composer);
-  const composerResponse = await composerRepo.find({
-    where: { name: Like(`%${composer}%`) },
-    relations: ["symphonies", "symphonies.performances", "symphonies.performances.concert"],
-  });
-  composerConcerts = composerResponse.map((x) => x.symphonies.map((x) => x.performances.map((x) => x.concert))).flat(2);
+  if (composer) {
+    const composerRepo = getRepository(Composer);
+    const composerResponse = await composerRepo.find({
+      where: { name: Like(`%${composer}%`) },
+      relations: ["symphonies", "symphonies.performances", "symphonies.performances.concert"],
+    });
+    composerConcerts = composerResponse
+      .map((x) => x.symphonies.map((x) => x.performances.map((x) => x.concert)))
+      .flat(2);
+  }
 
-  const musicianRepo = getRepository(Musician);
-  const musicianResponse = await musicianRepo.find({
-    where: { name: Like(`%${soloist}%`) },
-    relations: ["soloist_performances", "soloist_performances.performance", "soloist_performances.performance.concert"],
-  });
-  musicianConcerts = musicianResponse
-    .map((x) => x.soloist_performances.map((x) => x.performance))
-    .flat(2)
-    .map((x) => x.concert);
+  if (soloist) {
+    const musicianRepo = getRepository(Musician);
+    const musicianResponse = await musicianRepo.find({
+      where: { name: Like(`%${soloist}%`) },
+      relations: [
+        "soloist_performances",
+        "soloist_performances.performance",
+        "soloist_performances.performance.concert",
+      ],
+    });
+    musicianConcerts = musicianResponse
+      .map((x) => x.soloist_performances.map((x) => x.performance))
+      .flat(2)
+      .map((x) => x.concert);
+  }
 
-  const conductorRepo = getRepository(Conductor);
-  const conductorResponse = await conductorRepo.find({
-    where: { name: Like(`%${conductor}%`) },
-    relations: ["concerts"],
-  });
-  conductorConcerts = conductorResponse.map((x) => x.concerts).flat(1);
+  if (conductor) {
+    const conductorRepo = getRepository(Conductor);
+    const conductorResponse = await conductorRepo.find({
+      where: { name: Like(`%${conductor}%`) },
+      relations: ["concerts"],
+    });
+    conductorConcerts = conductorResponse.map((x) => x.concerts).flat(1);
+  }
+
+  const chunk = 150;
+  const skipAmount = chunk * chunkIndex;
   const array = composerConcerts.concat(musicianConcerts).concat(conductorConcerts);
   const whereQuery = filterUniquesById(array).map((x) => ({
     id: x.id,
     date: Between(start, end),
   }));
-
   const concertRepo = getRepository(Concert);
   const concertsResponse = await concertRepo.find({
     where: whereQuery,
@@ -218,7 +229,13 @@ export const searchConcertsByNames = async (
       "performances.symphony.arrangers",
       "performances.symphony.composers",
     ],
+    order: {
+      date: "ASC",
+    },
+    take: chunk,
+    skip: skipAmount,
   });
+
   const filterComposers = (concert: Concert) =>
     findStringArrayMatch(
       concert.performances
@@ -247,6 +264,7 @@ export const searchConcertsByNames = async (
   const results = concertsResponse
     .filter((concert) => filterComposers(concert) && filterConductors(concert) && filterSoloists(concert))
     .flat(1);
+
   const mapped: Partial<Concert>[] = results.map((x) => ({
     concert_id: x.concert_id,
     concert_tag: x.concert_tag,
