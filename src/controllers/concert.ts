@@ -65,8 +65,6 @@ controller.get("/combination/search", async (req, res, next) => {
     const startYear = req.query.startyear as string;
     const startDate = new Date(Number(startYear) ?? 1882, 0, 1);
 
-    console.log("chunkIndex", chunkIndex);
-
     const response = await searchConcertsByNames(startDate, composer, conductor, soloist, Number(chunkIndex));
     return res.send(response);
   } catch (err) {
