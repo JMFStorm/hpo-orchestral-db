@@ -41,24 +41,17 @@ export const fetchAllPremiereTags = async () => {
   return { result, error };
 };
 
-export const fetchConcertsCombinationSearch = async (
-  conductor,
-  composer,
-  soloist,
-  startDateString,
-  endDateString,
-  chunkIndex
-) => {
-  let urlPath = `api/concert/combination/search?start=${startDateString}&end=${endDateString}`;
+export const fetchConcertsCombinationSearch = async (conductor, composer, soloist, startYear, chunkIndex) => {
+  let urlPath = `api/concert/combination/search?startyear=${startYear}`;
 
   if (composer) {
-    urlPath = urlPath.concat(`&composer=${composer}`);
+    urlPath = urlPath.concat(`&composer=${composer.toLowerCase()}`);
   }
   if (soloist) {
-    urlPath = urlPath.concat(`&soloist=${soloist}`);
+    urlPath = urlPath.concat(`&soloist=${soloist.toLowerCase()}`);
   }
   if (conductor) {
-    urlPath = urlPath.concat(`&conductor=${conductor}`);
+    urlPath = urlPath.concat(`&conductor=${conductor.toLowerCase()}`);
   }
   if (chunkIndex) {
     urlPath = urlPath.concat(`&chunkindex=${chunkIndex}`);

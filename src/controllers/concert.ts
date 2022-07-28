@@ -60,16 +60,14 @@ controller.get("/combination/search", async (req, res, next) => {
     const conductor = req.query.conductor as string | undefined;
     const soloist = req.query.soloist as string | undefined;
 
-    // Expect date format: yyyy-mm-dd (1999-01-08)
-    const startDate = req.query.start as string;
-    const endDate = req.query.end as string;
-
     const chunkIndex = req.query.chunkindex as string;
+    // Expect date format: yyyy (1999)
+    const startYear = req.query.startyear as string;
+    const startDate = new Date(Number(startYear) ?? 1882, 0, 1);
 
-    const start = startDate ? new Date(startDate) : new Date(1700, 1, 1);
-    const end = endDate ? new Date(endDate) : new Date(4000, 1, 1);
+    console.log("chunkIndex", chunkIndex);
 
-    const response = await searchConcertsByNames(start, end, composer, conductor, soloist, Number(chunkIndex));
+    const response = await searchConcertsByNames(startDate, composer, conductor, soloist, Number(chunkIndex));
     return res.send(response);
   } catch (err) {
     console.error("err", err);

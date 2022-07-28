@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 import { fetchConcertsCombinationSearch } from "../api/request";
 
 const startYear = 1882;
 const endYear = 2030;
-const currentYear = new Date().getFullYear();
 
 const setYears = (start, end) => {
   const newYearsArray = [];
@@ -28,11 +27,11 @@ const sortConcertsByDate = (a, b, isDescending = false) => {
 
 const Concerts = () => {
   const navigate = useNavigate();
-  const [searchParamsQuery, setSearchParamsQuery] = useSearchParams();
+  const [searchParamsQuery, setSearchParamsQuery] = useSearchParams({});
   const [namesInput, setNamesInput] = useState({ composer: "", soloist: "", conductor: "" });
   const [concerts, setConcerts] = useState([]);
   const [chunkIndex, setChunkIndex] = useState(0);
-  const [currentYearRange, setCurrentYearRange] = useState({ start: startYear, end: endYear });
+  const [selectedYear, setSelectedYear] = useState(startYear);
   const [searchResultsCriteria, setSearchResultsCriteria] = useState({});
 
   const changeNameHandle = (event) => {
@@ -42,40 +41,26 @@ const Concerts = () => {
     }));
   };
 
-  const fetchConcertsRequest = async (conductor, composer, soloist, startYear, endYear, chunkIndex = 0) => {
-    const start = `${startYear}-01-01`;
+  const fetchConcertsRequest = async (conductor, composer, soloist, startYear, chunkIndex = 0) => {
     setSearchResultsCriteria({ conductor, composer, soloist, startYear, endYear });
-    const { result, error } = await fetchConcertsCombinationSearch(
-      conductor,
-      composer,
-      soloist,
-      start,
-      endYear,
-      chunkIndex
-    );
+    const { result, error } = await fetchConcertsCombinationSearch(conductor, composer, soloist, startYear, chunkIndex);
     if (result) {
       setConcerts(result);
       console.log("result", result);
     }
   };
 
-  const searchConcerts = async () => {
+  const userSearchConcerts = async () => {
     const searchParams = {
       conductor: namesInput.conductor.trim(),
       composer: namesInput.composer.trim(),
       soloist: namesInput.soloist.trim(),
-      start: currentYearRange.start,
-      end: currentYearRange.end,
+      start: selectedYear,
+      pageindex: 0,
     };
     setChunkIndex(0);
     setSearchParamsQuery(searchParams);
-    await fetchConcertsRequest(
-      searchParams.conductor,
-      searchParams.composer,
-      searchParams.soloist,
-      currentYearRange.start,
-      currentYearRange.end
-    );
+    await fetchConcertsRequest(searchParams.conductor, searchParams.composer, searchParams.soloist, selectedYear);
   };
 
   useEffect(() => {
@@ -84,55 +69,48 @@ const Concerts = () => {
       const cond = searchParamsQuery.get("conductor") ?? "";
       const solo = searchParamsQuery.get("soloist") ?? "";
       const start = searchParamsQuery.get("start") ?? startYear;
-      const end = searchParamsQuery.get("end") ?? endYear;
+      const pageIndex = searchParamsQuery.get("pageindex") ?? "";
 
       setNamesInput({
         composer: comp,
         conductor: cond,
         soloist: solo,
       });
-      setCurrentYearRange({ start: start, end: end });
+      setSelectedYear(start);
+      setChunkIndex(Number(pageIndex));
 
-      if (comp || cond || solo) {
-        await fetchConcertsRequest(cond, comp, solo, currentYearRange.start, currentYearRange.end);
+      if (comp || cond || solo || start !== startYear) {
+        await fetchConcertsRequest(cond, comp, solo, start, pageIndex);
       }
     };
     searchAtStart();
   }, [searchParamsQuery]);
 
   const changeYearsHandle = (event) => {
-    const name = event.target.name;
-    const value = Number(event.target.value);
-    if (currentYearRange) {
-      const newRange = {
-        ...currentYearRange,
-        [name]: value,
-      };
-      setCurrentYearRange(newRange);
-    }
+    setSelectedYear(Number(event.target.value));
   };
 
-  const changeChunkIndex = async (val) => {
-    let next = chunkIndex + val;
-    if (next < 0) {
-      return;
-    }
-    setChunkIndex(next);
-    await fetchConcertsRequest(
-      namesInput.conductor,
-      namesInput.composer,
-      namesInput.soloist,
-      currentYearRange.start,
-      currentYearRange.end,
-      next
-    );
-  };
+  const changeChunkIndex = useCallback(
+    async (val) => {
+      let next = chunkIndex + val;
+      if (next < 0) {
+        return;
+      }
+      setChunkIndex(next);
+
+      searchParamsQuery.set("pageindex", next);
+      setSearchParamsQuery(searchParamsQuery);
+
+      await fetchConcertsRequest(namesInput.conductor, namesInput.composer, namesInput.soloist, selectedYear, next);
+    },
+    [chunkIndex, namesInput, setChunkIndex, setSearchParamsQuery]
+  );
 
   const resetFilters = () => {
     setNamesInput({ composer: "", soloist: "", conductor: "" });
     setChunkIndex(0);
     setConcerts([]);
-    setCurrentYearRange((prev) => ({ ...prev, start: startYear }));
+    setSelectedYear(startYear);
   };
 
   const resultsPageString = (index) => {
@@ -164,7 +142,7 @@ const Concerts = () => {
       </div>
       <div>
         <label htmlFor="start">Vuodesta lähtien</label>
-        <select value={currentYearRange.start} name="start" onChange={changeYearsHandle}>
+        <select value={selectedYear} name="start" onChange={changeYearsHandle}>
           {yearsArray.map((year) => (
             <option key={year} value={year}>
               {year}
@@ -173,7 +151,7 @@ const Concerts = () => {
         </select>
       </div>
       <button onClick={resetFilters}>Tyhjennä</button>
-      <button onClick={searchConcerts}>Hae</button>
+      <button onClick={userSearchConcerts}>Hae</button>
       {concerts.length > 0 && (
         <>
           <div>

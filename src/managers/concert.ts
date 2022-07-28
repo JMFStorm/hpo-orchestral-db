@@ -1,4 +1,4 @@
-import { getRepository, Any, Between, Like } from "typeorm";
+import { getRepository, Any, Between, MoreThanOrEqual, ILike } from "typeorm";
 
 import Performance from "../entities/Performance";
 import ConcertObject from "../interfaces/ConcertObject";
@@ -160,7 +160,6 @@ export const getConcertById = async (concertId: string) => {
 // Search concerts by composer, conductor and soloist name
 export const searchConcertsByNames = async (
   startDate: Date,
-  endDate: Date,
   composer?: string,
   conductor?: string,
   soloist?: string,
@@ -174,13 +173,12 @@ export const searchConcertsByNames = async (
     chunkIndex = 0;
   }
 
-  const start = startDate.toISOString();
-  const end = endDate.toISOString();
+  const start = startDate.toDateString();
 
   if (composer) {
     const composerRepo = getRepository(Composer);
     const composerResponse = await composerRepo.find({
-      where: { name: Like(`%${composer}%`) },
+      where: { name: ILike(`%${composer}%`) },
       relations: ["symphonies", "symphonies.performances", "symphonies.performances.concert"],
     });
     composerConcerts = composerResponse
@@ -191,7 +189,7 @@ export const searchConcertsByNames = async (
   if (soloist) {
     const musicianRepo = getRepository(Musician);
     const musicianResponse = await musicianRepo.find({
-      where: { name: Like(`%${soloist}%`) },
+      where: { name: ILike(`%${soloist}%`) },
       relations: [
         "soloist_performances",
         "soloist_performances.performance",
@@ -207,7 +205,7 @@ export const searchConcertsByNames = async (
   if (conductor) {
     const conductorRepo = getRepository(Conductor);
     const conductorResponse = await conductorRepo.find({
-      where: { name: Like(`%${conductor}%`) },
+      where: { name: ILike(`%${conductor}%`) },
       relations: ["concerts"],
     });
     conductorConcerts = conductorResponse.map((x) => x.concerts).flat(1);
@@ -216,10 +214,18 @@ export const searchConcertsByNames = async (
   const chunk = 100;
   const skipAmount = chunk * chunkIndex;
   const array = composerConcerts.concat(musicianConcerts).concat(conductorConcerts);
-  const whereQuery = filterUniquesById(array).map((x) => ({
+
+  const queryList = filterUniquesById(array).map((x) => ({
     id: x.id,
-    date: Between(start, end),
+    date: MoreThanOrEqual(start),
   }));
+  const whereQuery =
+    queryList.length === 0
+      ? {
+          date: MoreThanOrEqual(start),
+        }
+      : queryList;
+
   const concertRepo = getRepository(Concert);
   const concertsResponse = await concertRepo.find({
     where: whereQuery,
