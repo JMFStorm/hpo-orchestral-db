@@ -170,6 +170,10 @@ export const searchConcertsByNames = async (
   let musicianConcerts: Concert[] = [];
   let conductorConcerts: Concert[] = [];
 
+  if (Number.isNaN(chunkIndex)) {
+    chunkIndex = 0;
+  }
+
   const start = startDate.toISOString();
   const end = endDate.toISOString();
 
@@ -209,7 +213,7 @@ export const searchConcertsByNames = async (
     conductorConcerts = conductorResponse.map((x) => x.concerts).flat(1);
   }
 
-  const chunk = 150;
+  const chunk = 100;
   const skipAmount = chunk * chunkIndex;
   const array = composerConcerts.concat(musicianConcerts).concat(conductorConcerts);
   const whereQuery = filterUniquesById(array).map((x) => ({
@@ -236,31 +240,38 @@ export const searchConcertsByNames = async (
     skip: skipAmount,
   });
 
-  const filterComposers = (concert: Concert) =>
-    findStringArrayMatch(
-      concert.performances
-        .map((x) => x.symphony.composers)
-        .flat()
-        .map((x) => x.name),
-      composer,
-      true
-    );
-  const filterConductors = (concert: Concert) =>
-    findStringArrayMatch(
-      concert.conductors.map((x) => x.name),
-      conductor,
-      true
-    );
-  const filterSoloists = (concert: Concert) =>
-    findStringArrayMatch(
-      concert.performances
-        .map((x) => x.soloist_performances)
-        .flat()
-        .map((x) => x.soloist)
-        .map((x) => x.name),
-      soloist,
-      true
-    );
+  const filterComposers = composer
+    ? (concert: Concert) =>
+        findStringArrayMatch(
+          concert.performances
+            .map((x) => x.symphony.composers)
+            .flat()
+            .map((x) => x.name),
+          composer,
+          true
+        )
+    : (x: Concert) => x;
+  const filterConductors = conductor
+    ? (concert: Concert) =>
+        findStringArrayMatch(
+          concert.conductors.map((x) => x.name),
+          conductor,
+          true
+        )
+    : (x: Concert) => x;
+  const filterSoloists = soloist
+    ? (concert: Concert) =>
+        findStringArrayMatch(
+          concert.performances
+            .map((x) => x.soloist_performances)
+            .flat()
+            .map((x) => x.soloist)
+            .map((x) => x.name),
+          soloist,
+          true
+        )
+    : (x: Concert) => x;
+
   const results = concertsResponse
     .filter((concert) => filterComposers(concert) && filterConductors(concert) && filterSoloists(concert))
     .flat(1);

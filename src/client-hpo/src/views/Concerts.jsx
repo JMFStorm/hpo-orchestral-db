@@ -31,7 +31,9 @@ const Concerts = () => {
   const [searchParamsQuery, setSearchParamsQuery] = useSearchParams();
   const [namesInput, setNamesInput] = useState({ composer: "", soloist: "", conductor: "" });
   const [concerts, setConcerts] = useState([]);
+  const [chunkIndex, setChunkIndex] = useState(0);
   const [currentYearRange, setCurrentYearRange] = useState({ start: startYear, end: endYear });
+  const [searchResultsCriteria, setSearchResultsCriteria] = useState({});
 
   const changeNameHandle = (event) => {
     setNamesInput((prevState) => ({
@@ -40,18 +42,15 @@ const Concerts = () => {
     }));
   };
 
-  const fetchConcertsRequest = async (conductor, composer, soloist, startYear, endYear) => {
+  const fetchConcertsRequest = async (conductor, composer, soloist, startYear, endYear, chunkIndex = 0) => {
     const start = `${startYear}-01-01`;
-    const endDatetime = new Date(endYear, 11, 31);
-    const end = `${endDatetime.getFullYear()}-${endDatetime.getMonth() + 1}-${endDatetime.getDate()}`;
-
-    const chunkIndex = 0;
+    setSearchResultsCriteria({ conductor, composer, soloist, startYear, endYear });
     const { result, error } = await fetchConcertsCombinationSearch(
       conductor,
       composer,
       soloist,
       start,
-      end,
+      endYear,
       chunkIndex
     );
     if (result) {
@@ -68,6 +67,7 @@ const Concerts = () => {
       start: currentYearRange.start,
       end: currentYearRange.end,
     };
+    setChunkIndex(0);
     setSearchParamsQuery(searchParams);
     await fetchConcertsRequest(
       searchParams.conductor,
@@ -84,7 +84,7 @@ const Concerts = () => {
       const cond = searchParamsQuery.get("conductor") ?? "";
       const solo = searchParamsQuery.get("soloist") ?? "";
       const start = searchParamsQuery.get("start") ?? startYear;
-      const end = searchParamsQuery.get("end") ?? currentYear;
+      const end = searchParamsQuery.get("end") ?? endYear;
 
       setNamesInput({
         composer: comp,
@@ -112,6 +112,36 @@ const Concerts = () => {
     }
   };
 
+  const changeChunkIndex = async (val) => {
+    let next = chunkIndex + val;
+    if (next < 0) {
+      return;
+    }
+    setChunkIndex(next);
+    await fetchConcertsRequest(
+      namesInput.conductor,
+      namesInput.composer,
+      namesInput.soloist,
+      currentYearRange.start,
+      currentYearRange.end,
+      next
+    );
+  };
+
+  const resetFilters = () => {
+    setNamesInput({ composer: "", soloist: "", conductor: "" });
+    setChunkIndex(0);
+    setConcerts([]);
+    setCurrentYearRange((prev) => ({ ...prev, start: startYear }));
+  };
+
+  const resultsPageString = (index) => {
+    const chunkSize = 100;
+    const start = chunkSize * index;
+    const end = chunkSize * index + chunkSize;
+    return `${start} ... ${end}`;
+  };
+
   return (
     <>
       <h2>Hae konsertteja</h2>
@@ -133,7 +163,7 @@ const Concerts = () => {
         <input name="soloist" type="text" value={namesInput.soloist} onChange={(event) => changeNameHandle(event)} />
       </div>
       <div>
-        <label htmlFor="start">Alku</label>
+        <label htmlFor="start">Vuodesta lähtien</label>
         <select value={currentYearRange.start} name="start" onChange={changeYearsHandle}>
           {yearsArray.map((year) => (
             <option key={year} value={year}>
@@ -141,41 +171,51 @@ const Concerts = () => {
             </option>
           ))}
         </select>
-        <label htmlFor="end">Loppu</label>
-        <select value={currentYearRange.end} name="end" onChange={changeYearsHandle}>
-          {yearsArray.map((year) => (
-            <option className="option" key={year} value={year}>
-              {year}
-            </option>
-          ))}
-        </select>
       </div>
-      <button onClick={() => setNamesInput({ composer: "", soloist: "", conductor: "" })}>Tyhjennä</button>
+      <button onClick={resetFilters}>Tyhjennä</button>
       <button onClick={searchConcerts}>Hae</button>
-      {concerts.length === 0 && <div>Rajaa hakua hakukentillä</div>}
       {concerts.length > 0 && (
-        <ul>
-          {concerts.sort(sortConcertsByDate).map((conc) => {
-            let conductorsText = " ";
-            if (conc.conductors) {
-              conc.conductors.forEach((cond, index) => {
-                if (index !== 0) {
-                  conductorsText = conductorsText.concat(" / ");
-                }
-                conductorsText = conductorsText.concat(`${cond.name}`);
-              });
-            }
-            return (
-              <li key={conc.concert_id}>
-                <span>
-                  {conc.date} {conc.concert_tag?.name}
-                  {conductorsText}
-                </span>
-                <button onClick={() => navigate(`/concert/concertid/${conc.id}`)}>Avaa</button>
-              </li>
-            );
-          })}
-        </ul>
+        <>
+          <div>
+            <div>Tulokset hakukriteereillä:</div>
+            <span>
+              Kapellimestari: {searchResultsCriteria.conductor.length > 1 ? searchResultsCriteria.conductor : "-"},
+              Säveltäjä: {searchResultsCriteria.composer.length > 1 ? searchResultsCriteria.composer : "-"}, Solisti:{" "}
+              {searchResultsCriteria.soloist.length > 1 ? searchResultsCriteria.soloist : "-"} Tulokset:{" "}
+              {resultsPageString(chunkIndex)}
+            </span>
+          </div>
+          <div>
+            <button disabled={chunkIndex === 0} onClick={() => changeChunkIndex(-1)}>
+              Edelliset 100
+            </button>
+            <button disabled={concerts.length !== 0 && concerts.length < 100} onClick={() => changeChunkIndex(1)}>
+              Seuraavat 100
+            </button>
+          </div>
+          <ul>
+            {concerts.sort(sortConcertsByDate).map((conc) => {
+              let conductorsText = " ";
+              if (conc.conductors) {
+                conc.conductors.forEach((cond, index) => {
+                  if (index !== 0) {
+                    conductorsText = conductorsText.concat(" / ");
+                  }
+                  conductorsText = conductorsText.concat(`${cond.name}`);
+                });
+              }
+              return (
+                <li key={conc.concert_id}>
+                  <span>
+                    {conc.date} {conc.concert_tag?.name}
+                    {conductorsText}
+                  </span>
+                  <button onClick={() => navigate(`/concert/concertid/${conc.id}`)}>Avaa</button>
+                </li>
+              );
+            })}
+          </ul>
+        </>
       )}
     </>
   );
