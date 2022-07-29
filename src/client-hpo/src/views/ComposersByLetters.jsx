@@ -1,12 +1,14 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
+import Language from "../lang/Language.jsx";
 import GetBackButton from "./GetBackButton";
 import { fetchComposersByStartingLetters } from "../api/request";
 
 const ComposersByLetters = () => {
   const params = useParams();
   let navigate = useNavigate();
+  const { lng } = Language();
   const [composersResponse, setComposersResponse] = useState([]);
   const [nameInput, setNameInput] = useState("");
 
@@ -33,7 +35,7 @@ const ComposersByLetters = () => {
     <>
       <GetBackButton path={"/composers"} />
       <div>
-        <label htmlFor="name">Hae nimeä</label>
+        <label htmlFor="name">{lng("search_name")}</label>
         <input name="name" type="text" value={nameInput} onChange={(event) => changeNameHandle(event)} />
       </div>
       <ul>
