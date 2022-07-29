@@ -178,3 +178,11 @@ export const getAllArrangers = async () => {
   const response = await repo.find();
   return response;
 };
+
+// Describe
+// Gets all arrangers
+export const getComposerById = async (composerId: string) => {
+  const repo = getRepository(Composer);
+  const response = await repo.findOne({ id: composerId });
+  return response;
+};

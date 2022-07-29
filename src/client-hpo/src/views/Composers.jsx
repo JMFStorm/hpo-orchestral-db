@@ -102,7 +102,9 @@ const Composers = () => {
           id="composers-autocomplete"
           options={composersList}
           renderInput={(params) => <TextField {...params} label={lng("search_name")} />}
-          onChange={(event, newValue) => {}}
+          onChange={(event, newValue) => {
+            navigate(`/composer/${newValue.id}`);
+          }}
           onInputChange={(event, newInputValue) => {
             setAutocompleteInput(newInputValue);
           }}

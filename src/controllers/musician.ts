@@ -7,6 +7,7 @@ import {
   getAllConductors,
   searchComposersByStartingLetter,
   getComposersByKeyword,
+  getComposerById,
 } from "../managers/musician";
 
 const controller = Router();
@@ -24,11 +25,24 @@ controller.get("/composer", async (req, res, next) => {
 });
 
 // Describe
-// Get all composers
+// Search composer by keyword
 controller.get("/composer/search", async (req, res, next) => {
   try {
     let keyword = req.query.keyword as string;
     const response = await getComposersByKeyword(keyword);
+    return res.send(response);
+  } catch (err) {
+    console.error("err", err);
+    return next(httpError(err));
+  }
+});
+
+// Describe
+// Search composer by keyword
+controller.get("/composer/composerid/:composerid", async (req, res, next) => {
+  try {
+    const composerId = req.params.composerid;
+    const response = await getComposerById(composerId);
     return res.send(response);
   } catch (err) {
     console.error("err", err);

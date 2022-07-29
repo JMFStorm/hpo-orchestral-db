@@ -46,14 +46,7 @@ const ComposersByLetters = () => {
           .map((x) => (
             <li key={x.id}>
               <span to={`/symphonies/composerid/${x.id}`}>{x.name} </span>
-              <button onClick={() => navigate(`/symphonies/composerid/${x.id}`)}>
-                Hae teokset ({x.symphoniesCount})
-              </button>
-              {x.premieresCount > 0 && (
-                <button onClick={() => navigate(`/premieres/composerid/${x.id}`)}>
-                  Hae kantaesitykset ({x.premieresCount})
-                </button>
-              )}
+              <button onClick={() => navigate(`/composer/${x.id}`)}>Avaa</button>
             </li>
           ))}
       </ul>

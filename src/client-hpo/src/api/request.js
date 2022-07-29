@@ -68,7 +68,7 @@ export const fetchConcertsCombinationSearch = async (conductor, composer, solois
 };
 
 export const fetchPerformancesByComposerIdAndPremiereTag = async (composerId, premiereTagIdsArray) => {
-  let urlPath = `api/performance/composer/${composerId}`;
+  let urlPath = `api/performance/composer/composerid/${composerId}`;
 
   urlPath = urlPath.concat("?");
 
@@ -119,6 +119,12 @@ export const fetchConcertsBySymphonyId = async (symphonyId) => {
 
 export const fetchConcertById = async (concertId) => {
   const urlPath = `api/concert/${concertId}`;
+  const { result, error } = await get(urlPath);
+  return { result, error };
+};
+
+export const fetchComposerById = async (composerId) => {
+  const urlPath = `api/musician/composer/${composerId}`;
   const { result, error } = await get(urlPath);
   return { result, error };
 };

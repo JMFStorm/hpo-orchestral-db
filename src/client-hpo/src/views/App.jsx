@@ -10,6 +10,7 @@ import HomePage from "./HomePage";
 import Admin from "./Admin";
 import Concerts from "./Concerts";
 import Composers from "./Composers";
+import Composer from "./Composer";
 import ComposersByLetters from "./ComposersByLetters";
 import SymphoniesByComposer from "./SymphoniesByComposer";
 import PremieresByComposer from "./PremieresByComposer";
@@ -37,6 +38,7 @@ const App = () => {
               <Route path="/admin" element={<Admin />} />
               <Route path="/composers" element={<Composers />} />
               <Route path="/composers/startingletter/:letters" element={<ComposersByLetters />} />
+              <Route path="/composer/:composerid" element={<Composer />} />
               <Route path="/symphonies/composerid/:composerid" element={<SymphoniesByComposer />} />
               <Route path="/premieres/composerid/:composerid" element={<PremieresByComposer />} />
               <Route path="/concerts/symphonyid/:symphonyid" element={<ConcertsBySymphony />} />
