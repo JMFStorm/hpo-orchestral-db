@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 
+import { fetchAllComposersByKeyword } from "../api/request";
 import Language from "../lang/Language.jsx";
 
 const alphabeticals = [
@@ -43,11 +44,16 @@ const Composers = () => {
 
   const [autocompleteInput, setAutocompleteInput] = useState("");
   const [debounceId, setDebounceId] = useState(undefined);
+  const [composersResult, setComposersResult] = useState([]);
 
   const fetchRequest = async (id) => {
     clearInterval(id);
     setDebounceId(undefined);
-    console.log("FETCH REQUEST", id);
+    if (autocompleteInput) {
+      const { result } = await fetchAllComposersByKeyword(autocompleteInput);
+      console.log("result", result);
+      setComposersResult(result);
+    }
   };
 
   useEffect(() => {
@@ -77,23 +83,32 @@ const Composers = () => {
     navigate(`/composers/startingletter/${lettersStr}`);
   };
 
+  const composersList = useMemo(() => {
+    if (!composersResult) {
+      return [];
+    }
+    return composersResult.map((comp) => {
+      return { label: comp.name, id: comp.id };
+    });
+  }, [composersResult]);
+
   return (
     <>
-      <h2>Hae säveltäjän mukaan</h2>
+      <h2>Hae säveltäjää nimellä</h2>
       <div>
         <Autocomplete
           disablePortal
           filterOptions={(x) => x}
           id="composers-autocomplete"
-          options={[]}
-          renderInput={(params) => <TextField {...params} label={lng("search_composer")} />}
+          options={composersList}
+          renderInput={(params) => <TextField {...params} label={lng("search_name")} />}
           onChange={(event, newValue) => {}}
           onInputChange={(event, newInputValue) => {
             setAutocompleteInput(newInputValue);
           }}
         />
       </div>
-      <h2>Aakkosten mukaan</h2>
+      <h2>Hae säveltäjää aakkosten mukaan</h2>
       <ul>
         {alphabeticals.map((x) => (
           <li key={x}>

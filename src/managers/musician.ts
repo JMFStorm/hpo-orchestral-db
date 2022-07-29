@@ -1,4 +1,4 @@
-import { getRepository, IsNull, Not } from "typeorm";
+import { getRepository, IsNull, ILike, Not } from "typeorm";
 
 import Performance from "../entities/Performance";
 import Composer from "../entities/Composer";
@@ -90,20 +90,20 @@ export const getAllComposers = async () => {
 };
 
 // Describe
-// Search composers by the starting letter
-export const searchComposersByStartingLetter = async (lettersArr: string[]) => {
-  const regexString = (str: string) => `^${str}`;
-  const regexArr = lettersArr.map((x) => new RegExp(regexString(x), "i"));
+// Search composers by a keyword
+export const getComposersByKeyword = async (keyword: string) => {
+  const repo = getRepository(Composer);
+  const response = await repo.find({ where: { name: ILike(`%${keyword}%`) }, order: { name: "ASC" } });
+  return response;
+};
 
-  const symphoniesRepo = getRepository(Symphony);
-  const performancesRepo = getRepository(Performance);
-  const composersRepo = getRepository(Composer);
-
-  let composers: Composer[] = [];
+const addComposersWithSymphoniesAndPremieres = async (composers: Composer[]) => {
   let premieres: Performance[] = [];
   let symphonies: Symphony[] = [];
 
-  const getComposers = async () => await composersRepo.find({ order: { name: "ASC" } });
+  const symphoniesRepo = getRepository(Symphony);
+  const performancesRepo = getRepository(Performance);
+
   const getPremieres = async () =>
     await performancesRepo.find({
       where: {
@@ -117,13 +117,9 @@ export const searchComposersByStartingLetter = async (lettersArr: string[]) => {
     });
 
   await Promise.all([
-    await getComposers().then((res) => (composers = res)),
     await getPremieres().then((res) => (premieres = res)),
     await getSymphonies().then((res) => (symphonies = res)),
   ]);
-
-  const filteredByStaringLetter = composers.filter((comp) => regexArr.some((reg) => reg.test(comp.name)));
-  const sorted = filteredByStaringLetter.sort((a, b) => sortStringsFunction(a.name, b.name));
 
   const composerIds = premieres
     .map((x) => x.symphony)
@@ -131,18 +127,35 @@ export const searchComposersByStartingLetter = async (lettersArr: string[]) => {
     .flat()
     .map((x) => x.id);
 
-  const withPremieres = sorted.map((comp) => {
+  const withCounts = composers.map((comp) => {
     let premsCount = 0;
     composerIds.forEach((val) => {
       if (val === comp.id) {
         premsCount++;
       }
     });
+
     const symphsCount = symphonies.filter((x) => x.composers.find((x) => x.id === comp.id)).length;
     return { ...comp, premieresCount: premsCount, symphoniesCount: symphsCount };
   });
 
-  return withPremieres;
+  return withCounts;
+};
+
+// Describe
+// Search composers by the starting letter
+export const searchComposersByStartingLetter = async (lettersArr: string[]) => {
+  const composersRepo = getRepository(Composer);
+  const composers = await composersRepo.find({ order: { name: "ASC" } });
+
+  const regexString = (str: string) => `^${str}`;
+  const regexArr = lettersArr.map((x) => new RegExp(regexString(x), "i"));
+
+  const filteredByStaringLetter = composers.filter((comp) => regexArr.some((reg) => reg.test(comp.name)));
+  const sortedComps = filteredByStaringLetter.sort((a, b) => sortStringsFunction(a.name, b.name));
+
+  const withCounts = addComposersWithSymphoniesAndPremieres(sortedComps);
+  return withCounts;
 };
 
 // Describe

@@ -103,7 +103,7 @@ const Concerts = () => {
 
       await fetchConcertsRequest(namesInput.conductor, namesInput.composer, namesInput.soloist, selectedYear, next);
     },
-    [chunkIndex, namesInput, setChunkIndex, setSearchParamsQuery]
+    [chunkIndex, namesInput, setChunkIndex, setSearchParamsQuery, searchParamsQuery]
   );
 
   const resetFilters = () => {

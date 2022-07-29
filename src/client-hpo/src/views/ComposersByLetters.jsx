@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import TextField from "@mui/material/TextField";
 
 import Language from "../lang/Language.jsx";
 import GetBackButton from "./GetBackButton";
@@ -35,8 +36,9 @@ const ComposersByLetters = () => {
     <>
       <GetBackButton path={"/composers"} />
       <div>
-        <label htmlFor="name">{lng("search_name")}</label>
-        <input name="name" type="text" value={nameInput} onChange={(event) => changeNameHandle(event)} />
+        <div>
+          <TextField label={lng("search_name")} variant="standard" onChange={(event) => changeNameHandle(event)} />
+        </div>
       </div>
       <ul>
         {composersResponse
