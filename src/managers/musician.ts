@@ -105,6 +105,14 @@ export const getConductorsByKeyword = async (keyword: string) => {
   return response;
 };
 
+// Describe
+// Search soloists by a keyword
+export const getSoloistsByKeyword = async (keyword: string) => {
+  const repo = getRepository(Musician);
+  const response = await repo.find({ where: { name: ILike(`%${keyword}%`) }, order: { name: "ASC" } });
+  return response;
+};
+
 const addComposersWithSymphoniesAndPremieres = async (composers: Composer[]) => {
   let premieres: Performance[] = [];
   let symphonies: Symphony[] = [];

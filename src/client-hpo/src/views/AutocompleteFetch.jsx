@@ -33,6 +33,10 @@ const AutocompleteFetch = ({ name, label, asyncRequest, value, setValue }) => {
     }
   }, [inputValue]);
 
+  useEffect(() => {
+    setInputValue(value);
+  }, [value]);
+
   const resultsList = useMemo(() => {
     if (!results) {
       return [];
@@ -45,6 +49,7 @@ const AutocompleteFetch = ({ name, label, asyncRequest, value, setValue }) => {
   return (
     <>
       <Autocomplete
+        sx={{ margin: "0.5rem" }}
         disablePortal
         filterOptions={(x) => x}
         id={"autocomplete-" + name}
@@ -53,7 +58,6 @@ const AutocompleteFetch = ({ name, label, asyncRequest, value, setValue }) => {
         value={value}
         onChange={(event, newValue) => {
           if (newValue) {
-            console.log("New value:", newValue);
             setInputValue(newValue.label);
             setValue(newValue.label);
           }
@@ -64,7 +68,7 @@ const AutocompleteFetch = ({ name, label, asyncRequest, value, setValue }) => {
           setValue(newInputValue);
         }}
         isOptionEqualToValue={(option, value) => {
-          return option.label == value;
+          return true || option?.label === value || option?.label.includes(value);
         }}
       />
     </>

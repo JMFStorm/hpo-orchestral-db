@@ -9,6 +9,7 @@ import {
   getComposersByKeyword,
   getComposerById,
   getConductorsByKeyword,
+  getSoloistsByKeyword,
 } from "../managers/musician";
 
 const controller = Router();
@@ -39,11 +40,24 @@ controller.get("/composer/search", async (req, res, next) => {
 });
 
 // Describe
-// Search conductor by keyword
+// Search conductors by keyword
 controller.get("/conductor/search", async (req, res, next) => {
   try {
     let keyword = req.query.keyword as string;
     const response = await getConductorsByKeyword(keyword);
+    return res.send(response);
+  } catch (err) {
+    console.error("err", err);
+    return next(httpError(err));
+  }
+});
+
+// Describe
+// Search soloists by keyword
+controller.get("/soloist/search", async (req, res, next) => {
+  try {
+    let keyword = req.query.keyword as string;
+    const response = await getSoloistsByKeyword(keyword);
     return res.send(response);
   } catch (err) {
     console.error("err", err);

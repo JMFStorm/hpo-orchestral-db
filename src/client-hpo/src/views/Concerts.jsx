@@ -7,6 +7,7 @@ import {
   fetchConcertsCombinationSearch,
   fetchAllComposersByKeyword,
   fetchAllConductorsByKeyword,
+  fetchAllSoloistsByKeyword,
 } from "../api/request";
 
 const startYear = 1882;
@@ -40,15 +41,9 @@ const Concerts = () => {
   const [selectedYear, setSelectedYear] = useState(startYear);
   const [searchResultsCriteria, setSearchResultsCriteria] = useState({});
 
-  const [selectedConductor, setSelectedConductor] = useState(null);
-  const [selectedComposer, setSelectedComposer] = useState(null);
-
-  const changeNameHandle = (event) => {
-    setNamesInput((prevState) => ({
-      ...prevState,
-      [event.target.name]: event.target.value,
-    }));
-  };
+  const [selectedConductor, setSelectedConductor] = useState("");
+  const [selectedComposer, setSelectedComposer] = useState("");
+  const [selectedSoloist, setSelectedSoloist] = useState("");
 
   const fetchConcertsRequest = async (conductor, composer, soloist, startYear, chunkIndex = 0) => {
     setSearchResultsCriteria({ conductor, composer, soloist, startYear, endYear });
@@ -63,7 +58,7 @@ const Concerts = () => {
     const searchParams = {
       conductor: selectedConductor?.trim() ?? "",
       composer: selectedComposer?.trim() ?? "",
-      soloist: namesInput.soloist.trim(),
+      soloist: selectedSoloist?.trim() ?? "",
       start: selectedYear,
       pageindex: 0,
     };
@@ -79,13 +74,10 @@ const Concerts = () => {
       const solo = searchParamsQuery.get("soloist") ?? "";
       const start = searchParamsQuery.get("start") ?? startYear;
       const pageIndex = searchParamsQuery.get("pageindex") ?? "";
-      setNamesInput({
-        composer: comp,
-        conductor: cond,
-        soloist: solo,
-      });
       setSelectedConductor(cond);
+      setSelectedComposer(comp);
       setSelectedYear(start);
+      setSelectedSoloist(solo);
       setChunkIndex(Number(pageIndex));
 
       if (comp || cond || solo || start !== startYear) {
@@ -108,9 +100,17 @@ const Concerts = () => {
       setChunkIndex(next);
       searchParamsQuery.set("pageindex", next);
       setSearchParamsQuery(searchParamsQuery);
-      await fetchConcertsRequest(namesInput.conductor, namesInput.composer, namesInput.soloist, selectedYear, next);
+      await fetchConcertsRequest(selectedConductor, selectedComposer, selectedSoloist, selectedYear, next);
     },
-    [chunkIndex, namesInput, setChunkIndex, setSearchParamsQuery, searchParamsQuery]
+    [
+      selectedConductor,
+      selectedComposer,
+      selectedSoloist,
+      chunkIndex,
+      setChunkIndex,
+      setSearchParamsQuery,
+      searchParamsQuery,
+    ]
   );
 
   const resetFilters = () => {
@@ -144,10 +144,13 @@ const Concerts = () => {
         setValue={setSelectedComposer}
         asyncRequest={fetchAllComposersByKeyword}
       />
-      <div>
-        <label htmlFor="soloist">Solisti</label>
-        <input name="soloist" type="text" value={namesInput.soloist} onChange={(event) => changeNameHandle(event)} />
-      </div>
+      <AutocompleteFetch
+        name="soloist"
+        label={lng("search_soloist")}
+        value={selectedSoloist}
+        setValue={setSelectedSoloist}
+        asyncRequest={fetchAllSoloistsByKeyword}
+      />
       <div>
         <label htmlFor="start">Vuodesta lähtien</label>
         <select value={selectedYear} name="start" onChange={changeYearsHandle}>

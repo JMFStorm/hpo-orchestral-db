@@ -48,6 +48,12 @@ export const fetchAllConductorsByKeyword = async (keyword) => {
   return { result, error };
 };
 
+export const fetchAllSoloistsByKeyword = async (keyword) => {
+  const url = `api/musician/soloist/search?keyword=${keyword}`;
+  const { result, error } = await get(url);
+  return { result, error };
+};
+
 export const fetchAllPremiereTags = async () => {
   const { result, error } = await get("api/performance/premieretag");
   return { result, error };
