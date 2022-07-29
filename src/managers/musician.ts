@@ -97,6 +97,14 @@ export const getComposersByKeyword = async (keyword: string) => {
   return response;
 };
 
+// Describe
+// Search composers by a keyword
+export const getConductorsByKeyword = async (keyword: string) => {
+  const repo = getRepository(Conductor);
+  const response = await repo.find({ where: { name: ILike(`%${keyword}%`) }, order: { name: "ASC" } });
+  return response;
+};
+
 const addComposersWithSymphoniesAndPremieres = async (composers: Composer[]) => {
   let premieres: Performance[] = [];
   let symphonies: Symphony[] = [];

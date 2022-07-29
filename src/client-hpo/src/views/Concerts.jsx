@@ -1,11 +1,16 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
-import { fetchConcertsCombinationSearch } from "../api/request";
+import AutocompleteFetch from "./AutocompleteFetch";
+import Language from "../lang/Language.jsx";
+import {
+  fetchConcertsCombinationSearch,
+  fetchAllComposersByKeyword,
+  fetchAllConductorsByKeyword,
+} from "../api/request";
 
 const startYear = 1882;
 const endYear = 2030;
-
 const setYears = (start, end) => {
   const newYearsArray = [];
   for (let i = start; i <= end; i++) {
@@ -26,6 +31,7 @@ const sortConcertsByDate = (a, b, isDescending = false) => {
 };
 
 const Concerts = () => {
+  const { lng } = Language();
   const navigate = useNavigate();
   const [searchParamsQuery, setSearchParamsQuery] = useSearchParams({});
   const [namesInput, setNamesInput] = useState({ composer: "", soloist: "", conductor: "" });
@@ -33,6 +39,9 @@ const Concerts = () => {
   const [chunkIndex, setChunkIndex] = useState(0);
   const [selectedYear, setSelectedYear] = useState(startYear);
   const [searchResultsCriteria, setSearchResultsCriteria] = useState({});
+
+  const [selectedConductor, setSelectedConductor] = useState(null);
+  const [selectedComposer, setSelectedComposer] = useState(null);
 
   const changeNameHandle = (event) => {
     setNamesInput((prevState) => ({
@@ -52,8 +61,8 @@ const Concerts = () => {
 
   const userSearchConcerts = async () => {
     const searchParams = {
-      conductor: namesInput.conductor.trim(),
-      composer: namesInput.composer.trim(),
+      conductor: selectedConductor?.trim() ?? "",
+      composer: selectedComposer?.trim() ?? "",
       soloist: namesInput.soloist.trim(),
       start: selectedYear,
       pageindex: 0,
@@ -70,12 +79,12 @@ const Concerts = () => {
       const solo = searchParamsQuery.get("soloist") ?? "";
       const start = searchParamsQuery.get("start") ?? startYear;
       const pageIndex = searchParamsQuery.get("pageindex") ?? "";
-
       setNamesInput({
         composer: comp,
         conductor: cond,
         soloist: solo,
       });
+      setSelectedConductor(cond);
       setSelectedYear(start);
       setChunkIndex(Number(pageIndex));
 
@@ -97,10 +106,8 @@ const Concerts = () => {
         return;
       }
       setChunkIndex(next);
-
       searchParamsQuery.set("pageindex", next);
       setSearchParamsQuery(searchParamsQuery);
-
       await fetchConcertsRequest(namesInput.conductor, namesInput.composer, namesInput.soloist, selectedYear, next);
     },
     [chunkIndex, namesInput, setChunkIndex, setSearchParamsQuery, searchParamsQuery]
@@ -123,19 +130,20 @@ const Concerts = () => {
   return (
     <>
       <h2>Hae konsertteja</h2>
-      <div>
-        <label htmlFor="conductor">Kapellimestari</label>
-        <input
-          name="conductor"
-          type="text"
-          value={namesInput.conductor}
-          onChange={(event) => changeNameHandle(event)}
-        />
-      </div>
-      <div>
-        <label htmlFor="composer">Säveltäjä</label>
-        <input name="composer" type="text" value={namesInput.composer} onChange={(event) => changeNameHandle(event)} />
-      </div>
+      <AutocompleteFetch
+        name="conductor"
+        label={lng("search_conductor")}
+        value={selectedConductor}
+        setValue={setSelectedConductor}
+        asyncRequest={fetchAllConductorsByKeyword}
+      />
+      <AutocompleteFetch
+        name="composer"
+        label={lng("search_composer")}
+        value={selectedComposer}
+        setValue={setSelectedComposer}
+        asyncRequest={fetchAllComposersByKeyword}
+      />
       <div>
         <label htmlFor="soloist">Solisti</label>
         <input name="soloist" type="text" value={namesInput.soloist} onChange={(event) => changeNameHandle(event)} />

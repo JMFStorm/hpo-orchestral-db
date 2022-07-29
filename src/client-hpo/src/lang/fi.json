@@ -16,6 +16,8 @@
   "search_by_composer": "Hae säveltäjän mukaan",
   "search_concerts": "Hae konsertteja",
   "search_composer": "Hae säveltäjää",
+  "search_conductor": "Hae kapellimestaria",
+  "search_soloist": "Hae solistia",
   "search_name": "Hae nimeä",
   "symphonies_count": "teokset: {value}",
   "upload_error.column_missing": "Virhe: '{value}' - Sarake puuttuu.",
