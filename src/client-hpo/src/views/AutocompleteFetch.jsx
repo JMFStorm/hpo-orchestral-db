@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 
@@ -7,15 +7,18 @@ const AutocompleteFetch = ({ name, label, asyncRequest, value, setValue }) => {
   const [debounceId, setDebounceId] = useState(undefined);
   const [results, setResults] = useState();
 
-  const fetch = async (id) => {
-    clearInterval(id);
-    setDebounceId(undefined);
-    if (inputValue) {
-      const { result } = await asyncRequest(inputValue);
-      console.log("result", result);
-      setResults(result);
-    }
-  };
+  const fetch = useCallback(
+    async (id) => {
+      clearInterval(id);
+      setDebounceId(undefined);
+      if (inputValue) {
+        const { result } = await asyncRequest(inputValue);
+        console.log("result", result);
+        setResults(result);
+      }
+    },
+    [asyncRequest, inputValue]
+  );
 
   useEffect(() => {
     if (inputValue) {

@@ -35,7 +35,6 @@ const Concerts = () => {
   const { lng } = Language();
   const navigate = useNavigate();
   const [searchParamsQuery, setSearchParamsQuery] = useSearchParams({});
-  const [namesInput, setNamesInput] = useState({ composer: "", soloist: "", conductor: "" });
   const [concerts, setConcerts] = useState([]);
   const [chunkIndex, setChunkIndex] = useState(0);
   const [selectedYear, setSelectedYear] = useState(startYear);
@@ -114,10 +113,12 @@ const Concerts = () => {
   );
 
   const resetFilters = () => {
-    setNamesInput({ composer: "", soloist: "", conductor: "" });
     setChunkIndex(0);
     setConcerts([]);
     setSelectedYear(startYear);
+    setSelectedConductor("");
+    setSelectedComposer("");
+    setSelectedSoloist("");
   };
 
   const resultsPageString = (index) => {
