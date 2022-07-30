@@ -312,7 +312,7 @@ export const parsePerformancesFromRows = async (rows: CsvRowObject[], premiereTa
   const premiereTagObjects = await getAllPremiereTags();
 
   rows.forEach((row) => {
-    const soloistPerformances: SoloistPerformanceObject[] = [];
+    const soloistPerformances: Partial<SoloistPerformanceObject>[] = [];
     const soloistsCell = row.Solisti;
 
     // Check for multiple soloists in one cell

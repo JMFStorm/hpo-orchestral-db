@@ -107,8 +107,8 @@ export const addPerformances = async (performances: PerformanceObject[]) => {
       const savedResponse = await performanceRepo.save(concertPerfObj);
       performance.soloist_performances.forEach((soloPerf) => {
         const soloistPerf: SoloistPerformanceObject = {
-          soloistName: soloPerf.soloistName,
-          instrumentName: soloPerf.instrumentName,
+          soloistName: soloPerf.soloistName as string,
+          instrumentName: soloPerf.instrumentName as string,
           performanceId: savedResponse.id,
         };
         soloistPerformanceObjects.push(soloistPerf);
