@@ -21,55 +21,59 @@ export const addConcerts = async (concerts: ConcertObject[]) => {
   let result: any = [];
   let addedCount = 0;
 
-  for (const concert of concerts) {
-    if (addedCount % numeralPart == 0) {
-      seedLog(`Saving concerts: (${addedCount}/${concertCount})`, "concerts");
-    }
-    const conductorRepo = getRepository(Conductor);
-    const concertRepo = getRepository(Concert);
-    const concertTagRepo = getRepository(ConcertTag);
-    const locationRepo = getRepository(Location);
-    const orchestraRepo = getRepository(Orchestra);
+  await Promise.all(
+    concerts.map(async (concert) => {
+      const conductorRepo = getRepository(Conductor);
+      const concertRepo = getRepository(Concert);
+      const concertTagRepo = getRepository(ConcertTag);
+      const locationRepo = getRepository(Location);
+      const orchestraRepo = getRepository(Orchestra);
 
-    let concertObject: Partial<Concert> = {};
+      let concertObject: Partial<Concert> = {};
 
-    // Fill concert object fields
-    concertObject.concert_id = concert.concert_id;
-    concertObject.date = parseStringToDate(concert.date);
-    concertObject.starting_time = concert.starting_time !== "" ? concert.starting_time : undefined;
-    concertObject.archive_info = concert.archive_info;
-    concertObject.footnote = concert.footnote;
+      // Fill concert object fields
+      concertObject.concert_id = concert.concert_id;
+      concertObject.date = parseStringToDate(concert.date);
+      concertObject.starting_time = concert.starting_time !== "" ? concert.starting_time : undefined;
+      concertObject.archive_info = concert.archive_info;
+      concertObject.footnote = concert.footnote;
 
-    const getConductor = async (name?: string) => {
-      if (!name) {
-        return;
+      const getConductor = async (name?: string) => {
+        if (!name) {
+          return;
+        }
+        const result = await conductorRepo.findOne({ name: name });
+        if (!result) {
+          throw "Conductor " + name + " missing from conductors";
+        }
+        return result;
+      };
+      // Add only from valid conductor names
+      const conductorObjects: Conductor[] = [];
+      await Promise.all(
+        concert.conductors.map(
+          async (x) =>
+            await getConductor(x)
+              .then((x) => (x ? conductorObjects.push(x) : null))
+              .catch((err: Error) => {
+                console.error(err);
+              })
+        )
+      );
+      concertObject.conductors = conductorObjects;
+      await Promise.all([
+        await concertTagRepo.findOne({ name: concert.concert_tag }).then((x) => (concertObject.concert_tag = x)),
+        await locationRepo.findOne({ name: concert.location }).then((x) => (concertObject.location = x)),
+        await orchestraRepo.findOne({ name: concert.orchestra }).then((x) => (concertObject.orchestra = x)),
+      ]);
+      // Save result
+      result = await concertRepo.save(concertObject);
+      if (addedCount % numeralPart == 0) {
+        seedLog(`Saving concerts: (${addedCount}/${concertCount})`, "concerts");
       }
-      const result = await conductorRepo.findOne({ name: name });
-      if (!result) {
-        throw "Conductor " + name + " missing from conductors";
-      }
-      return result;
-    };
-    // Add only from valid conductor names
-    const conductorObjects: Conductor[] = [];
-    concert.conductors.forEach(
-      async (x) =>
-        await getConductor(x)
-          .then((x) => (x ? conductorObjects.push(x) : null))
-          .catch((err: Error) => {
-            console.error(err);
-          })
-    );
-    concertObject.conductors = conductorObjects;
-    await Promise.all([
-      await concertTagRepo.findOne({ name: concert.concert_tag }).then((x) => (concertObject.concert_tag = x)),
-      await locationRepo.findOne({ name: concert.location }).then((x) => (concertObject.location = x)),
-      await orchestraRepo.findOne({ name: concert.orchestra }).then((x) => (concertObject.orchestra = x)),
-    ]);
-    // Save result
-    result = await concertRepo.save(concertObject);
-    addedCount++;
-  }
+      addedCount++;
+    })
+  );
   seedLog(`Saved concerts: (${addedCount}/${concertCount})`, "concerts");
   return result.length;
 };

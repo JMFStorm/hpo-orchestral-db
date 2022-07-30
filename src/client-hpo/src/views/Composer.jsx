@@ -22,7 +22,7 @@ const Composer = () => {
       let prems = [];
       let comp = [];
 
-      Promise.all([
+      await Promise.all([
         await fetchSymphoniesByComposerId(composerId).then((res) => (symphs = res.result)),
         await fetchPremieresByComposer(composerId).then((res) => (prems = res.result)),
         await fetchComposerById(composerId).then((res) => (comp = res.result)),

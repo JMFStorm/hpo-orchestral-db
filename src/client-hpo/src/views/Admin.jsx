@@ -4,7 +4,7 @@ import { io } from "socket.io-client";
 import { parseCsv } from "../utils.js/csvParse";
 import { uploadCsvData, loginUser } from "../api/request";
 import { serverUrl } from "../config";
-import UploadErrors from "./UploadErrors";
+import UploadValidateErrors from "./UploadValidateErrors";
 
 const Admin = () => {
   const [fileData, setFileData] = useState([]);
@@ -19,6 +19,7 @@ const Admin = () => {
     performances: "",
     result: "",
   });
+  const [seedWarnings, setSeedWarnings] = useState([]);
 
   // Sockets
   useEffect(() => {
@@ -28,7 +29,11 @@ const Admin = () => {
         console.log(message);
       });
       socket.on("db_seed", (data) => {
-        setSeedMessages((prev) => ({ ...prev, [data.type]: data.message }));
+        if (data.type === "warning") {
+          setSeedWarnings((prev) => prev.concat(data.message));
+        } else {
+          setSeedMessages((prev) => ({ ...prev, [data.type]: data.message }));
+        }
       });
     }
   }, [userToken]);
@@ -86,6 +91,14 @@ const Admin = () => {
 
   const onFileUpload = async () => {
     setUploadErrors([]);
+    setSeedMessages({
+      default: "",
+      symphonies: "",
+      concerts: "",
+      performances: "",
+      result: "",
+    });
+    setSeedWarnings([]);
     const { error } = await uploadCsvData(fileData, userToken);
     if (error) {
       setUploadErrors(error.errors);
@@ -105,8 +118,13 @@ const Admin = () => {
         <div>{seedMessages.concerts}</div>
         <div>{seedMessages.performances}</div>
         <div>{seedMessages.result}</div>
+        <ul>
+          {seedWarnings.map((warning) => (
+            <li>{warning}</li>
+          ))}
+        </ul>
       </div>
-      <UploadErrors uploadErrors={uploadErrors} />
+      <UploadValidateErrors uploadErrors={uploadErrors} />
     </>
   );
 };

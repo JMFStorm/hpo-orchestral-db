@@ -28,40 +28,44 @@ export const addSymphonies = async (symphonies: SymphonyObject[]) => {
   const composerRepo = getRepository(Composer);
   const arrangerRepo = getRepository(Arranger);
 
-  for (const symphony of symphonies) {
-    if (addedCount % numeralPart == 0) {
-      seedLog(`Saving symphonies: (${addedCount}/${symphoniesCount})`, "symphonies");
-    }
-    let composerObjects: Composer[] = [];
-    for (const composerName of symphony.composerNames) {
-      let existingComp = await composerRepo.findOne({ name: composerName });
-      if (!existingComp) {
-        const newComp: Partial<Composer> = { name: composerName };
-        existingComp = await composerRepo.save(newComp);
-      }
-      if (!composerObjects.some((x) => x.name === composerName)) {
-        composerObjects.push(existingComp);
-      }
-    }
-    const arrangersObject = await arrangerRepo.findOne({ names: symphony.arrangers });
-    const newSymphony: Partial<Symphony> = {
-      name: symphony.name,
-      symphony_id: symphony.symphony_id,
-      composers: composerObjects,
-      arrangers: arrangersObject,
-    };
-    try {
-      const found = await SymphonyRepo.findOne({ id: newSymphony.id });
-      if (!found) {
+  await Promise.all(
+    symphonies.map(async (symphony) => {
+      let composerObjects: Composer[] = [];
+      let arrangersObject: Arranger | undefined = undefined;
+
+      const handleComposers = async (composerNames: string[]) => {
+        for (const composerName of composerNames) {
+          const existingComp = await composerRepo.findOne({ name: composerName });
+          if (existingComp && !composerObjects.some((x) => x.name === composerName)) {
+            composerObjects.push(existingComp);
+          }
+        }
+      };
+
+      await Promise.all([
+        await handleComposers(symphony.composerNames),
+        await arrangerRepo.findOne({ names: symphony.arrangers }).then((res) => (arrangersObject = res)),
+      ]);
+
+      const newSymphony: Partial<Symphony> = {
+        name: symphony.name,
+        symphony_id: symphony.symphony_id,
+        composers: composerObjects,
+        arrangers: arrangersObject,
+      };
+      try {
         await SymphonyRepo.save(newSymphony);
+      } catch (err) {
+        console.log("Error with", newSymphony);
+        console.error(err);
+        process.exit();
       }
-    } catch (err) {
-      console.log("Error with", newSymphony);
-      console.error(err);
-      process.exit();
-    }
-    addedCount++;
-  }
+      if (addedCount % numeralPart == 0) {
+        seedLog(`Saving symphonies: (${addedCount}/${symphoniesCount})`, "symphonies");
+      }
+      addedCount++;
+    })
+  );
   seedLog(`Saved symphonies: (${addedCount}/${symphoniesCount})`, "symphonies");
   return addedCount;
 };

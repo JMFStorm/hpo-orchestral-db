@@ -2,7 +2,7 @@ import React from "react";
 
 import Language from "../lang/Language";
 
-const App = ({ uploadErrors }) => {
+const UpdateValidateErrors = ({ uploadErrors }) => {
   if (uploadErrors.length < 1) {
     return <></>;
   }
@@ -33,4 +33,4 @@ const App = ({ uploadErrors }) => {
   );
 };
 
-export default App;
+export default UpdateValidateErrors;

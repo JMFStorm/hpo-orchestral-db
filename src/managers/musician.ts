@@ -47,6 +47,37 @@ export const addMusicians = async (musicianNames: string[]) => {
   return result.length;
 };
 
+export const addComposers = async (composerNames: string[]) => {
+  const repo = getRepository(Composer);
+  let objects: Partial<Composer>[] = [];
+
+  // Filter duplicates and invalid
+  composerNames.forEach((name) => {
+    if (name.trim() === "") {
+      return;
+    }
+    if (!objects.some((obj) => obj.name === name)) {
+      objects.push({
+        name,
+      });
+    }
+  });
+
+  let newObjects: Partial<Composer>[] = [];
+  const existingComposers = await repo.find({});
+  // Filter already existing
+  objects.forEach((obj) => {
+    if (!existingComposers.some((mus) => mus.name === obj.name)) {
+      newObjects.push({
+        name: obj.name,
+      });
+    }
+  });
+
+  const result = await repo.save(newObjects);
+  return result.length;
+};
+
 // Describe
 // Adds conductors to table from an array of names,
 // filters duplicates, returns saved count

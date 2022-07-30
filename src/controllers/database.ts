@@ -2,7 +2,7 @@ import { Router } from "express";
 
 import { validateToken } from "../middleware/authorization";
 import { httpError } from "../utils/httpError";
-import { addConductors, addMusicians } from "../managers/musician";
+import { addComposers, addConductors, addMusicians } from "../managers/musician";
 import { addInstruments } from "../managers/instrument";
 import { addSymphonies } from "../managers/symphony";
 import { addOrchestries } from "../managers/orchestra";
@@ -33,7 +33,7 @@ const seedDatabase = async (rowObjects: CsvRowObject[]) => {
     seedLog("Seed init...");
     // Delete existing data
     seedLog("Deleting existing tables...");
-    Promise.all([
+    await Promise.all([
       await deleteAllFromRepo("arranger"),
       await deleteAllFromRepo("composer"),
       await deleteAllFromRepo("concert"),
@@ -71,6 +71,10 @@ const seedDatabase = async (rowObjects: CsvRowObject[]) => {
 
     console.log(`Adding new symphonies.`);
     const symphonyObjects = parseSymphoniesFromRows(rowObjects, premiereTags);
+
+    const composerNamesArr = symphonyObjects.map((symph) => symph.composerNames).flat();
+    await addComposers(composerNamesArr);
+
     const addedSymphonies = await addSymphonies(symphonyObjects);
     console.log(`Added ${addedSymphonies} new symphonies.`);
 
@@ -90,7 +94,7 @@ const seedDatabase = async (rowObjects: CsvRowObject[]) => {
 
     // Save all 'loosely' collected
     seedLog("Pregenerating tables...");
-    Promise.all([
+    await Promise.all([
       await addConductors(conductors).then(() => console.log("Saved conductors")),
       await addMusicians(musicians).then(() => console.log("Saved musicians")),
       await addInstruments(instruments).then(() => console.log("Saved instruments")),

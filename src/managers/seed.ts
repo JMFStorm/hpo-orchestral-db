@@ -6,6 +6,7 @@ import ConcertObject from "../interfaces/ConcertObject";
 import PerformanceObject from "../interfaces/PerformanceObject";
 import SoloistPerformanceObject from "../interfaces/SoloistPerformanceObject";
 import { getAllPremiereTags } from "./premiereTag";
+import { seedLog } from "../socket";
 
 type CsvErrorType = "value_missing" | "invalid_format" | "value_not_number" | "column_missing";
 
@@ -141,8 +142,8 @@ export const parseSymphoniesFromRows = (rows: CsvRowObject[], premiereTags: Prem
       composersArr.push(composerCell.trim());
     }
 
-    const symphonyIdCell = row.TeoksenId;
-    const symphonyNameCell = row.TeoksenNimi;
+    const symphonyIdCell = row.TeoksenId.trim();
+    const symphonyNameCell = row.TeoksenNimi.trim();
     const arrangerCell = row.Sovittaja.trim();
     let symphonyName = symphonyNameCell;
 
@@ -170,7 +171,7 @@ export const parseSymphoniesFromRows = (rows: CsvRowObject[], premiereTags: Prem
       symphonyName = parseFromPremiereTag(symphonyNameCell);
     }
 
-    const symphonyObj: SymphonyObject = {
+    const newSymphonyObj: SymphonyObject = {
       symphony_id: symphonyIdCell,
       name: symphonyName,
       composerNames: composersArr,
@@ -178,9 +179,19 @@ export const parseSymphoniesFromRows = (rows: CsvRowObject[], premiereTags: Prem
     };
 
     if (
-      !symphoniesWithComposers.some((x) => x.symphony_id === symphonyObj.symphony_id && x.name === symphonyObj.name)
+      !symphoniesWithComposers.some(
+        (symph) => symph.symphony_id === newSymphonyObj.symphony_id //  && symph.name === newSymphonyObj.name
+      )
     ) {
-      symphoniesWithComposers.push(symphonyObj);
+      symphoniesWithComposers.push(newSymphonyObj);
+    } else if (
+      symphoniesWithComposers.some(
+        (symph) => symph.symphony_id === newSymphonyObj.symphony_id && symph.name !== newSymphonyObj.name
+      )
+    ) {
+      const previous = symphoniesWithComposers.find((symph) => symph.symphony_id === newSymphonyObj.symphony_id);
+      const message = `Already found id ${newSymphonyObj.symphony_id}, '${newSymphonyObj.name}' != '${previous?.name}'`;
+      seedLog(message, "warning");
     }
   });
   return symphoniesWithComposers;
