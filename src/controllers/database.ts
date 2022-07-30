@@ -33,6 +33,7 @@ const seedDatabase = async (rowObjects: CsvRowObject[]) => {
     seedLog("Seed init...");
     // Delete existing data
     seedLog("Deleting existing tables...");
+    console.time("deleteTables");
     await Promise.all([
       await deleteAllFromRepo("arranger"),
       await deleteAllFromRepo("composer"),
@@ -48,6 +49,7 @@ const seedDatabase = async (rowObjects: CsvRowObject[]) => {
       await deleteAllFromRepo("soloist_performance"),
       await deleteAllFromRepo("symphony"),
     ]);
+    console.timeEnd("deleteTables");
 
     seedLog("Deleted existing tables.");
 
@@ -75,8 +77,9 @@ const seedDatabase = async (rowObjects: CsvRowObject[]) => {
     const composerNamesArr = symphonyObjects.map((symph) => symph.composerNames).flat();
     await addComposers(composerNamesArr);
 
-    const addedSymphonies = await addSymphonies(symphonyObjects);
-    console.log(`Added ${addedSymphonies} new symphonies.`);
+    console.time("symphonies");
+    await addSymphonies(symphonyObjects);
+    console.timeEnd("symphonies");
 
     const conductors = parseConductorsFromRows(rowObjects);
     const { musicians, instruments } = parseSoloistsFromRows(rowObjects);
@@ -94,6 +97,7 @@ const seedDatabase = async (rowObjects: CsvRowObject[]) => {
 
     // Save all 'loosely' collected
     seedLog("Pregenerating tables...");
+    console.time("addLooseTables");
     await Promise.all([
       await addConductors(conductors).then(() => console.log("Saved conductors")),
       await addMusicians(musicians).then(() => console.log("Saved musicians")),
@@ -102,22 +106,29 @@ const seedDatabase = async (rowObjects: CsvRowObject[]) => {
       await addLocations(locationNames).then(() => console.log("Saved locationNames")),
       await addConcertTags(concertTagNames).then(() => console.log("Saved concertTagNames")),
     ]);
+    console.timeEnd("addLooseTables");
 
     // Save concerts
     seedLog("Saving concerts...");
+    console.time("concerts");
     await addConcerts(concerts);
+    console.timeEnd("concerts");
 
-    // Save soloist and concert performances
+    // Save concert performances
     seedLog("Saving performances...");
+    console.time("Performances");
     const { addedCount, soloistPerformanceObjects } = await addPerformances(performances);
+    console.timeEnd("Performances");
 
+    // Save soloist performances
     seedLog("Saving soloist performances...");
+    console.time("soloistPerformances");
     await saveSoloistPerformances(soloistPerformanceObjects);
+    console.timeEnd("soloistPerformances");
 
     console.log({ savedPerformances: addedCount });
     seedLog("Database seed complete");
     seedLog(`Saved ${addedCount} performances in total!`, "result");
-
     return addedCount;
   } catch (err) {
     console.error("err", err);

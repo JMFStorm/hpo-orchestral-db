@@ -21,7 +21,6 @@ export const addConcerts = async (concerts: ConcertObject[]) => {
   let result: any = [];
   let addedCount = 0;
 
-  seedLog(`Saving concerts: (${addedCount}/${concertCount})`, "concerts");
   await Promise.all(
     concerts.map(async (concert) => {
       const conductorRepo = getRepository(Conductor);
@@ -31,7 +30,6 @@ export const addConcerts = async (concerts: ConcertObject[]) => {
       const orchestraRepo = getRepository(Orchestra);
 
       let concertObject: Partial<Concert> = {};
-
       // Fill concert object fields
       concertObject.concert_id = concert.concert_id;
       concertObject.date = parseStringToDate(concert.date);
