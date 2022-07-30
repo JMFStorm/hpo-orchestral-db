@@ -18,7 +18,7 @@ export const io = new Server(socketServer, { cors: { origin: clientUrl } });
 
 io.on("connection", (socket) => {
   console.log("New socket connection:", socket.id);
-  io.emit("connect_message", `Connection successfull. Hello from server, user '${socket.id}!'`);
+  io.emit("connect_message", `Connection successfull. Hello from server, user key '${socket.id}!'`);
 });
 
 socketServer.listen(serverPort, () => {
