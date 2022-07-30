@@ -17,6 +17,7 @@ const Admin = () => {
     symphonies: "",
     concerts: "",
     performances: "",
+    soloistPerformances: "",
     result: "",
   });
   const [seedWarnings, setSeedWarnings] = useState([]);
@@ -96,6 +97,7 @@ const Admin = () => {
       symphonies: "",
       concerts: "",
       performances: "",
+      soloistPerformances: "",
       result: "",
     });
     setSeedWarnings([]);
@@ -117,6 +119,7 @@ const Admin = () => {
         <div>{seedMessages.symphonies}</div>
         <div>{seedMessages.concerts}</div>
         <div>{seedMessages.performances}</div>
+        <div>{seedMessages.soloistPerformances}</div>
         <div>{seedMessages.result}</div>
         <ul>
           {seedWarnings.map((warning) => (

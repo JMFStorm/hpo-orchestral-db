@@ -9,7 +9,7 @@ import { addOrchestries } from "../managers/orchestra";
 import { addLocations } from "../managers/location";
 import { addConcerts, addConcertTags } from "../managers/concert";
 import { addPremiereTags } from "../managers/premiereTag";
-import { addPerformances } from "../managers/performance";
+import { addPerformances, saveSoloistPerformances } from "../managers/performance";
 import { addArrangers } from "../managers/arrangers";
 import { csvDirectoryPath, premiereTags } from "../utils/config";
 import { csvRowsToObjects } from "../utils/csvRead";
@@ -109,13 +109,14 @@ const seedDatabase = async (rowObjects: CsvRowObject[]) => {
 
     // Save soloist and concert performances
     seedLog("Saving performances...");
-    const savedCount = await addPerformances(performances);
+    const { addedCount, soloistPerformanceObjects } = await addPerformances(performances);
+    await saveSoloistPerformances(soloistPerformanceObjects);
 
-    console.log({ savedPerformances: savedCount });
+    console.log({ savedPerformances: addedCount });
     seedLog("Database seed complete");
-    seedLog(`Saved ${savedCount} performances in total!`, "result");
+    seedLog(`Saved ${addedCount} performances in total!`, "result");
 
-    return savedCount;
+    return addedCount;
   } catch (err) {
     console.error("err", err);
     return;

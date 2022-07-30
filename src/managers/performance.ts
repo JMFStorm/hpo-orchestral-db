@@ -33,61 +33,92 @@ const performanceRelationsForList = [
   "premiere_tag",
 ];
 
+export const saveSoloistPerformances = async (soloPerformances: SoloistPerformanceObject[]) => {
+  const instrumentRepo = getRepository(Instrument);
+  const musicianRepo = getRepository(Musician);
+  const soloistPerfRepo = getRepository(SoloistPerformance);
+  const performanceRepo = getRepository(Performance);
+
+  let addedCount = 0;
+  const performancesCount = soloPerformances.length;
+  const numeralPart = Math.floor(performancesCount / 20);
+  let soloistObjectsArray = [];
+  await Promise.all(
+    soloPerformances.map(async (perf) => {
+      let soloistObj: Musician | undefined = undefined;
+      let instrumentObj: Instrument | undefined = undefined;
+      let performance: Performance | undefined = undefined;
+
+      await Promise.all([
+        await musicianRepo.findOne({ name: perf.soloistName }).then((res) => (soloistObj = res as Musician)),
+        await instrumentRepo.findOne({ name: perf.instrumentName }).then((res) => (instrumentObj = res as Instrument)),
+        await performanceRepo.findOne({ id: perf.performanceId }).then((res) => (performance = res as Performance)),
+      ]);
+
+      const soloistPerfObject: Partial<SoloistPerformance> = {
+        soloist: soloistObj,
+        instrument: instrumentObj,
+        performance: performance,
+      };
+      const savedSoloistPerf = await soloistPerfRepo.save(soloistPerfObject);
+      soloistObjectsArray.push(savedSoloistPerf);
+      if (addedCount % numeralPart == 0) {
+        seedLog(`Saving soloist performances: (${addedCount}/${performancesCount})`, "soloistPerformances");
+      }
+      addedCount++;
+    })
+  );
+  seedLog(`Saved soloist performances: (${addedCount}/${performancesCount})`, "soloistPerformances");
+  return addedCount;
+};
+
 // Describe
 // Adds concert & soloist performances to table,
 // returns saved count
 export const addPerformances = async (performances: PerformanceObject[]) => {
   const concertRepo = getRepository(Concert);
   const symphonyRepo = getRepository(Symphony);
-  const instrumentRepo = getRepository(Instrument);
-  const musicianRepo = getRepository(Musician);
   const premiereTagRepo = getRepository(PremiereTag);
-  const concertPerfRepo = getRepository(Performance);
-  const soloistPerfRepo = getRepository(SoloistPerformance);
+  const performanceRepo = getRepository(Performance);
 
   let addedCount = 0;
   const performancesCount = performances.length;
   const numeralPart = Math.floor(performancesCount / 40);
-  for (const performance of performances) {
-    if (addedCount % numeralPart == 0) {
-      seedLog(`Saving performances: (${addedCount}/${performancesCount})`, "performances");
-    }
-    // Soloists
-    const saveSoloistPerformances = async (performances: SoloistPerformanceObject[]) => {
-      let soloistObjectsArray = [];
-      for (const performance of performances) {
-        const soloistObj = await musicianRepo.findOne({ name: performance.soloistName });
-        const instrumentObj = await instrumentRepo.findOne({ name: performance.instrumentName });
-        const soloistPerfObject = {
-          soloist: soloistObj,
-          instrument: instrumentObj,
+  let soloistPerformanceObjects: SoloistPerformanceObject[] = [];
+  await Promise.all(
+    performances.map(async (performance) => {
+      const symphony = await symphonyRepo.findOne({ symphony_id: performance.symphonyId });
+      // Init performance object
+      let concertPerfObj: Partial<Performance> = {
+        order: Number(performance.order),
+        symphony: symphony,
+        is_encore: performance.is_encore ?? false,
+      };
+      // Get all existing fields from tables
+      await Promise.all([
+        await concertRepo.findOne({ concert_id: performance.concertId }).then((x) => (concertPerfObj.concert = x)),
+        await premiereTagRepo
+          .findOne({ name: performance.premiere_tag })
+          .then((x) => (concertPerfObj.premiere_tag = x)),
+      ]);
+      // Save
+      const savedResponse = await performanceRepo.save(concertPerfObj);
+      performance.soloist_performances.forEach((soloPerf) => {
+        const soloistPerf: SoloistPerformanceObject = {
+          soloistName: soloPerf.soloistName,
+          instrumentName: soloPerf.instrumentName,
+          performanceId: savedResponse.id,
         };
-        const savedSoloistPerf = await soloistPerfRepo.save(soloistPerfObject);
-        soloistObjectsArray.push(savedSoloistPerf);
+        soloistPerformanceObjects.push(soloistPerf);
+      });
+      if (addedCount % numeralPart == 0) {
+        seedLog(`Saving performances: (${addedCount}/${performancesCount})`, "performances");
       }
-      return soloistObjectsArray as SoloistPerformance[];
-    };
-    const symphony = await symphonyRepo.findOne({ symphony_id: performance.symphonyId });
-    // Init performance object
-    let concertPerfObj: Partial<Performance> = {
-      order: Number(performance.order),
-      symphony: symphony,
-      is_encore: performance.is_encore ?? false,
-    };
-    // Get all existing fields from tables
-    await Promise.all([
-      await concertRepo.findOne({ concert_id: performance.concertId }).then((x) => (concertPerfObj.concert = x)),
-      await premiereTagRepo.findOne({ name: performance.premiere_tag }).then((x) => (concertPerfObj.premiere_tag = x)),
-      await saveSoloistPerformances(performance.soloist_performances).then(
-        (x) => (concertPerfObj.soloist_performances = x)
-      ),
-    ]);
-    // Save
-    await concertPerfRepo.save(concertPerfObj);
-    addedCount++;
-  }
+      addedCount++;
+    })
+  );
   seedLog(`Saved performances: (${addedCount}/${performancesCount})`, "performances");
-  return addedCount;
+  return { addedCount, soloistPerformanceObjects };
 };
 
 // Describe
