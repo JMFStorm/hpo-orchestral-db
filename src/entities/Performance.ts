@@ -1,4 +1,4 @@
-import { BaseEntity, ManyToMany, Entity, Column, ManyToOne, PrimaryGeneratedColumn, JoinTable } from "typeorm";
+import { BaseEntity, Entity, Column, ManyToOne, PrimaryGeneratedColumn, OneToMany } from "typeorm";
 
 import Concert from "./Concert";
 import Symphony from "./Symphony";
@@ -22,10 +22,9 @@ export default class Performance extends BaseEntity {
   @ManyToOne(() => Symphony, { onDelete: "CASCADE" })
   symphony: Symphony;
 
-  @ManyToMany(() => SoloistPerformance, (soloistPerf) => soloistPerf.performance, {
+  @OneToMany(() => SoloistPerformance, (soloistPerf) => soloistPerf.performance, {
     onDelete: "CASCADE",
   })
-  @JoinTable()
   soloist_performances: SoloistPerformance[];
 
   @ManyToOne(() => PremiereTag, { onDelete: "CASCADE" })

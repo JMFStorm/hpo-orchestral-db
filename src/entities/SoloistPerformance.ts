@@ -1,4 +1,4 @@
-import { BaseEntity, ManyToMany, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 import Musician from "./Musician";
 import Instrument from "./Instrument";
@@ -15,7 +15,7 @@ export default class SoloistPerformance extends BaseEntity {
   @ManyToOne(() => Instrument, { onDelete: "CASCADE" })
   instrument: Instrument;
 
-  @ManyToMany(() => Performance, (performance) => performance.soloist_performances, {
+  @ManyToOne(() => Performance, {
     onDelete: "CASCADE",
   })
   performance: Performance;
