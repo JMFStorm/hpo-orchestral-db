@@ -32,22 +32,25 @@ const seedDatabase = async (csvRows: CsvRowObject[]) => {
   try {
     seedLog("Seed init...");
     // Delete existing data
+    const totalEntities = 13;
+    let deletedEntities = 0;
     seedLog("Deleting existing tables. This will take a while...");
     console.time("deleteTables");
+    const logDeletion = () => seedLog(`Deleted ${++deletedEntities}/${totalEntities} entities.`, "total");
     await Promise.all([
-      await deleteAllFromRepo("arranger"),
-      await deleteAllFromRepo("composer"),
-      await deleteAllFromRepo("concert"),
-      await deleteAllFromRepo("concert_tag"),
-      await deleteAllFromRepo("conductor"),
-      await deleteAllFromRepo("instrument"),
-      await deleteAllFromRepo("location"),
-      await deleteAllFromRepo("musician"),
-      await deleteAllFromRepo("orchestra"),
-      await deleteAllFromRepo("performance"),
-      await deleteAllFromRepo("premiere_tag"),
-      await deleteAllFromRepo("soloist_performance"),
-      await deleteAllFromRepo("symphony"),
+      await deleteAllFromRepo("arranger").then(() => logDeletion()),
+      await deleteAllFromRepo("composer").then(() => logDeletion()),
+      await deleteAllFromRepo("concert").then(() => logDeletion()),
+      await deleteAllFromRepo("concert_tag").then(() => logDeletion()),
+      await deleteAllFromRepo("conductor").then(() => logDeletion()),
+      await deleteAllFromRepo("instrument").then(() => logDeletion()),
+      await deleteAllFromRepo("location").then(() => logDeletion()),
+      await deleteAllFromRepo("musician").then(() => logDeletion()),
+      await deleteAllFromRepo("orchestra").then(() => logDeletion()),
+      await deleteAllFromRepo("performance").then(() => logDeletion()),
+      await deleteAllFromRepo("premiere_tag").then(() => logDeletion()),
+      await deleteAllFromRepo("soloist_performance").then(() => logDeletion()),
+      await deleteAllFromRepo("symphony").then(() => logDeletion()),
     ]);
     console.timeEnd("deleteTables");
     seedLog("Deleted existing tables.");
@@ -59,6 +62,7 @@ const seedDatabase = async (csvRows: CsvRowObject[]) => {
     const totalCount = csvRows.length;
     const maxConcurrency = 1000;
 
+    seedLog(`Processed ${totalAdded}/${totalCount} performances`, "total");
     while (csvRows.length > 0) {
       const rowObjects = csvRows.splice(0, maxConcurrency);
 
@@ -108,12 +112,12 @@ const seedDatabase = async (csvRows: CsvRowObject[]) => {
       // Save all 'loosely' collected
       seedLog(`Adding more stuff to performance relation tables...`);
       await Promise.all([
-        await addConductors(conductors).then(() => console.log("Saved conductors")),
-        await addMusicians(musicians).then(() => console.log("Saved musicians")),
-        await addInstruments(instruments).then(() => console.log("Saved instruments")),
-        await addOrchestries(orchestraNames).then(() => console.log("Saved orchestraNames")),
-        await addLocations(locationNames).then(() => console.log("Saved locationNames")),
-        await addConcertTags(concertTagNames).then(() => console.log("Saved concertTagNames")),
+        await addConductors(conductors),
+        await addMusicians(musicians),
+        await addInstruments(instruments),
+        await addOrchestries(orchestraNames),
+        await addLocations(locationNames),
+        await addConcertTags(concertTagNames),
       ]);
 
       // Save concerts
@@ -128,12 +132,12 @@ const seedDatabase = async (csvRows: CsvRowObject[]) => {
       await saveSoloistPerformances(soloistPerformanceObjects);
 
       totalAdded += addedCount;
-      seedLog(`Processed ${totalAdded}/${totalCount} performances`, "total");
+      seedLog(`Processed ${totalAdded}/${totalCount} performances.`, "total");
     }
 
     console.log({ savedPerformances: totalAdded });
     seedLog("Database seed complete!");
-    seedLog(`Saved ${totalAdded} performances in total`, "result");
+    seedLog(`Saved ${totalAdded} performances in total.`, "result");
     return totalAdded;
   } catch (err) {
     console.error("err", err);
