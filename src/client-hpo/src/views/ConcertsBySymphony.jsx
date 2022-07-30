@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
+import { sortConcertsByDate } from "../utils.js/functions";
 import GetBackButton from "./GetBackButton";
 import { fetchConcertsBySymphonyId } from "../api/request";
 
@@ -28,7 +29,7 @@ const ConcertsBySymphony = () => {
     <>
       <GetBackButton />
       <ul>
-        {concerts.map((x) => {
+        {concerts.sort(sortConcertsByDate).map((x) => {
           let conductorsText = "";
           if (x.conductors) {
             x.conductors.forEach((x, index) => {

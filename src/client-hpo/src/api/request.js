@@ -136,7 +136,7 @@ export const fetchConcertById = async (concertId) => {
 };
 
 export const fetchComposerById = async (composerId) => {
-  const urlPath = `api/musician/composer/${composerId}`;
+  const urlPath = `api/musician/composer/composerid/${composerId}`;
   const { result, error } = await get(urlPath);
   return { result, error };
 };

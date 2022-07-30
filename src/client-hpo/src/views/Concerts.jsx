@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
+import { sortConcertsByDate } from "../utils.js/functions";
 import AutocompleteFetch from "./AutocompleteFetch";
 import Language from "../lang/Language.jsx";
 import {
@@ -20,16 +21,6 @@ const setYears = (start, end) => {
   return newYearsArray;
 };
 const yearsArray = setYears(startYear, endYear);
-
-const sortConcertsByDate = (a, b, isDescending = false) => {
-  const aDate = Date.parse(a.date);
-  const bDate = Date.parse(b.date);
-  if (aDate === bDate) {
-    return 0;
-  }
-  let mult = isDescending ? -1 : 1;
-  return aDate < bDate ? -1 * mult : 1 * mult;
-};
 
 const Concerts = () => {
   const { lng } = Language();

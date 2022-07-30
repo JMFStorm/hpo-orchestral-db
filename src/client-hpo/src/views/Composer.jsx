@@ -12,7 +12,7 @@ const Composer = () => {
 
   const [premieres, setPremieres] = useState([]);
   const [symphonies, setSymphonies] = useState([]);
-  const [composer, setComposer] = useState(undefined);
+  const [composer, setComposer] = useState(null);
 
   const composerId = useMemo(() => params.composerid ?? undefined, [params.composerid]);
 
@@ -20,7 +20,9 @@ const Composer = () => {
     const fetchByComposer = async () => {
       let symphs = [];
       let prems = [];
-      let comp = [];
+      let comp = null;
+
+      console.log("composerId", composerId);
 
       await Promise.all([
         await fetchSymphoniesByComposerId(composerId).then((res) => (symphs = res.result)),
@@ -34,7 +36,7 @@ const Composer = () => {
 
       setSymphonies(symphs ?? []);
       setPremieres(prems ?? []);
-      setComposer(comp ?? {});
+      setComposer(comp);
     };
     fetchByComposer();
   }, [composerId]);
@@ -48,7 +50,7 @@ const Composer = () => {
       </div>
       {composer && (
         <div>
-          <div>Säveltäjä: {composer.name}</div>
+          <div>Säveltäjä: {composer?.name}</div>
         </div>
       )}
       <div>
@@ -73,7 +75,7 @@ const Composer = () => {
                 <span>
                   {prem.concert?.date}: {prem.symphony?.name} ({lng("premiere_tag." + prem.premiere_tag?.name)})
                 </span>
-                <button onClick={() => navigate(`/concerts/symphonyid/${prem.symphony?.id}`)}>Avaa konsertti</button>
+                <button onClick={() => navigate(`/concert/concertid/${prem.concert?.id}`)}>Avaa konsertti</button>
               </li>
             ))}
           </ul>
