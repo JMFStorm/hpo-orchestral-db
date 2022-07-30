@@ -14,12 +14,10 @@ export const addPremiereTags = async (premiereTags: PremiereTagConfig[]) => {
     const premiereTagObject = {
       name: premiereTag.sqlName,
     };
-
     // Save
     await premiereTagRepo.save(premiereTagObject);
     addedCount++;
   }
-
   return addedCount;
 };
 

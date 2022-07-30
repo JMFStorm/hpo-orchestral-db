@@ -9,107 +9,61 @@ import Concert from "../entities/Concert";
 import Conductor from "../entities/Conductor";
 import Symphony from "../entities/Symphony";
 
-// Describe
-// Adds musicians to table from an array of names,
-// filters duplicates, returns saved count
 export const addMusicians = async (musicianNames: string[]) => {
   const repo = getRepository(Musician);
+  let newMusicians: Partial<Musician>[] = [];
 
-  let objects: Partial<Musician>[] = [];
+  await Promise.all(
+    musicianNames.map(async (musicianName) => {
+      const found = await repo.findOne({ name: musicianName });
+      if (!found) {
+        newMusicians.push({
+          name: musicianName,
+        });
+      }
+    })
+  );
 
-  // Filter duplicates and invalid
-  musicianNames.forEach((name) => {
-    if (name.trim() === "") {
-      return;
-    }
-
-    if (!objects.some((obj) => obj.name === name)) {
-      objects.push({
-        name,
-      });
-    }
-  });
-
-  let newObjects: Partial<Musician>[] = [];
-
-  const existingMusicians = await repo.find({});
-
-  // Filter already existing
-  objects.forEach((obj) => {
-    if (!existingMusicians.some((mus) => mus.name === obj.name)) {
-      newObjects.push({
-        name: obj.name,
-      });
-    }
-  });
-
-  const result = await repo.save(newObjects);
-  return result.length;
+  const res = await repo.save(newMusicians);
+  return res.length;
 };
 
 export const addComposers = async (composerNames: string[]) => {
   const repo = getRepository(Composer);
-  let objects: Partial<Composer>[] = [];
+  let newComposers: Partial<Composer>[] = [];
 
-  // Filter duplicates and invalid
-  composerNames.forEach((name) => {
-    if (name.trim() === "") {
-      return;
-    }
-    if (!objects.some((obj) => obj.name === name)) {
-      objects.push({
-        name,
-      });
-    }
-  });
+  await Promise.all(
+    composerNames.map(async (composerName) => {
+      const found = await repo.findOne({ name: composerName });
+      if (!found) {
+        newComposers.push({
+          name: composerName,
+        });
+      }
+    })
+  );
 
-  let newObjects: Partial<Composer>[] = [];
-  const existingComposers = await repo.find({});
-  // Filter already existing
-  objects.forEach((obj) => {
-    if (!existingComposers.some((mus) => mus.name === obj.name)) {
-      newObjects.push({
-        name: obj.name,
-      });
-    }
-  });
-
-  const result = await repo.save(newObjects);
-  return result.length;
+  const res = await repo.save(newComposers);
+  return res.length;
 };
 
-// Describe
-// Adds conductors to table from an array of names,
-// filters duplicates, returns saved count
 export const addConductors = async (conductorNames: string[]) => {
   const repo = getRepository(Conductor);
-  let objects: Partial<Conductor>[] = [];
+  let newConductors: Partial<Conductor>[] = [];
 
-  // Filter duplicates and invalid
-  conductorNames.forEach((name) => {
-    if (name.trim() === "") {
-      return;
-    }
+  await Promise.all(
+    conductorNames.map(async (conductorName) => {
+      const found = await repo.findOne({ name: conductorName });
+      if (!found) {
+        newConductors.push({
+          name: conductorName,
+        });
+      }
+    })
+  );
 
-    if (!objects.some((obj) => obj.name === name)) {
-      objects.push({
-        name,
-      });
-    }
-  });
-  let newObjects: Partial<Conductor>[] = [];
-  const existingConductors = await repo.find({});
-
-  // Filter already existing
-  objects.forEach((obj) => {
-    if (!existingConductors.some((cond) => cond.name === obj.name)) {
-      newObjects.push({
-        name: obj.name,
-      });
-    }
-  });
-  const result = await repo.save(newObjects);
-  return result.length;
+  const res = await repo.save(newConductors);
+  return res.length;
 };
 
 // Describe

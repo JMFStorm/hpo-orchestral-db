@@ -7,35 +7,19 @@ import Instrument from "../entities/Instrument";
 // filters duplicates, returns saved count
 export const addInstruments = async (instrumentNames: string[]) => {
   const repo = getRepository(Instrument);
+  let newInstruments: Partial<Instrument>[] = [];
 
-  let objects: Partial<Instrument>[] = [];
+  await Promise.all(
+    instrumentNames.map(async (instrumentName) => {
+      const found = await repo.findOne({ name: instrumentName });
+      if (!found) {
+        newInstruments.push({
+          name: instrumentName,
+        });
+      }
+    })
+  );
 
-  // Filter duplicates and invalid
-  instrumentNames.forEach((name) => {
-    if (name.trim() === "") {
-      return;
-    }
-
-    if (!objects.some((obj) => obj.name === name)) {
-      objects.push({
-        name,
-      });
-    }
-  });
-
-  let newObjects: Partial<Instrument>[] = [];
-
-  const existingInstruments = await repo.find({});
-
-  // Filter already existing
-  objects.forEach((obj) => {
-    if (!existingInstruments.some((instr) => instr.name === obj.name)) {
-      newObjects.push({
-        name: obj.name,
-      });
-    }
-  });
-
-  const result = await repo.save(newObjects);
-  return result.length;
+  const res = await repo.save(newInstruments);
+  return res.length;
 };

@@ -16,10 +16,7 @@ const Admin = () => {
   const [loginError, setLoginError] = useState(false);
   const [seedMessages, setSeedMessages] = useState({
     default: "",
-    symphonies: "",
-    concerts: "",
-    performances: "",
-    soloistPerformances: "",
+    total: "",
     result: "",
   });
   const [seedWarnings, setSeedWarnings] = useState([]);
@@ -96,10 +93,7 @@ const Admin = () => {
     setUploadErrors([]);
     setSeedMessages({
       default: "",
-      symphonies: "",
-      concerts: "",
-      performances: "",
-      soloistPerformances: "",
+      total: "",
       result: "",
     });
     setSeedWarnings([]);
@@ -125,16 +119,20 @@ const Admin = () => {
       </div>
       <div>
         <div>{seedMessages.default}</div>
-        <div>{seedMessages.symphonies}</div>
-        <div>{seedMessages.concerts}</div>
-        <div>{seedMessages.performances}</div>
-        <div>{seedMessages.soloistPerformances}</div>
+        <div>{seedMessages.total}</div>
         <div>{seedMessages.result}</div>
-        <ul>
-          {seedWarnings.map((warning) => (
-            <li>{warning}</li>
-          ))}
-        </ul>
+        {seedWarnings.length > 0 && (
+          <div>
+            <h3>Teosten nimikonflikteja:</h3>
+            <ul>
+              {seedWarnings
+                .filter((current, index, self) => index === self.findIndex((x) => x === current))
+                .map((warning) => (
+                  <li>{warning}</li>
+                ))}
+            </ul>
+          </div>
+        )}
       </div>
       <UploadValidateErrors uploadErrors={uploadErrors} />
     </>

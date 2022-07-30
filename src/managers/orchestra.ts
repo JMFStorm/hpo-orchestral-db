@@ -7,13 +7,19 @@ import Orchestra from "../entities/Orchestra";
 // returns saved count
 export const addOrchestries = async (orchestraNames: string[]) => {
   const repo = getRepository(Orchestra);
+  let newOrchestries: Partial<Orchestra>[] = [];
 
-  const objects = orchestraNames.map((x) => {
-    return {
-      name: x,
-    };
-  });
+  await Promise.all(
+    orchestraNames.map(async (orchestraName) => {
+      const found = await repo.findOne({ name: orchestraName });
+      if (!found) {
+        newOrchestries.push({
+          name: orchestraName,
+        });
+      }
+    })
+  );
 
-  const res = await repo.save(objects);
+  const res = await repo.save(newOrchestries);
   return res.length;
 };

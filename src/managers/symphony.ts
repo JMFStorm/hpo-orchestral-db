@@ -6,7 +6,6 @@ import { filterUniquesById, sortStringsFunction } from "../utils/functions";
 import Symphony from "../entities/Symphony";
 import Performance from "../entities/Performance";
 import Arranger from "../entities/Arranger";
-import { seedLog } from "../socket";
 
 // Describe
 // Get all symphonies
@@ -21,23 +20,31 @@ export const getAllSymphonies = async () => {
 // return added count
 export const addSymphonies = async (symphonies: SymphonyObject[]) => {
   let addedCount = 0;
-  const symphoniesCount = symphonies.length;
-  const numeralPart = Math.floor(symphoniesCount / 20);
 
   const SymphonyRepo = getRepository(Symphony);
   const composerRepo = getRepository(Composer);
   const arrangerRepo = getRepository(Arranger);
 
+  let newSymphonies: SymphonyObject[] = [];
   await Promise.all(
-    symphonies.map(async (symphony) => {
+    symphonies.map(async (symph) => {
+      const found = await SymphonyRepo.findOne({ symphony_id: symph.symphony_id });
+      if (!found) {
+        newSymphonies.push(symph);
+      }
+    })
+  );
+
+  await Promise.all(
+    newSymphonies.map(async (symphony) => {
       let composerObjects: Composer[] = [];
       let arrangersObject: Arranger | undefined = undefined;
 
       const handleComposers = async (composerNames: string[]) => {
         for (const composerName of composerNames) {
-          const existingComp = await composerRepo.findOne({ name: composerName });
-          if (existingComp && !composerObjects.some((x) => x.name === composerName)) {
-            composerObjects.push(existingComp);
+          const composer = (await composerRepo.findOne({ name: composerName })) as Composer;
+          if (composer && !composerObjects.some((comp) => comp.name === composer.name)) {
+            composerObjects.push(composer);
           }
         }
       };
@@ -60,13 +67,9 @@ export const addSymphonies = async (symphonies: SymphonyObject[]) => {
         console.error(err);
         process.exit();
       }
-      if (addedCount % numeralPart == 0) {
-        seedLog(`Saving symphonies: (${addedCount}/${symphoniesCount})`, "symphonies");
-      }
       addedCount++;
     })
   );
-  seedLog(`Saved symphonies: (${addedCount}/${symphoniesCount})`, "symphonies");
   return addedCount;
 };
 

@@ -1,4 +1,4 @@
-import { getRepository } from "typeorm";
+import { createQueryBuilder, getRepository } from "typeorm";
 
 // Describe
 // Assign names from array to to neme
@@ -20,8 +20,6 @@ export const addEntitiesByName = async (names: string[], repoName: string) => {
 // Deletes all arrangers repo,
 // returns deleted count
 export const deleteAllFromRepo = async (repoName: string) => {
-  const repo = getRepository(repoName);
-
-  const result = await repo.delete({});
+  const result = await createQueryBuilder().delete().from(repoName).execute();
   return result.affected;
 };

@@ -28,11 +28,11 @@ import { seedLog } from "../socket";
 
 const controller = Router();
 
-const seedDatabase = async (rowObjects: CsvRowObject[]) => {
+const seedDatabase = async (csvRows: CsvRowObject[]) => {
   try {
     seedLog("Seed init...");
     // Delete existing data
-    seedLog("Deleting existing tables...");
+    seedLog("Deleting existing tables. This will take a while...");
     console.time("deleteTables");
     await Promise.all([
       await deleteAllFromRepo("arranger"),
@@ -50,86 +50,96 @@ const seedDatabase = async (rowObjects: CsvRowObject[]) => {
       await deleteAllFromRepo("symphony"),
     ]);
     console.timeEnd("deleteTables");
-
     seedLog("Deleted existing tables.");
 
     const premsRes = await addPremiereTags(premiereTags);
     console.log(`Added ${premsRes} premiere tags`);
 
-    // Add arrangers
-    let arrangers: string[] = [];
-    rowObjects
-      .filter((x) => x.Sovittaja.trim().length !== 0)
-      .map((x) => {
-        const current = x.Sovittaja;
-        const arranger = current;
-        if (!arrangers.includes(arranger)) {
-          arrangers.push(arranger);
-        }
-      });
+    let totalAdded = 0;
+    const totalCount = csvRows.length;
+    const maxConcurrency = 1000;
 
-    const arrangersRes = await addArrangers(arrangers);
-    console.log(`Added ${arrangersRes} arrangers`);
+    while (csvRows.length > 0) {
+      console.log("Csv rows remaining:", csvRows.length);
+      const rowObjects = csvRows.splice(0, maxConcurrency);
 
-    console.log(`Adding new symphonies.`);
-    const symphonyObjects = parseSymphoniesFromRows(rowObjects, premiereTags);
+      // Add arrangers
+      let arrangers: string[] = [];
+      rowObjects
+        .filter((x) => x.Sovittaja.trim().length !== 0)
+        .forEach((x) => {
+          const current = x.Sovittaja;
+          const arranger = current;
+          if (!arrangers.includes(arranger)) {
+            arrangers.push(arranger);
+          }
+        });
 
-    const composerNamesArr = symphonyObjects.map((symph) => symph.composerNames).flat();
-    await addComposers(composerNamesArr);
+      const arrangersRes = await addArrangers(arrangers);
+      console.log(`Added ${arrangersRes} arrangers`);
 
-    console.time("symphonies");
-    await addSymphonies(symphonyObjects);
-    console.timeEnd("symphonies");
+      console.log(`Adding new symphonies.`);
+      const symphonyObjects = parseSymphoniesFromRows(rowObjects, premiereTags);
 
-    const conductors = parseConductorsFromRows(rowObjects);
-    const { musicians, instruments } = parseSoloistsFromRows(rowObjects);
+      let composerNamesArr = symphonyObjects.map((symph) => symph.composerNames).flat();
+      composerNamesArr = composerNamesArr.filter(
+        (current, index, self) => index === self.findIndex((x) => x === current && current !== "")
+      );
+      await addComposers(composerNamesArr);
 
-    const orchestraNames = parseStringsFromColumn(rowObjects, "Orkesteri");
-    const locationNames = parseStringsFromColumn(rowObjects, "Konserttipaikka");
-    const concertTagNames = parseStringsFromColumn(rowObjects, "KonsertinNimike");
+      console.time("symphonies");
+      await addSymphonies(symphonyObjects);
+      console.timeEnd("symphonies");
 
-    // Collect concerts
-    const concerts = parseConcertsFromRows(rowObjects);
+      const conductors = parseConductorsFromRows(rowObjects);
+      const { musicians, instruments } = parseSoloistsFromRows(rowObjects);
 
-    // Collect both soloist and concert performances
-    // and connect premiere tags
-    const performances = await parsePerformancesFromRows(rowObjects, premiereTags);
+      const orchestraNames = parseStringsFromColumn(rowObjects, "Orkesteri");
+      const locationNames = parseStringsFromColumn(rowObjects, "Konserttipaikka");
+      const concertTagNames = parseStringsFromColumn(rowObjects, "KonsertinNimike");
 
-    // Save all 'loosely' collected
-    seedLog("Pregenerating tables...");
-    console.time("addLooseTables");
-    await Promise.all([
-      await addConductors(conductors).then(() => console.log("Saved conductors")),
-      await addMusicians(musicians).then(() => console.log("Saved musicians")),
-      await addInstruments(instruments).then(() => console.log("Saved instruments")),
-      await addOrchestries(orchestraNames).then(() => console.log("Saved orchestraNames")),
-      await addLocations(locationNames).then(() => console.log("Saved locationNames")),
-      await addConcertTags(concertTagNames).then(() => console.log("Saved concertTagNames")),
-    ]);
-    console.timeEnd("addLooseTables");
+      // Collect concerts
+      const concerts = parseConcertsFromRows(rowObjects);
 
-    // Save concerts
-    seedLog("Saving concerts...");
-    console.time("concerts");
-    await addConcerts(concerts);
-    console.timeEnd("concerts");
+      // Collect both soloist and concert performances
+      // and connect premiere tags
+      const performances = await parsePerformancesFromRows(rowObjects, premiereTags);
 
-    // Save concert performances
-    seedLog("Saving performances...");
-    console.time("Performances");
-    const { addedCount, soloistPerformanceObjects } = await addPerformances(performances);
-    console.timeEnd("Performances");
+      // Save all 'loosely' collected
+      console.time("addLooseTables");
+      await Promise.all([
+        await addConductors(conductors).then(() => console.log("Saved conductors")),
+        await addMusicians(musicians).then(() => console.log("Saved musicians")),
+        await addInstruments(instruments).then(() => console.log("Saved instruments")),
+        await addOrchestries(orchestraNames).then(() => console.log("Saved orchestraNames")),
+        await addLocations(locationNames).then(() => console.log("Saved locationNames")),
+        await addConcertTags(concertTagNames).then(() => console.log("Saved concertTagNames")),
+      ]);
+      console.timeEnd("addLooseTables");
 
-    // Save soloist performances
-    seedLog("Saving soloist performances...");
-    console.time("soloistPerformances");
-    await saveSoloistPerformances(soloistPerformanceObjects);
-    console.timeEnd("soloistPerformances");
+      // Save concerts
+      console.time("concerts");
+      await addConcerts(concerts);
+      console.timeEnd("concerts");
 
-    console.log({ savedPerformances: addedCount });
-    seedLog("Database seed complete");
-    seedLog(`Saved ${addedCount} performances in total!`, "result");
-    return addedCount;
+      // Save concert performances
+      console.time("Performances");
+      const { addedCount, soloistPerformanceObjects } = await addPerformances(performances);
+      console.timeEnd("Performances");
+
+      // Save soloist performances
+      console.time("soloistPerformances");
+      await saveSoloistPerformances(soloistPerformanceObjects);
+      console.timeEnd("soloistPerformances");
+
+      totalAdded += addedCount;
+      seedLog(`Processed ${totalAdded}/${totalCount} performances`, "total");
+    }
+
+    console.log({ savedPerformances: totalAdded });
+    seedLog("Database seed complete!");
+    seedLog(`Saved ${totalAdded} performances in total`, "result");
+    return totalAdded;
   } catch (err) {
     console.error("err", err);
     return;

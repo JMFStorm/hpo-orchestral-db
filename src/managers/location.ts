@@ -7,13 +7,19 @@ import Location from "../entities/Location";
 // returns saved count
 export const addLocations = async (locationNames: string[]) => {
   const repo = getRepository(Location);
+  let newLocations: Partial<Location>[] = [];
 
-  const objects = locationNames.map((x) => {
-    return {
-      name: x,
-    };
-  });
+  await Promise.all(
+    locationNames.map(async (locationName) => {
+      const found = await repo.findOne({ name: locationName });
+      if (!found) {
+        newLocations.push({
+          name: locationName,
+        });
+      }
+    })
+  );
 
-  const res = await repo.save(objects);
+  const res = await repo.save(newLocations);
   return res.length;
 };

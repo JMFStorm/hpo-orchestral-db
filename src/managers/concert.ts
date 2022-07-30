@@ -10,25 +10,31 @@ import Musician from "../entities/Musician";
 import { filterUniquesById, findStringArrayMatch, parseStringToDate } from "../utils/functions";
 import Composer from "../entities/Composer";
 import Conductor from "../entities/Conductor";
-import { seedLog } from "../socket";
 
 // Describe
 // Add concerts to table
 // returns saved count
 export const addConcerts = async (concerts: ConcertObject[]) => {
-  const concertCount = concerts.length;
-  const numeralPart = Math.floor(concertCount / 20);
-  let result: any = [];
-  let addedCount = 0;
+  const conductorRepo = getRepository(Conductor);
+  const concertRepo = getRepository(Concert);
+  const concertTagRepo = getRepository(ConcertTag);
+  const locationRepo = getRepository(Location);
+  const orchestraRepo = getRepository(Orchestra);
 
+  let result: any = [];
+
+  let newConcerts: ConcertObject[] = [];
   await Promise.all(
     concerts.map(async (concert) => {
-      const conductorRepo = getRepository(Conductor);
-      const concertRepo = getRepository(Concert);
-      const concertTagRepo = getRepository(ConcertTag);
-      const locationRepo = getRepository(Location);
-      const orchestraRepo = getRepository(Orchestra);
+      const found = await concertRepo.findOne({ concert_id: concert.concert_id });
+      if (!found) {
+        newConcerts.push(concert);
+      }
+    })
+  );
 
+  await Promise.all(
+    newConcerts.map(async (concert) => {
       let concertObject: Partial<Concert> = {};
       // Fill concert object fields
       concertObject.concert_id = concert.concert_id;
@@ -67,13 +73,8 @@ export const addConcerts = async (concerts: ConcertObject[]) => {
       ]);
       // Save result
       result = await concertRepo.save(concertObject);
-      if (addedCount % numeralPart == 0) {
-        seedLog(`Saving concerts: (${addedCount}/${concertCount})`, "concerts");
-      }
-      addedCount++;
     })
   );
-  seedLog(`Saved concerts: (${addedCount}/${concertCount})`, "concerts");
   return result.length;
 };
 
@@ -82,13 +83,21 @@ export const addConcerts = async (concerts: ConcertObject[]) => {
 // returns saved count
 export const addConcertTags = async (tagNames: string[]) => {
   const repo = getRepository(ConcertTag);
-  const tagObjects = tagNames.map((x) => {
-    return {
-      name: x,
-    };
-  });
-  const result = await repo.save(tagObjects);
-  return result.length;
+  let newTags: Partial<ConcertTag>[] = [];
+
+  await Promise.all(
+    tagNames.map(async (tagName) => {
+      const found = await repo.findOne({ name: tagName });
+      if (!found) {
+        newTags.push({
+          name: tagName,
+        });
+      }
+    })
+  );
+
+  const res = await repo.save(newTags);
+  return res.length;
 };
 
 // Describe

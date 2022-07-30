@@ -235,7 +235,7 @@ export const parseSoloistsFromRows = (rows: CsvRowObject[]) => {
         const current = x.trim();
         const soloist = current.substring(0, current.indexOf("(")).trim();
 
-        if (soloist.length > 0 && !musicians.includes(soloist)) {
+        if (soloist.length > 0 && !musicians.includes(soloist) && soloist !== "") {
           musicians.push(soloist);
         }
 

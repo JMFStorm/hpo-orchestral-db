@@ -21,12 +21,6 @@ io.on("connection", (socket) => {
   io.emit("connect_message", `Connection successfull. Hello from server, user '${socket.id}!'`);
 });
 
-export const seedLog = (message: string, type: string = "default") => {
-  console.log(message);
-  const data = { type: type ?? "default", message: message };
-  io.emit("db_seed", data);
-};
-
 socketServer.listen(serverPort, () => {
   console.log(`HPO Orchestral DB - express server initialized on port: ${serverPort}`);
 });
