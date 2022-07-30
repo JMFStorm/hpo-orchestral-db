@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { io } from "socket.io-client";
+import { useNavigate } from "react-router-dom";
 
 import { parseCsv } from "../utils.js/csvParse";
 import { uploadCsvData, loginUser } from "../api/request";
@@ -7,6 +8,7 @@ import { serverUrl } from "../config";
 import UploadValidateErrors from "./UploadValidateErrors";
 
 const Admin = () => {
+  const navigate = useNavigate();
   const [fileData, setFileData] = useState([]);
   const [uploadErrors, setUploadErrors] = useState([]);
   const [loginPassword, setLoginPassword] = useState("");
@@ -109,7 +111,14 @@ const Admin = () => {
 
   return (
     <>
-      <button onClick={() => setUserToken(undefined)}>Kirjaudu ulos</button>
+      <button
+        onClick={() => {
+          setUserToken(undefined);
+          navigate("/admin");
+        }}
+      >
+        Kirjaudu ulos
+      </button>
       <div>
         <input type="file" onChange={(e) => onFileChange(e)} />
         <button onClick={onFileUpload}>Upload!</button>

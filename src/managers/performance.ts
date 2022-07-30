@@ -43,6 +43,7 @@ export const saveSoloistPerformances = async (soloPerformances: SoloistPerforman
   const performancesCount = soloPerformances.length;
   const numeralPart = Math.floor(performancesCount / 20);
   let soloistObjectsArray = [];
+  seedLog(`Saving soloist performances: (${addedCount}/${performancesCount})`, "soloistPerformances");
   await Promise.all(
     soloPerformances.map(async (perf) => {
       let soloistObj: Musician | undefined = undefined;
@@ -85,6 +86,7 @@ export const addPerformances = async (performances: PerformanceObject[]) => {
   const performancesCount = performances.length;
   const numeralPart = Math.floor(performancesCount / 40);
   let soloistPerformanceObjects: SoloistPerformanceObject[] = [];
+  seedLog(`Saving performances: (${addedCount}/${performancesCount})`, "performances");
   await Promise.all(
     performances.map(async (performance) => {
       const symphony = await symphonyRepo.findOne({ symphony_id: performance.symphonyId });

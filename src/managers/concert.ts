@@ -21,6 +21,7 @@ export const addConcerts = async (concerts: ConcertObject[]) => {
   let result: any = [];
   let addedCount = 0;
 
+  seedLog(`Saving concerts: (${addedCount}/${concertCount})`, "concerts");
   await Promise.all(
     concerts.map(async (concert) => {
       const conductorRepo = getRepository(Conductor);

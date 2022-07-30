@@ -110,6 +110,8 @@ const seedDatabase = async (rowObjects: CsvRowObject[]) => {
     // Save soloist and concert performances
     seedLog("Saving performances...");
     const { addedCount, soloistPerformanceObjects } = await addPerformances(performances);
+
+    seedLog("Saving soloist performances...");
     await saveSoloistPerformances(soloistPerformanceObjects);
 
     console.log({ savedPerformances: addedCount });
