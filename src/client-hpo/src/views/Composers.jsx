@@ -69,7 +69,7 @@ const Composers = () => {
           }}
         />
       </div>
-      <h2>Hae säveltäjää aakkosten mukaan</h2>
+      <h2>Hae säveltäjää alkukirjaimella</h2>
       <ul>
         {alphabeticals.map((x) => (
           <li key={x}>

@@ -1,6 +1,14 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemText from "@mui/material/ListItemText";
+import Button from "@mui/material/Button";
+import Divider from "@mui/material/Divider";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
 
+import LoadingContent from "./LoadingContent";
 import GetBackButton from "./GetBackButton";
 import { fetchPremieresByComposer, fetchSymphoniesByComposerId, fetchComposerById } from "../api/request";
 import Language from "../lang/Language.jsx";
@@ -13,6 +21,8 @@ const Composer = () => {
   const [premieres, setPremieres] = useState([]);
   const [symphonies, setSymphonies] = useState([]);
   const [composer, setComposer] = useState(null);
+  const [pageLoading, setPageLoading] = useState(true);
+  const [tabValue, setTabValue] = useState(0);
 
   const composerId = useMemo(() => params.composerid ?? undefined, [params.composerid]);
 
@@ -22,17 +32,15 @@ const Composer = () => {
       let prems = [];
       let comp = null;
 
-      console.log("composerId", composerId);
-
+      setPageLoading(true);
       await Promise.all([
         await fetchSymphoniesByComposerId(composerId).then((res) => (symphs = res.result)),
         await fetchPremieresByComposer(composerId).then((res) => (prems = res.result)),
         await fetchComposerById(composerId).then((res) => (comp = res.result)),
       ]);
+      setPageLoading(false);
 
-      console.log("symphonies", symphs);
-      console.log("premieres", prems);
-      console.log("composer", comp);
+      console.log("symphs", symphs);
 
       setSymphonies(symphs ?? []);
       setPremieres(prems ?? []);
@@ -41,46 +49,84 @@ const Composer = () => {
     fetchByComposer();
   }, [composerId]);
 
-  console.log("composerId", composerId);
+  const concertsString = (value) => {
+    let txt = `(${value.concertsCount}`;
+    if (value.concertsCount > 1) {
+      txt = txt.concat(" konserttia");
+    } else {
+      txt = txt.concat(" konsertti");
+    }
+    txt = txt.concat(")");
+    return txt;
+  };
+
+  const changeTab = (event, newValue) => {
+    setTabValue(newValue);
+  };
+
+  const premieresTabDisabled = premieres.length === 0;
+  const symphoniesLabel = lng("symhponies_tab", { value: symphonies.length });
+  const premieresLabel = lng("premieres_tab", { value: premieres.length });
 
   return (
     <>
       <div>
         <GetBackButton />
       </div>
-      {composer && (
+      <LoadingContent loading={pageLoading}>
         <div>
           <div>Säveltäjä: {composer?.name}</div>
         </div>
-      )}
-      <div>
-        <div>Teokset:</div>
-        <ul>
-          {symphonies.map((symph) => (
-            <li>
-              <span>{symph.name}</span>
-              <button onClick={() => navigate(`/concerts/symphonyid/${symph.id}`)}>
-                Hae konsertit ({symph.concertsCount})
-              </button>
-            </li>
-          ))}
-        </ul>
-      </div>
-      {premieres.length > 0 && (
-        <div>
-          <div>Kantaesitykset:</div>
-          <ul>
-            {premieres.map((prem) => (
-              <li>
-                <span>
-                  {prem.concert?.date}: {prem.symphony?.name} ({lng("premiere_tag." + prem.premiere_tag?.name)})
-                </span>
-                <button onClick={() => navigate(`/concert/concertid/${prem.concert?.id}`)}>Avaa konsertti</button>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+        <Tabs value={tabValue} onChange={changeTab}>
+          <Tab label={symphoniesLabel} />
+          <Tab label={premieresLabel} disabled={premieresTabDisabled} />
+        </Tabs>
+        {tabValue === 0 && (
+          <>
+            <List>
+              {symphonies.map((symph, index) => {
+                let textValue = `${symph.name}`;
+                if (symph.arrangers) {
+                  textValue = textValue.concat(` (${symph.arrangers.names})`);
+                }
+                const concertsText = concertsString(symph);
+                return (
+                  <div key={symph.id}>
+                    {index !== 0 && <Divider variant="middle" component="li" />}
+                    <ListItem>
+                      <ListItemText primary={textValue} secondary={concertsText} />
+                      <Button onClick={() => navigate(`/concerts/symphonyid/${symph.id}`)} variant="outlined">
+                        Hae
+                      </Button>
+                    </ListItem>
+                  </div>
+                );
+              })}
+            </List>
+          </>
+        )}
+        {tabValue === 1 && (
+          <>
+            <List>
+              {premieres.map((prem, index) => {
+                const textValue = `${prem.concert?.date}: ${prem.symphony?.name}`;
+                const premiereText = `(${lng("premiere_tag." + prem.premiere_tag?.name)})`;
+                return (
+                  <div key={prem.id}>
+                    {index !== 0 && <Divider variant="middle" component="li" />}
+                    <ListItem>
+                      <ListItemText primary={textValue} secondary={premiereText} />
+                      <Button onClick={() => navigate(`/concert/concertid/${prem.concert?.id}`)} variant="outlined">
+                        Avaa
+                      </Button>
+                    </ListItem>
+                  </div>
+                );
+              })}
+            </List>
+          </>
+        )}
+      </LoadingContent>
     </>
   );
 };

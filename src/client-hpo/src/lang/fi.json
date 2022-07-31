@@ -1,6 +1,7 @@
 {
   "header_1": "Konserttitiedot",
   "encore": "Ylimääräinen",
+  "filter_name_search": "Rajaa tuloksia nimellä",
   "premiere_tag.premiere": "Maailman kantaesitys",
   "premiere_tag.premiere_in_finland": "Ensi kertaa Suomessa",
   "premiere_tag.premiere_for_orchestra": "Orkesterin kantaesitys",
@@ -13,6 +14,7 @@
   "premiere_tag.premiere_for_secondary_lyrics": "Kantaesitys toissijaisella sanoituksella",
   "premiere_tag.encore": "Ylimääräinen",
   "premieres_count": "kantaesitykset: {value}",
+  "premieres_tab": "Kantaesitykset ({value})",
   "search_by_composer": "Hae säveltäjän mukaan",
   "search_concerts": "Hae konsertteja",
   "search_composer": "Hae säveltäjää",
@@ -20,6 +22,7 @@
   "search_soloist": "Hae solistia",
   "search_name": "Hae nimeä",
   "symphonies_count": "teokset: {value}",
+  "symhponies_tab": "Teokset ({value})",
   "upload_error.column_missing": "Virhe: '{value}' - Sarake puuttuu.",
   "upload_error.value_missing": "Virhe: Rivi {row}, solu '{cell}' - Arvo puuttuu.",
   "upload_error.invalid_format": "Virhe: Rivi {row}, solu '{cell}' - Väärä formatointi arvolla: '{value}'.",
