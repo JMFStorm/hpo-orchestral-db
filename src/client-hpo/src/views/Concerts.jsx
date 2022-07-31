@@ -125,6 +125,9 @@ const Concerts = () => {
       const results = concerts.length;
       const tail = results < 100 ? results : chunkSize;
       const end = chunkSize * index + tail;
+      if (start > end) {
+        return "0";
+      }
       return `${start} ... ${end}`;
     },
     [concerts]

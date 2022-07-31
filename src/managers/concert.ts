@@ -237,6 +237,7 @@ export const searchConcertsByNames = async (
           date: MoreThanOrEqual(start),
         }
       : queryList;
+  const takeQuery = conductor || soloist || composer ? undefined : 100;
 
   const concertRepo = getRepository(Concert);
   const concertsResponse = await concertRepo.find({
@@ -254,6 +255,7 @@ export const searchConcertsByNames = async (
     order: {
       date: "ASC",
     },
+    take: takeQuery,
     skip: skipAmount,
   });
 

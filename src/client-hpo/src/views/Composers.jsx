@@ -1,8 +1,7 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Autocomplete from "@mui/material/Autocomplete";
-import TextField from "@mui/material/TextField";
 
+import AutocompleteFetch from "./AutocompleteFetch";
 import { fetchAllComposersByKeyword } from "../api/request";
 import Language from "../lang/Language.jsx";
 
@@ -42,35 +41,7 @@ const Composers = () => {
   const navigate = useNavigate();
   const { lng } = Language();
 
-  const [autocompleteInput, setAutocompleteInput] = useState("");
-  const [debounceId, setDebounceId] = useState(undefined);
-  const [composersResult, setComposersResult] = useState([]);
-
-  const fetchRequest = async (id) => {
-    clearInterval(id);
-    setDebounceId(undefined);
-    if (autocompleteInput) {
-      const { result } = await fetchAllComposersByKeyword(autocompleteInput);
-      console.log("result", result);
-      setComposersResult(result);
-    }
-  };
-
-  useEffect(() => {
-    if (autocompleteInput) {
-      const setTimer = () => {
-        const second = 1000;
-        const newTimerId = setInterval(() => fetchRequest(newTimerId), second);
-        setDebounceId(newTimerId);
-      };
-      if (!debounceId) {
-        setTimer();
-      } else if (debounceId) {
-        clearInterval(debounceId);
-        setTimer();
-      }
-    }
-  }, [autocompleteInput]);
+  const [selectedComposer, setSelectedComposer] = useState(null);
 
   const navigateByComposerLetter = async (letter) => {
     let lettersStr = [letter];
@@ -83,30 +54,18 @@ const Composers = () => {
     navigate(`/composers/startingletter/${lettersStr}`);
   };
 
-  const composersList = useMemo(() => {
-    if (!composersResult) {
-      return [];
-    }
-    return composersResult.map((comp) => {
-      return { label: comp.name, id: comp.id };
-    });
-  }, [composersResult]);
-
   return (
     <>
       <h2>Hae säveltäjää nimellä</h2>
       <div>
-        <Autocomplete
-          disablePortal
-          filterOptions={(x) => x}
-          id="composers-autocomplete"
-          options={composersList}
-          renderInput={(params) => <TextField {...params} label={lng("search_name")} />}
-          onChange={(event, newValue) => {
+        <AutocompleteFetch
+          name="composer"
+          label={lng("search_composer")}
+          value={selectedComposer}
+          setValue={setSelectedComposer}
+          asyncRequest={fetchAllComposersByKeyword}
+          customOnChange={(event, newValue) => {
             navigate(`/composer/${newValue.id}`);
-          }}
-          onInputChange={(event, newInputValue) => {
-            setAutocompleteInput(newInputValue);
           }}
         />
       </div>

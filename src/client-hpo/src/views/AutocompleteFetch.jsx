@@ -4,7 +4,7 @@ import TextField from "@mui/material/TextField";
 
 import LoadingIcon from "./LoadingIcon";
 
-const AutocompleteFetch = ({ name, label, asyncRequest, value, setValue }) => {
+const AutocompleteFetch = ({ name, label, asyncRequest, value, setValue, customOnChange }) => {
   const [inputValue, setInputValue] = useState("");
   const [debounceId, setDebounceId] = useState(undefined);
   const [results, setResults] = useState();
@@ -50,6 +50,14 @@ const AutocompleteFetch = ({ name, label, asyncRequest, value, setValue }) => {
     });
   }, [results]);
 
+  const onChangeEventDefault = (event, newValue) => {
+    if (newValue) {
+      setValue(newValue.label);
+    }
+  };
+
+  const onChangeEvent = customOnChange ?? onChangeEventDefault;
+
   return (
     <>
       <Autocomplete
@@ -74,11 +82,7 @@ const AutocompleteFetch = ({ name, label, asyncRequest, value, setValue }) => {
           />
         )}
         value={value}
-        onChange={(event, newValue) => {
-          if (newValue) {
-            setValue(newValue.label);
-          }
-        }}
+        onChange={onChangeEvent}
         inputValue={inputValue}
         onInputChange={(event, newInputValue) => {
           setInputValue(newInputValue);
