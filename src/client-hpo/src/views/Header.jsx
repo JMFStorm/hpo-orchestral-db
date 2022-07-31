@@ -14,7 +14,6 @@ const Header = ({ setLanguage }) => {
         <button onClick={() => setLanguage("en")}>EN</button>
       </div>
       <Link to="/home">Etusivu</Link> <Link to="/composers">{lng("search_by_composer")}</Link>{" "}
-      <Link to="/concerts">{lng("search_concerts")}</Link> <Link to="/admin">Admin</Link>
     </header>
   );
 };

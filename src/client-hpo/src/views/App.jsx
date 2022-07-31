@@ -1,5 +1,5 @@
 import React, { useEffect, useReducer, useState } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HashRouter, Routes, Route } from "react-router-dom";
 
 import "../styles/app.css";
 import { languageReducer } from "../lang/languageReducer";
@@ -30,7 +30,7 @@ const App = () => {
     <main>
       {appLanguage && (
         <LanguageContext.Provider value={appLanguage}>
-          <BrowserRouter>
+          <HashRouter>
             <Header setLanguage={setLanguage} />
             <Routes>
               <Route path="/" element={<HomePage />} />
@@ -45,7 +45,7 @@ const App = () => {
               <Route path="/concert/concertid/:concertid" element={<Concert />} />
               <Route path="/concerts" element={<Concerts />} />
             </Routes>
-          </BrowserRouter>
+          </HashRouter>
         </LanguageContext.Provider>
       )}
     </main>
