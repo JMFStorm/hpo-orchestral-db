@@ -31,7 +31,7 @@ const Concerts = () => {
   const [chunkIndex, setChunkIndex] = useState(0);
   const [selectedYear, setSelectedYear] = useState(startYear);
   const [searchResultsCriteria, setSearchResultsCriteria] = useState({});
-  const [pageLoading, setPageLoading] = useState(true);
+  const [pageLoading, setPageLoading] = useState(false);
 
   const [selectedConductor, setSelectedConductor] = useState("");
   const [selectedComposer, setSelectedComposer] = useState("");
