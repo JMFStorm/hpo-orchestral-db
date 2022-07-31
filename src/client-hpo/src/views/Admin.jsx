@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { io } from "socket.io-client";
 import { useNavigate } from "react-router-dom";
 
+import LoadingIcon from "./LoadingIcon";
 import { parseCsv } from "../utils.js/csvParse";
 import { uploadCsvData, loginUser } from "../api/request";
 import { serverUrl } from "../config";
@@ -20,6 +21,7 @@ const Admin = () => {
     result: "",
   });
   const [seedWarnings, setSeedWarnings] = useState([]);
+  const [seedInProgress, setSeedInProgress] = useState(false);
 
   // Sockets
   useEffect(() => {
@@ -34,6 +36,7 @@ const Admin = () => {
         } else {
           setSeedMessages((prev) => ({ ...prev, [data.type]: data.message }));
         }
+        setSeedInProgress(!data.completed);
       });
     }
   }, [userToken]);
@@ -96,6 +99,7 @@ const Admin = () => {
       total: "",
       result: "",
     });
+    setSeedInProgress(true);
     setSeedWarnings([]);
     const { error } = await uploadCsvData(fileData, userToken);
     if (error) {
@@ -121,6 +125,7 @@ const Admin = () => {
         <div>{seedMessages.default}</div>
         <div>{seedMessages.total}</div>
         <div>{seedMessages.result}</div>
+        {seedInProgress && <LoadingIcon sizePixels={50} />}
         {seedWarnings.length > 0 && (
           <div>
             <h3>Teosten nimikonflikteja:</h3>

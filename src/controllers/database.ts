@@ -137,7 +137,7 @@ const seedDatabase = async (csvRows: CsvRowObject[]) => {
 
     console.log({ savedPerformances: totalAdded });
     seedLog("Database seed complete!");
-    seedLog(`Saved ${totalAdded} performances in total.`, "result");
+    seedLog(`Saved ${totalAdded} performances in total.`, "result", true);
     return totalAdded;
   } catch (err) {
     console.error("err", err);

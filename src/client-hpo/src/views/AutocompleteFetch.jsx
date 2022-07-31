@@ -2,10 +2,13 @@ import React, { useState, useEffect, useMemo, useCallback } from "react";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 
+import LoadingIcon from "./LoadingIcon";
+
 const AutocompleteFetch = ({ name, label, asyncRequest, value, setValue }) => {
   const [inputValue, setInputValue] = useState("");
   const [debounceId, setDebounceId] = useState(undefined);
   const [results, setResults] = useState();
+  const [loading, setLoading] = useState(false);
 
   const fetch = useCallback(
     async (id) => {
@@ -13,15 +16,17 @@ const AutocompleteFetch = ({ name, label, asyncRequest, value, setValue }) => {
       setDebounceId(undefined);
       if (inputValue) {
         const { result } = await asyncRequest(inputValue);
+        setLoading(false);
         console.log("result", result);
         setResults(result);
       }
     },
-    [asyncRequest, inputValue]
+    [asyncRequest, inputValue, setLoading]
   );
 
   useEffect(() => {
     if (inputValue) {
+      setLoading(true);
       const setTimer = () => {
         const second = 1000;
         const newTimerId = setInterval(() => fetch(newTimerId), second);
@@ -57,7 +62,21 @@ const AutocompleteFetch = ({ name, label, asyncRequest, value, setValue }) => {
         filterOptions={(x) => x}
         id={"autocomplete-" + name}
         options={resultsList}
-        renderInput={(params) => <TextField {...params} label={label} />}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            label={label}
+            InputProps={{
+              ...params.InputProps,
+              endAdornment: (
+                <React.Fragment>
+                  {loading ? <LoadingIcon sizePixels={20} /> : null}
+                  {params.InputProps.endAdornment}
+                </React.Fragment>
+              ),
+            }}
+          />
+        )}
         value={value}
         onChange={(event, newValue) => {
           if (newValue) {
