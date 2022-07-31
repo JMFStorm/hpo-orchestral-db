@@ -1,4 +1,7 @@
 {
+  "conductor": "Kapellimestari",
+  "conductor_unknown": "Kapellimestari ei tiedossa",
+  "conductors": "Kapellimestarit",
   "filter_name_search": "Rajaa tuloksia nimellä",
   "get_back": "Takaisin",
   "encore": "Ylimääräinen",

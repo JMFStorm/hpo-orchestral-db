@@ -25,7 +25,7 @@ const AutocompleteFetch = ({ name, label, asyncRequest, value, setValue, customO
   );
 
   useEffect(() => {
-    if (inputValue && value != inputValue) {
+    if (inputValue && value !== inputValue) {
       setLoading(true);
       const setTimer = () => {
         const second = 1000;

@@ -1,6 +1,12 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemText from "@mui/material/ListItemText";
+import Button from "@mui/material/Button";
+import Divider from "@mui/material/Divider";
 
+import { parsePgDateToString } from "../utils/functions";
 import LoadingContent from "./LoadingContent";
 import { sortConcertsByDate } from "../utils/functions";
 import AutocompleteFetch from "./AutocompleteFetch";
@@ -133,6 +139,23 @@ const Concerts = () => {
     [concerts]
   );
 
+  const setConductorsString = (concert) => {
+    let txt = "";
+    if (concert.conductors.length > 0) {
+      txt = txt.concat("(");
+      concert.conductors.forEach((cond, index) => {
+        if (index === concert.conductors.length - 1 && index !== 0) {
+          txt = txt.concat(" & ");
+        } else if (index !== 0) {
+          txt = txt.concat(", ");
+        }
+        txt = txt.concat(`${cond.name}`);
+      });
+      txt = txt.concat(")");
+    }
+    return txt === "" ? `(${lng("conductor_unknown")})` : txt;
+  };
+
   const prviousButtonDisabled = chunkIndex === 0 || pageLoading;
   const nextButtonDisabled = (concerts.length !== 0 && concerts.length < 100) || pageLoading;
 
@@ -193,28 +216,26 @@ const Concerts = () => {
           </button>
         </div>
         <LoadingContent loading={pageLoading}>
-          <ul>
-            {concerts.sort(sortConcertsByDate).map((conc) => {
-              let conductorsText = " ";
-              if (conc.conductors) {
-                conc.conductors.forEach((cond, index) => {
-                  if (index !== 0) {
-                    conductorsText = conductorsText.concat(" / ");
-                  }
-                  conductorsText = conductorsText.concat(`${cond.name}`);
-                });
+          <List>
+            {concerts.sort(sortConcertsByDate).map((concert, index) => {
+              let textValue = `${parsePgDateToString(concert.date)}`;
+              if (concert.concert_tag?.name) {
+                textValue = textValue.concat(`: ${concert.concert_tag?.name}`);
               }
+              const conductorsText = setConductorsString(concert);
               return (
-                <li key={conc.concert_id}>
-                  <span>
-                    {conc.date} {conc.concert_tag?.name}
-                    {conductorsText}
-                  </span>
-                  <button onClick={() => navigate(`/concert/concertid/${conc.id}`)}>Avaa</button>
-                </li>
+                <div key={concert.id}>
+                  {index !== 0 && <Divider variant="middle" component="li" />}
+                  <ListItem>
+                    <ListItemText primary={textValue} secondary={conductorsText} />
+                    <Button onClick={() => navigate(`/concert/concertid/${concert.id}`)} variant="outlined">
+                      Avaa
+                    </Button>
+                  </ListItem>
+                </div>
               );
             })}
-          </ul>
+          </List>
         </LoadingContent>
       </>
     </>
