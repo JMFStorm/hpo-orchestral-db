@@ -36,3 +36,8 @@ export const findStringArrayMatch = (arr: string[], substring?: string, defaultR
     .find((element) => element.includes(substring.toLowerCase()));
   return !!find;
 };
+
+export const pipe =
+  (...fns: any[]) =>
+  (val: any) =>
+    fns.reduce((prev, fn) => fn(prev), val);

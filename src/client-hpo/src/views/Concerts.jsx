@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
+import LoadingIcon from "./LoadingIcon";
 import { sortConcertsByDate } from "../utils.js/functions";
 import AutocompleteFetch from "./AutocompleteFetch";
 import Language from "../lang/Language.jsx";
@@ -30,6 +31,7 @@ const Concerts = () => {
   const [chunkIndex, setChunkIndex] = useState(0);
   const [selectedYear, setSelectedYear] = useState(startYear);
   const [searchResultsCriteria, setSearchResultsCriteria] = useState({});
+  const [pageLoading, setPageLoading] = useState(false);
 
   const [selectedConductor, setSelectedConductor] = useState("");
   const [selectedComposer, setSelectedComposer] = useState("");
@@ -37,14 +39,16 @@ const Concerts = () => {
 
   const fetchConcertsRequest = async (conductor, composer, soloist, startYear, chunkIndex = 0) => {
     setSearchResultsCriteria({ conductor, composer, soloist, startYear, endYear });
+    setPageLoading(true);
     const { result, error } = await fetchConcertsCombinationSearch(conductor, composer, soloist, startYear, chunkIndex);
+    setPageLoading(false);
     if (result) {
       setConcerts(result);
       console.log("result", result);
     }
   };
 
-  const userSearchConcerts = async () => {
+  const userSearchConcerts = useCallback(async () => {
     const searchParams = {
       conductor: selectedConductor?.trim() ?? "",
       composer: selectedComposer?.trim() ?? "",
@@ -55,7 +59,7 @@ const Concerts = () => {
     setChunkIndex(0);
     setSearchParamsQuery(searchParams);
     await fetchConcertsRequest(searchParams.conductor, searchParams.composer, searchParams.soloist, selectedYear);
-  };
+  }, [setChunkIndex, setSearchParamsQuery, selectedComposer, selectedSoloist, selectedYear, selectedConductor]);
 
   useEffect(() => {
     const searchAtStart = async () => {
@@ -69,17 +73,19 @@ const Concerts = () => {
       setSelectedYear(start);
       setSelectedSoloist(solo);
       setChunkIndex(Number(pageIndex));
-
       if (comp || cond || solo || start !== startYear) {
         await fetchConcertsRequest(cond, comp, solo, start, pageIndex);
       }
     };
     searchAtStart();
-  }, [searchParamsQuery]);
+  }, []);
 
-  const changeYearsHandle = (event) => {
-    setSelectedYear(Number(event.target.value));
-  };
+  const changeYearsHandle = useCallback(
+    (event) => {
+      setSelectedYear(Number(event.target.value));
+    },
+    [setSelectedYear]
+  );
 
   const changeChunkIndex = useCallback(
     async (val) => {
@@ -112,12 +118,20 @@ const Concerts = () => {
     setSelectedSoloist("");
   };
 
-  const resultsPageString = (index) => {
-    const chunkSize = 100;
-    const start = chunkSize * index;
-    const end = chunkSize * index + chunkSize;
-    return `${start} ... ${end}`;
-  };
+  const resultsPageString = useCallback(
+    (index) => {
+      const chunkSize = 100;
+      const start = chunkSize * index + 1;
+      const results = concerts.length;
+      const tail = results < 100 ? results : chunkSize;
+      const end = chunkSize * index + tail;
+      return `${start} ... ${end}`;
+    },
+    [concerts]
+  );
+
+  const prviousButtonDisabled = chunkIndex === 0 || pageLoading;
+  const nextButtonDisabled = (concerts.length !== 0 && concerts.length < 100) || pageLoading;
 
   return (
     <>
@@ -155,7 +169,7 @@ const Concerts = () => {
       </div>
       <button onClick={resetFilters}>Tyhjennä</button>
       <button onClick={userSearchConcerts}>Hae</button>
-      {concerts.length > 0 && (
+      {concerts?.length > 0 && (
         <>
           <div>
             <div>Tulokset hakukriteereillä:</div>
@@ -167,13 +181,15 @@ const Concerts = () => {
             </span>
           </div>
           <div>
-            <button disabled={chunkIndex === 0} onClick={() => changeChunkIndex(-1)}>
+            <button disabled={prviousButtonDisabled} onClick={() => changeChunkIndex(-1)}>
               Edelliset 100
             </button>
-            <button disabled={concerts.length !== 0 && concerts.length < 100} onClick={() => changeChunkIndex(1)}>
+            <button disabled={nextButtonDisabled} onClick={() => changeChunkIndex(1)}>
               Seuraavat 100
             </button>
           </div>
+          {pageLoading && <LoadingIcon sizePixels={30} />}
+
           <ul>
             {concerts.sort(sortConcertsByDate).map((conc) => {
               let conductorsText = " ";

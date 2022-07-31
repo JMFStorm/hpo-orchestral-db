@@ -25,7 +25,7 @@ const AutocompleteFetch = ({ name, label, asyncRequest, value, setValue }) => {
   );
 
   useEffect(() => {
-    if (inputValue) {
+    if (inputValue && value != inputValue) {
       setLoading(true);
       const setTimer = () => {
         const second = 1000;
@@ -40,10 +40,6 @@ const AutocompleteFetch = ({ name, label, asyncRequest, value, setValue }) => {
       }
     }
   }, [inputValue]);
-
-  useEffect(() => {
-    setInputValue(value);
-  }, [value]);
 
   const resultsList = useMemo(() => {
     if (!results) {
@@ -80,14 +76,15 @@ const AutocompleteFetch = ({ name, label, asyncRequest, value, setValue }) => {
         value={value}
         onChange={(event, newValue) => {
           if (newValue) {
-            setInputValue(newValue.label);
             setValue(newValue.label);
           }
         }}
         inputValue={inputValue}
         onInputChange={(event, newInputValue) => {
           setInputValue(newInputValue);
-          setValue(newInputValue);
+          if (newInputValue === "") {
+            setValue(newInputValue);
+          }
         }}
         isOptionEqualToValue={(option, value) => {
           return true || option?.label === value || option?.label.includes(value);

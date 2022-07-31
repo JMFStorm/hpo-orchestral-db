@@ -7,7 +7,7 @@ import ConcertTag from "../entities/ConcertTag";
 import Location from "../entities/Location";
 import Orchestra from "../entities/Orchestra";
 import Musician from "../entities/Musician";
-import { filterUniquesById, findStringArrayMatch, parseStringToDate } from "../utils/functions";
+import { filterUniquesById, findStringArrayMatch, parseStringToDate, pipe } from "../utils/functions";
 import Composer from "../entities/Composer";
 import Conductor from "../entities/Conductor";
 
@@ -254,45 +254,43 @@ export const searchConcertsByNames = async (
     order: {
       date: "ASC",
     },
-    take: chunk,
     skip: skipAmount,
   });
 
-  const filterComposers = composer
-    ? (concert: Concert) =>
-        findStringArrayMatch(
-          concert.performances
-            .map((x) => x.symphony.composers)
-            .flat()
-            .map((x) => x.name),
-          composer,
-          true
-        )
-    : (x: Concert) => x;
-  const filterConductors = conductor
-    ? (concert: Concert) =>
-        findStringArrayMatch(
-          concert.conductors.map((x) => x.name),
-          conductor,
-          true
-        )
-    : (x: Concert) => x;
-  const filterSoloists = soloist
-    ? (concert: Concert) =>
-        findStringArrayMatch(
-          concert.performances
-            .map((x) => x.soloist_performances)
-            .flat()
-            .map((x) => x.soloist)
-            .map((x) => x.name),
-          soloist,
-          true
-        )
-    : (x: Concert) => x;
+  const filterComposers = (concerts: Concert[]) =>
+    concerts.filter((concert) =>
+      findStringArrayMatch(
+        concert.performances
+          .map((x) => x.symphony.composers)
+          .flat()
+          .map((x) => x.name),
+        composer,
+        true
+      )
+    );
 
-  const results = concertsResponse
-    .filter((concert) => filterComposers(concert) && filterConductors(concert) && filterSoloists(concert))
-    .flat(1);
+  const filterConductors = (concerts: Concert[]) =>
+    concerts.filter((concert) =>
+      findStringArrayMatch(
+        concert.conductors.map((x) => x.name),
+        conductor,
+        true
+      )
+    );
+  const filterSoloists = (concerts: Concert[]) =>
+    concerts.filter((concert) =>
+      findStringArrayMatch(
+        concert.performances
+          .map((x) => x.soloist_performances)
+          .flat()
+          .map((x) => x.soloist)
+          .map((x) => x.name),
+        soloist,
+        true
+      )
+    );
+
+  const results = pipe(filterComposers, filterConductors, filterSoloists)(concertsResponse).flat() as Concert[];
 
   const mapped: Partial<Concert>[] = results.map((x) => ({
     concert_id: x.concert_id,
@@ -302,5 +300,7 @@ export const searchConcertsByNames = async (
     starting_time: x.starting_time,
     date: x.date,
   }));
-  return mapped;
+
+  // Return max 100
+  return mapped.splice(0, chunk);
 };
