@@ -1,7 +1,8 @@
 {
-  "header_1": "Konserttitiedot",
-  "encore": "Ylimääräinen",
   "filter_name_search": "Rajaa tuloksia nimellä",
+  "get_back": "Takaisin",
+  "encore": "Ylimääräinen",
+  "header_1": "Konserttitiedot",
   "premiere_tag.premiere": "Maailman kantaesitys",
   "premiere_tag.premiere_in_finland": "Ensi kertaa Suomessa",
   "premiere_tag.premiere_for_orchestra": "Orkesterin kantaesitys",

@@ -3,7 +3,7 @@ import { io } from "socket.io-client";
 import { useNavigate } from "react-router-dom";
 
 import LoadingIcon from "./LoadingIcon";
-import { parseCsv } from "../utils.js/csvParse";
+import { parseCsv } from "../utils/csvParse";
 import { uploadCsvData, loginUser } from "../api/request";
 import { serverUrl } from "../config";
 import UploadValidateErrors from "./UploadValidateErrors";

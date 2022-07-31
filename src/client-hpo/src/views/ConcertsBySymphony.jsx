@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
-import { sortConcertsByDate } from "../utils.js/functions";
+import { sortConcertsByDate } from "../utils/functions";
 import GetBackButton from "./GetBackButton";
 import { fetchConcertsBySymphonyId } from "../api/request";
 

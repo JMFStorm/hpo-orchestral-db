@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 import LoadingContent from "./LoadingContent";
-import { sortConcertsByDate } from "../utils.js/functions";
+import { sortConcertsByDate } from "../utils/functions";
 import AutocompleteFetch from "./AutocompleteFetch";
 import Language from "../lang/Language.jsx";
 import {

@@ -152,6 +152,29 @@ export const getPerformancesByComposerAndPremiereTag = async (composerId: string
   return filtered;
 };
 
+const sortByDatesAsc = (a: Performance, b: Performance) => {
+  const aDate = a.concert.date;
+  const bDate = b.concert.date;
+  const aYear = Number(aDate.substring(0, 4));
+  const bYear = Number(bDate.substring(0, 4));
+  if (aYear === bYear) {
+    const aMonth = Number(aDate.substring(5, 7));
+    const bMonth = Number(bDate.substring(5, 7));
+    if (aMonth === bMonth) {
+      const aDay = Number(aDate.substring(8, 10));
+      const bDay = Number(bDate.substring(8, 10));
+      if (aDay === bDay) {
+        return 0;
+      }
+    } else if (aMonth < bMonth) {
+      return -1;
+    }
+  } else if (aYear < bYear) {
+    return -1;
+  }
+  return 1;
+};
+
 // Describe
 // Get premieres by composer Id
 export const getAllPremieresByComposerId = async (composerId: string) => {
@@ -161,10 +184,11 @@ export const getAllPremieresByComposerId = async (composerId: string) => {
   const tagsQuery = tags.map((tag) => ({
     premiere_tag: { id: tag.id },
   }));
-  const performances = await performanceRepo.find({
+  let performances = await performanceRepo.find({
     where: tagsQuery,
     relations: performanceRelationsForList,
   });
-  const filtered = performances.filter((perf) => perf.symphony.composers.find((comp) => comp.id == composerId));
-  return filtered;
+  performances = performances.filter((perf) => perf.symphony.composers.find((comp) => comp.id == composerId));
+  performances = performances.sort(sortByDatesAsc);
+  return performances;
 };

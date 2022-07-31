@@ -8,6 +8,7 @@ import Divider from "@mui/material/Divider";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 
+import { parsePgDateToString } from "../utils/functions";
 import LoadingContent from "./LoadingContent";
 import GetBackButton from "./GetBackButton";
 import { fetchPremieresByComposer, fetchSymphoniesByComposerId, fetchComposerById } from "../api/request";
@@ -41,6 +42,7 @@ const Composer = () => {
       setPageLoading(false);
 
       console.log("symphs", symphs);
+      console.log("prems", prems);
 
       setSymphonies(symphs ?? []);
       setPremieres(prems ?? []);
@@ -109,7 +111,7 @@ const Composer = () => {
           <>
             <List>
               {premieres.map((prem, index) => {
-                const textValue = `${prem.concert?.date}: ${prem.symphony?.name}`;
+                const textValue = `${parsePgDateToString(prem.concert?.date)}: ${prem.symphony?.name}`;
                 const premiereText = `(${lng("premiere_tag." + prem.premiere_tag?.name)})`;
                 return (
                   <div key={prem.id}>
