@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
-import LoadingIcon from "./LoadingIcon";
+import LoadingContent from "./LoadingContent";
 import { sortConcertsByDate } from "../utils.js/functions";
 import AutocompleteFetch from "./AutocompleteFetch";
 import Language from "../lang/Language.jsx";
@@ -31,7 +31,7 @@ const Concerts = () => {
   const [chunkIndex, setChunkIndex] = useState(0);
   const [selectedYear, setSelectedYear] = useState(startYear);
   const [searchResultsCriteria, setSearchResultsCriteria] = useState({});
-  const [pageLoading, setPageLoading] = useState(false);
+  const [pageLoading, setPageLoading] = useState(true);
 
   const [selectedConductor, setSelectedConductor] = useState("");
   const [selectedComposer, setSelectedComposer] = useState("");
@@ -169,27 +169,27 @@ const Concerts = () => {
       </div>
       <button onClick={resetFilters}>Tyhjennä</button>
       <button onClick={userSearchConcerts}>Hae</button>
-      {concerts?.length > 0 && (
-        <>
+      <>
+        {searchResultsCriteria && (
           <div>
             <div>Tulokset hakukriteereillä:</div>
             <span>
-              Kapellimestari: {searchResultsCriteria.conductor.length > 1 ? searchResultsCriteria.conductor : "-"},
-              Säveltäjä: {searchResultsCriteria.composer.length > 1 ? searchResultsCriteria.composer : "-"}, Solisti:{" "}
-              {searchResultsCriteria.soloist.length > 1 ? searchResultsCriteria.soloist : "-"} Tulokset:{" "}
+              Kapellimestari: {searchResultsCriteria.conductor?.length > 0 ? searchResultsCriteria.conductor : "-"},
+              Säveltäjä: {searchResultsCriteria.composer?.length > 0 ? searchResultsCriteria.composer : "-"}, Solisti:{" "}
+              {searchResultsCriteria.soloist?.length > 0 ? searchResultsCriteria.soloist : "-"} Tulokset:{" "}
               {resultsPageString(chunkIndex)}
             </span>
           </div>
-          <div>
-            <button disabled={prviousButtonDisabled} onClick={() => changeChunkIndex(-1)}>
-              Edelliset 100
-            </button>
-            <button disabled={nextButtonDisabled} onClick={() => changeChunkIndex(1)}>
-              Seuraavat 100
-            </button>
-          </div>
-          {pageLoading && <LoadingIcon sizePixels={30} />}
-
+        )}
+        <div>
+          <button disabled={prviousButtonDisabled} onClick={() => changeChunkIndex(-1)}>
+            Edelliset 100
+          </button>
+          <button disabled={nextButtonDisabled} onClick={() => changeChunkIndex(1)}>
+            Seuraavat 100
+          </button>
+        </div>
+        <LoadingContent loading={pageLoading}>
           <ul>
             {concerts.sort(sortConcertsByDate).map((conc) => {
               let conductorsText = " ";
@@ -212,8 +212,8 @@ const Concerts = () => {
               );
             })}
           </ul>
-        </>
-      )}
+        </LoadingContent>
+      </>
     </>
   );
 };
